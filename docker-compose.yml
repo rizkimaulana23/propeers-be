@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:13-alpine
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nest
+    ports:
+      - "5433:5432" 
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - nest
+
+  app:
+    build: .
+    container_name: nestjs-app
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_NAME: nest
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - nest
+    restart: unless-stopped
+
+networks:
+  nest:
+
+volumes:
+  postgres-data:
