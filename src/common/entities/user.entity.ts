@@ -1,8 +1,10 @@
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { BaseEntity } from "./base.entity";
-import { Speciality } from "./speciality.entity";
 import { Project } from "./project.entity";
 import { Notification } from "./notification.entity";
+import { Commission } from "./commission.entity";
+import { Speciality } from "./speciality.entity";
+import AssignedRoles from "./assignedRoles.entity";
 
 export enum Role {
     ADMIN = 'ADMIN',
@@ -11,6 +13,12 @@ export enum Role {
     CLIENT = 'CLIENT',
     GM = 'GM',
     DIREKSI = 'DIREKSI',
+}
+
+export enum TalentStatus {
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE',
+    SUSPENDED = 'SUSPENDED'
 }
 
 @Entity('users')
@@ -33,9 +41,37 @@ export class User extends BaseEntity {
     @Column({ nullable: false, type: 'enum', enum: Role, default: Role.FREELANCER })
     role: Role;
 
+    // Fields for Talent (SMS/FREELANCER roles)
+    @Column({ nullable: true, type: 'enum', enum: TalentStatus })
+    talentStatus: TalentStatus;
+
+    @Column({ nullable: true })
+    bankName: string;
+
+    @Column({ nullable: true })
+    bankAccountNumber: string;
+
+    @Column({ nullable: true })
+    bankAccountName: string;
+
+    // Relationships
     @OneToMany(() => Project, (project) => project.client)
     projects: Project[];
 
     @OneToMany(() => Notification, (notifications) => notifications.user)
     notifications: Notification[];
+
+    @OneToMany(() => Commission, (commission) => commission.talent)
+    commissions: Commission[];
+
+    @OneToMany(() => AssignedRoles, (assignedRoles) => assignedRoles.talent)
+    assignedRoles: AssignedRoles[];
+
+    @ManyToMany(() => Speciality, (speciality) => speciality.users)
+    @JoinTable({
+        name: 'user_specialities',
+        joinColumn: { name: 'userId', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'specialityId', referencedColumnName: 'id' }
+    })
+    specialities: Speciality[];
 }

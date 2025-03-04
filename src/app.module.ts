@@ -13,9 +13,8 @@ import { Notification } from './common/entities/notification.entity';
 import { Submission } from './common/entities/submission.entity';
 import { Activity } from './common/entities/activity.entity';
 import { Commission } from './common/entities/commission.entity';
-import GeneralManager from './common/entities/user/generalManager.entity';
-import { Talent } from './common/entities/user/talent.entity';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 import AssignedRoles from './common/entities/assignedRoles.entity';
 
 @Module({
@@ -33,12 +32,13 @@ import AssignedRoles from './common/entities/assignedRoles.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User, Project, Speciality, ContentPlan, Deliverable, ProjectReferences, Notification, Submission, Activity, Commission, Talent, AssignedRoles],
+        entities: [User, Project, Speciality, ContentPlan, Deliverable, ProjectReferences, Notification, Submission, Activity, Commission, AssignedRoles],
         synchronize: configService.get('NODE_ENV') !== 'production',
         logging: configService.get('NODE_ENV') !== 'production',
       }),
     }),
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

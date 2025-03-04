@@ -7,7 +7,6 @@ import { Notification, NotificationStatus } from '../../common/entities/notifica
 import { Deliverable } from '../../common/entities/deliverables.entity';
 import { ContentPlan } from '../../common/entities/contentPlan.entity';
 import { Commission } from '../../common/entities/commission.entity';
-import { Talent, TalentType } from '../../common/entities/user/talent.entity';
 import { faker } from '@faker-js/faker';
 import { Submission } from '../entities/submission.entity';
 import AssignedRoles from '../entities/assignedRoles.entity';
@@ -21,7 +20,7 @@ const connection = new DataSource({
     username: 'postgres',
     password: 'test',
     database: 'artesa_db',
-    entities: [User, Project, Speciality, Notification, Deliverable, ContentPlan, Commission, Talent, Submission, AssignedRoles, ProjectReferences, Activity],
+    entities: [User, Project, Speciality, Notification, Deliverable, ContentPlan, Commission, Submission, AssignedRoles, ProjectReferences, Activity],
     synchronize: process.env.NODE_ENV !== 'production',
     logging: process.env.NODE_ENV !== 'production',
 });
@@ -35,7 +34,6 @@ async function seedDatabase() {
     const deliverableRepository = connection.getRepository(Deliverable);
     const contentPlanRepository = connection.getRepository(ContentPlan);
     const commissionRepository = connection.getRepository(Commission);
-    const talentRepository = connection.getRepository(Talent);
     const assignedRolesRepository = connection.getRepository(AssignedRoles);
     const projectReferencesRepository = connection.getRepository(ProjectReferences);
     const activityRepository = connection.getRepository(Activity);
@@ -71,7 +69,6 @@ async function seedDatabase() {
     const specialities = Array.from({ length: 5 }).map(() => {
         const speciality = new Speciality();
         speciality.name = faker.commerce.department();
-        speciality.speciality = faker.commerce.product();
         return speciality;
     });
     await specialityRepository.save(specialities);
@@ -121,24 +118,12 @@ async function seedDatabase() {
     });
     await commissionRepository.save(commissions);
 
-    // Generate Talents
-    const talents = Array.from({ length: 5 }).map(() => {
-        const talent = new Talent();
-        talent.status = faker.helpers.arrayElement(['ACTIVE', 'INACTIVE']);
-        talent.bankName = faker.company.name();
-        talent.bankAccountNumber = faker.finance.accountNumber();
-        talent.bankAccountName = faker.helpers.arrayElement(['BRI', 'BCA', 'MANDIRI', 'JAGO']);
-        talent.type = faker.helpers.arrayElement(Object.values(TalentType));
-        return talent;
-    });
-    await talentRepository.save(talents);
-
     // Generate Assigned Roles
     const assignedRoles = Array.from({ length: 5 }).map(() => {
         const role = new AssignedRoles();
         role.role = faker.lorem.word();
         role.briefNotesUrl = faker.internet.url();
-        role.talentId = faker.helpers.arrayElement(talents).id; // Assuming talent has an id
+        role.talentId = faker.helpers.arrayElement(users).id; // Assuming talent has an id
         role.projectId = faker.helpers.arrayElement(projects).id; // Assuming project has an id
         return role;
     });

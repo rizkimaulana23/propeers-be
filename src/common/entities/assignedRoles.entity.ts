@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { BaseEntity } from "./base.entity";
-import { Talent } from "./user/talent.entity";
 import { Project } from "./project.entity";
+import { User } from "./user.entity";
 
 @Entity('assigned_roles')
 export default class AssignedRoles extends BaseEntity {
@@ -11,9 +11,9 @@ export default class AssignedRoles extends BaseEntity {
     @Column({ nullable: false })
     briefNotesUrl: string;
 
-    @ManyToOne(() => Talent, (talent) => talent.assignedRoles)
+    @ManyToOne(() => User, (user) => user.assignedRoles)
     @JoinColumn({ name: 'talentId' })
-    talent: Talent; 
+    talent: User; 
 
     @Column({ nullable: true })
     talentId: number;
