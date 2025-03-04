@@ -1,22 +1,35 @@
-# Use official Node.js image as a base
-FROM node:18-alpine
+# Build stage
+FROM node:18-bullseye AS builder
 
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --only=production
-RUN npm install
-RUN npm install -g @nestjs/cli
+RUN npm ci
 
-# Copy the rest of the application
+# Copy source code
 COPY . .
 
-# Build the NestJS application
+# Build the application
 RUN npm run build
+
+# Production stage
+FROM node:18-bullseye-slim
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
+
+# Copy built application from builder stage
+COPY --from=builder /usr/src/app/dist ./dist
 
 # Expose the port
 EXPOSE 3000
