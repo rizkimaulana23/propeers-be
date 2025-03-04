@@ -8,9 +8,5 @@ export class Speciality extends BaseEntity {
     name: string;
 
     @ManyToMany(() => User, (user) => user.specialities)
-    @JoinColumn({ name: 'userId' })
     users: User[];
-
-    @Column({ nullable: true })
-    userId: number;
 }

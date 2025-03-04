@@ -1,0 +1,12 @@
+POST http://localhost:3000/users/register
+Content-Type: application/json
+
+{
+    "email" : "rizkim0075@gmail.com",
+    "password" : "pw1234",
+    "name": "Rizki Maulana",
+    "phone": "1234",
+    "description":"haha",
+    "specialities": [1,2],
+    "role":"FREELANCER"
+}
