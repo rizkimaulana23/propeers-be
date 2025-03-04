@@ -23,16 +23,16 @@ export class Deliverable extends BaseEntity {
     @Column({ nullable: false })
     status: string;
 
-    @Column()
+    @Column({ nullable: true })
     viewsAmount: number;
 
-    @Column()
+    @Column({ nullable: true })
     likesAmount: number;
     
-    @Column()
+    @Column({ nullable: true })
     commentAmount: number;
 
-    @Column()
+    @Column({ nullable: true })
     shareAmount: number;
 
     @ManyToOne(() => ContentPlan, contentPlan => contentPlan.deliverables)

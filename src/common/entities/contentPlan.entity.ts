@@ -11,7 +11,7 @@ export class ContentPlan extends BaseEntity {
     @Column({ nullable: true })
     whiteboardUrl: string;
 
-    @OneToOne(() => Project)
+    @OneToOne(() => Project, (project) => project.contentPlan)
     @JoinColumn({ name: 'projectId' })
     project: Project;
 

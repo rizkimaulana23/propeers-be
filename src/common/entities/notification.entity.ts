@@ -3,7 +3,9 @@ import { User } from "./user.entity";
 import { BaseEntity } from "./base.entity";
 
 export enum NotificationStatus {
-
+    SENT = 'SENT',
+    READ = 'READ',
+    ARCHIVED = 'ARCHIVED',
 }
 
 @Entity('notification')
@@ -15,7 +17,7 @@ export class Notification extends BaseEntity {
     status: NotificationStatus;
 
     @Column({ nullable: false })
-    senderId: string;
+    senderId: number;
 
     @Column({ nullable: true })
     actionUrl: string;

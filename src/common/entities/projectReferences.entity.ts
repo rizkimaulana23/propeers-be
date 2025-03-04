@@ -18,5 +18,5 @@ export class ProjectReferences extends BaseEntity {
     project: Project;
 
     @Column({ nullable: false })
-    projectId: string;
+    projectId: number;
 }
