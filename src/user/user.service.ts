@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role, User } from 'src/common/entities/user.entity';
 import { In, Repository } from 'typeorm';
-import { RegisterDto } from './dto/register-base.dto';
+import { RegisterDto } from './dto/request/register-base.dto';
 import * as bcrypt from 'bcrypt'
 import { Speciality } from 'src/common/entities/speciality.entity';
 
@@ -23,7 +23,7 @@ export class UserService {
             }
         })
         if (existingUser) {
-            throw new Error('User already exists');
+            throw new ConflictException('User already exists');
         }
 
         const hashedPassword = await bcrypt.hash(registerDto.password, 10);
