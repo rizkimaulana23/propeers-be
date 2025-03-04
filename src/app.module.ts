@@ -15,6 +15,7 @@ import { Activity } from './common/entities/activity.entity';
 import { Commission } from './common/entities/commission.entity';
 import GeneralManager from './common/entities/user/generalManager.entity';
 import { Talent } from './common/entities/user/talent.entity';
+import { AuthModule } from './auth/auth.module';
 import AssignedRoles from './common/entities/assignedRoles.entity';
 
 @Module({
@@ -37,6 +38,7 @@ import AssignedRoles from './common/entities/assignedRoles.entity';
         logging: configService.get('NODE_ENV') !== 'production',
       }),
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
