@@ -1,18 +1,22 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role, User } from 'src/common/entities/user.entity';
 import { In, Repository } from 'typeorm';
 import { RegisterDto } from './dto/request/register-base.dto';
 import * as bcrypt from 'bcrypt'
 import { Speciality } from 'src/common/entities/speciality.entity';
+import { REQUEST } from '@nestjs/core';
+import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
+import { Request } from 'express';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
         @InjectRepository(Speciality)
-        private readonly specialityRepository: Repository<Speciality>
+        private readonly specialityRepository: Repository<Speciality>,
+        @Inject(REQUEST) private readonly request: Request
     ) {}
 
     async register(registerDto: RegisterDto){
@@ -23,7 +27,7 @@ export class UserService {
             }
         })
         if (existingUser) {
-            throw new ConflictException('User already exists');
+            throw new FailedException("User already registered", HttpStatus.CONFLICT, this.request.path);
         }
 
         const hashedPassword = await bcrypt.hash(registerDto.password, 10);
