@@ -7,7 +7,6 @@ import { Request } from 'express';
 import { BaseUserResponseDto } from './dto/response/user-response.dto';
 import { SmsResponseDto } from './dto/response/sms-response.dto';
 import { FreelancerResponseDto } from './dto/response/freelancer-response.dto';
-import { SpecialityResponseDto } from './dto/response/speciality-response.dto';
 
 @Controller('users')
 export class UserController {
@@ -17,7 +16,6 @@ export class UserController {
     @Post('register')
     async register(@Body() registerDto: RegisterDto, @Req() request: Request): Promise<BaseResponseDto<any>> {
         const user: User= await this.userService.register(registerDto);
-        const response = new BaseResponseDto(request, "User successfully registered", user);
 
         let userResponse = new BaseUserResponseDto({
             id: user.id,
@@ -38,10 +36,10 @@ export class UserController {
 
             return new BaseResponseDto(request, "SMS successfully registered", smsResponse);
         } else if (user.role === Role.FREELANCER) {
-            const specialities: SpecialityResponseDto[] = [];
+            const specialities: string[] = [];
             
             for (const speciality of user.specialities) {
-                specialities.push(new SpecialityResponseDto({ speciality: speciality.speciality }))
+                specialities.push(speciality.speciality)
             }
             
             const freelancer: FreelancerResponseDto = new FreelancerResponseDto({

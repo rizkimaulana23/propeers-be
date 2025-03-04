@@ -1,4 +1,3 @@
-import { SpecialityResponseDto } from "./speciality-response.dto";
 import { BaseUserResponseDto } from "./user-response.dto";
 
 export class FreelancerResponseDto extends BaseUserResponseDto {
@@ -6,7 +5,7 @@ export class FreelancerResponseDto extends BaseUserResponseDto {
     bankName: string;
     bankAccountNumber: string;
     bankAccountName: string;
-    specialities: SpecialityResponseDto[];
+    specialities: string[];
 
     constructor(partial: Partial<FreelancerResponseDto>) {
         super(partial);
