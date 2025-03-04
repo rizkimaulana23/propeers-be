@@ -41,7 +41,7 @@ export class UserController {
             const specialities: SpecialityResponseDto[] = [];
             
             for (const speciality of user.specialities) {
-                specialities.push(new SpecialityResponseDto({ speciality: speciality.name }))
+                specialities.push(new SpecialityResponseDto({ speciality: speciality.speciality }))
             }
             
             const freelancer: FreelancerResponseDto = new FreelancerResponseDto({

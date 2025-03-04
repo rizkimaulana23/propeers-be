@@ -37,7 +37,7 @@ export class UserService {
                 phone: registerDto.phone,
                 description: registerDto.description,
                 role: registerDto.role,
-                specialities:  await this.specialityRepository.findBy({ id: In(registerDto.specialities) })
+                specialities:  await this.specialityRepository.findBy({ speciality: In(registerDto.specialities) })
             })
         } else {
             newUser = this.userRepository.create({

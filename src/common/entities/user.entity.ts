@@ -71,7 +71,7 @@ export class User extends BaseEntity {
     @JoinTable({
         name: 'user_specialities',
         joinColumn: { name: 'userId', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'specialityId', referencedColumnName: 'id' }
+        inverseJoinColumn: { name: 'specialityId', referencedColumnName: 'speciality' }
     })
     specialities: Speciality[];
 }

@@ -22,7 +22,7 @@ export class RegisterDto {
     description: string;
 
     @IsArray()
-    specialities: number[];
+    specialities: string[];
 
     @IsEnum(Role)
     @IsNotEmpty()

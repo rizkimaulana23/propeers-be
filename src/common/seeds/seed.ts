@@ -66,9 +66,9 @@ async function seedDatabase() {
     await projectRepository.save(projects);
 
     // Generate Specialities
-    const specialities = Array.from({ length: 5 }).map(() => {
+    const specialities = ['Videography', 'Content Creation', 'Web Development', 'Social Media Analytics'].map((spec) => {
         const speciality = new Speciality();
-        speciality.name = faker.commerce.department();
+        speciality.speciality= spec;
         return speciality;
     });
     await specialityRepository.save(specialities);
@@ -85,11 +85,11 @@ async function seedDatabase() {
     // await notificationRepository.save(notifications);
 
     // Generate Content Plans
-    const contentPlans = Array.from({ length: 5 }).map(() => {
+    const contentPlans = [1,2,3,4,5].map((id) => {
         const contentPlan = new ContentPlan();
         contentPlan.pinterestBoardUrl = faker.internet.url();
         contentPlan.whiteboardUrl = faker.internet.url();
-        contentPlan.projectId = faker.helpers.arrayElement(projects).id; // Assuming project has an id
+        contentPlan.projectId = id
         return contentPlan;
     });
     await contentPlanRepository.save(contentPlans);
@@ -151,7 +151,6 @@ async function seedDatabase() {
     });
     await activityRepository.save(activities);
 
-    console.log('Database seeded successfully!');
     await connection.close();
 }
 
