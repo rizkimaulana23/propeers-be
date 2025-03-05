@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { RegisterDto } from './dto/request/register-base.dto';
 import { UserService } from './user.service';
 import { Role, User } from 'src/common/entities/user.entity';
@@ -19,47 +19,15 @@ export class UserController {
     }
 
     @Post('register')
-    @Public()
     async register(@Body() registerDto: RegisterDto, @Req() request: Request): Promise<BaseResponseDto<any>> {
-        const user: User= await this.userService.register(registerDto);
-
-        let userResponse = new BaseUserResponseDto({
-            id: user.id,
-            email: user.email,
-            description: user.description,
-            name: user.name,
-            phone: user.phone
-        });
-
-        if (user.role === Role.SMS) {
-            const smsResponse: SmsResponseDto = new SmsResponseDto({
-                ...userResponse,
-                status: user.talentStatus,
-                bankName: user.bankName,
-                bankAccountName: user.bankAccountName,
-                bankAccountNumber: user.bankAccountNumber
-            })
-
-            return new BaseResponseDto(request, "SMS successfully registered", smsResponse);
-        } else if (user.role === Role.FREELANCER) {
-            const specialities: string[] = [];
-            
-            for (const speciality of user.specialities) {
-                specialities.push(speciality.speciality)
-            }
-            
-            const freelancer: FreelancerResponseDto = new FreelancerResponseDto({
-                ...userResponse,
-                status: user.talentStatus,
-                bankName: user.bankName,
-                bankAccountName: user.bankAccountName,
-                bankAccountNumber: user.bankAccountNumber,
-                specialities
-            }) 
-
-            return new BaseResponseDto(request, "FREELANCER successfully registered", freelancer);
-        }
+        const userResponse = await this.userService.register(registerDto);
         return new BaseResponseDto(request, "User successfully registered", userResponse);
-        ;
+    }
+
+    @Get(':email')
+    @UseGuards(JwtAuthGuard)
+    async getUser(@Param('email') email: string, @Req() request: Request) {
+        const userResponse = await this.userService.getUser(email);
+        return new BaseResponseDto(request, `User dengan email ${email} berhasil didapatkan`, userResponse);
     }
 }

@@ -2,7 +2,7 @@ POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email" : "rizkim0072@gmail.com",
+    "email" : "rizkim0075@gmail.com",
     "password" : "pw1234",
     "name": "Rizki Maulana",
     "phone": "1234",
@@ -17,10 +17,10 @@ Content-Type: application/json
 
 {
     "email" : "rizkim0072@gmail.com",
-    "password" : "pw12345"
+    "password" : "pw1234"
 }
 
 ### Test
-GET http://localhost:3000/users/admin-only
+GET http://localhost:3000/users/rizkim0075@gmail.com
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTEzODk3MiwiZXhwIjoxNzQxMTQyNTcyfQ.kwZbY3jKJUOEgWZukHtEIuXCMq5C5rAf92mPCcNtwGE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTE0NjA1OSwiZXhwIjoxNzQxMTQ5NjU5fQ.dg5s9ka9z0ez2ASyz2u8Up1O097Qf0UAv0Zk_xEfnAc

@@ -67,7 +67,7 @@ export class User extends BaseEntity {
     @OneToMany(() => AssignedRoles, (assignedRoles) => assignedRoles.talent)
     assignedRoles: AssignedRoles[];
 
-    @ManyToMany(() => Speciality, (speciality) => speciality.users)
+    @ManyToMany(() => Speciality, (speciality) => speciality.users, { eager: true })
     @JoinTable({
         name: 'user_specialities',
         joinColumn: { name: 'userId', referencedColumnName: 'id' },
