@@ -2,7 +2,7 @@ import { ConflictException, HttpStatus, Inject, Injectable, Scope } from '@nestj
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role, User } from 'src/common/entities/user.entity';
 import { In, Repository } from 'typeorm';
-import { RegisterDto } from './dto/request/register-base.dto';
+import { RegisterDto } from './dto/request/register.dto';
 import * as bcrypt from 'bcrypt'
 import { Speciality } from 'src/common/entities/speciality.entity';
 import { REQUEST } from '@nestjs/core';
@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { SmsResponseDto } from './dto/response/sms-response.dto';
 import { BaseUserResponseDto } from './dto/response/user-response.dto';
 import { FreelancerResponseDto } from './dto/response/freelancer-response.dto';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -70,6 +71,35 @@ export class UserService {
         })
         if (!user) throw new FailedException(`User dengan email ${email} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.path);
         return this.turnUserToUserResponse(user);
+    }
+    
+    async updateUser(updateUserDto: UpdateUserDto) {
+
+        const user: User | null = await this.userRepository.findOne({
+            where: {
+                id: updateUserDto.id
+            }
+        })
+        
+        if (!user) {
+            throw new FailedException("User not found", HttpStatus.NOT_FOUND, this.request.path);
+        }
+
+        user.name = updateUserDto.name;
+        user.email = updateUserDto.email;
+        user.description = updateUserDto.description;
+        if (user.role === Role.FREELANCER) {
+            user.bankName = updateUserDto.bankName;
+            user.bankAccountName = updateUserDto.bankAccountName;
+            user.bankAccountNumber = updateUserDto.bankAccountNumber;
+            user.specialities = await this.specialityRepository.findBy({ speciality: In(updateUserDto.specialities) })
+        }
+        if (user.role === Role.SMS) {
+            user.bankName = updateUserDto.bankName;
+            user.bankAccountName = updateUserDto.bankAccountName;
+            user.bankAccountNumber = updateUserDto.bankAccountNumber;
+        }
+        return this.turnUserToUserResponse(await this.userRepository.save(user));
     }
 
     turnUserToUserResponse(user: User) {

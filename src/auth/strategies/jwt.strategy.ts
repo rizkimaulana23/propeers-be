@@ -25,9 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             where: { email: payload.sub }
         });
 
-        console.log("PAYLOAD SUB")
-        console.log(payload.sub)
-
         if (!user) {
             throw new UnauthorizedException('User not found');
         }

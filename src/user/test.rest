@@ -16,11 +16,25 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email" : "rizkim0072@gmail.com",
+    "email" : "rizkim0075@gmail.com",
     "password" : "pw1234"
 }
 
-### Test
-GET http://localhost:3000/users/rizkim0075@gmail.com
+### Getting User
+GET http://localhost:3000/users/ichijou.ririka@gmail.com
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTE0NjA1OSwiZXhwIjoxNzQxMTQ5NjU5fQ.dg5s9ka9z0ez2ASyz2u8Up1O097Qf0UAv0Zk_xEfnAc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTE0OTkyNSwiZXhwIjoxNzQxMTUzNTI1fQ.S_RvMCmZyfHZAPn_PXxdquyw2CGcJstiybsRq1JP4W8
+
+### PUT Edit User
+PUT http://localhost:3000/users/rizkim0075@gmail.com
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDc1QGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3NUBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTE1MjM3MCwiZXhwIjoxNzQxMTU1OTcwfQ.Cw33C9rb3x99FVxQNokbX0kZZb0VhKSWR8WwFSXvlEI
+
+{
+    "id": 13,
+    "email" : "ichijou.ririka@gmail.com",
+    "name": "Ichijou Ririka",
+    "phone": "1234",
+    "description":"haha",
+    "specialities": ["Videography"]
+}
