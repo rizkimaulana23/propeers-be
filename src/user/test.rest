@@ -10,3 +10,17 @@ Content-Type: application/json
     "specialities": ["Videography"],
     "role":"FREELANCER"
 }
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email" : "rizkim0072@gmail.com",
+    "password" : "pw1234"
+}
+
+### Test
+GET http://localhost:3000/users/admin-only
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTEzODk3MiwiZXhwIjoxNzQxMTQyNTcyfQ.kwZbY3jKJUOEgWZukHtEIuXCMq5C5rAf92mPCcNtwGE

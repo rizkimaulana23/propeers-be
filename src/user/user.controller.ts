@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { RegisterDto } from './dto/request/register-base.dto';
 import { UserService } from './user.service';
 import { Role, User } from 'src/common/entities/user.entity';
@@ -7,6 +7,11 @@ import { Request } from 'express';
 import { BaseUserResponseDto } from './dto/response/user-response.dto';
 import { SmsResponseDto } from './dto/response/sms-response.dto';
 import { FreelancerResponseDto } from './dto/response/freelancer-response.dto';
+import { RolesDecorator } from 'src/common/decorators/roles.decorator';
+import { Auth } from 'src/common/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { Public } from 'src/common/decorators/public.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('users')
 export class UserController {
@@ -14,6 +19,7 @@ export class UserController {
     }
 
     @Post('register')
+    @Public()
     async register(@Body() registerDto: RegisterDto, @Req() request: Request): Promise<BaseResponseDto<any>> {
         const user: User= await this.userService.register(registerDto);
 
@@ -49,11 +55,18 @@ export class UserController {
                 bankAccountName: user.bankAccountName,
                 bankAccountNumber: user.bankAccountNumber,
                 specialities
-            })
+            }) 
 
             return new BaseResponseDto(request, "FREELANCER successfully registered", freelancer);
         }
         return new BaseResponseDto(request, "User successfully registered", userResponse);
         ;
+    }
+
+    @Get('admin-only')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @RolesDecorator(Role.FREELANCER)
+    async adminOnlyEndpoint() {
+        return 'This is an admin-only endpoint';
     }
 }

@@ -16,11 +16,13 @@ import { Commission } from './common/entities/commission.entity';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import AssignedRoles from './common/entities/assignedRoles.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
