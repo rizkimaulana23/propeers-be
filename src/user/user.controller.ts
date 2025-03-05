@@ -62,11 +62,4 @@ export class UserController {
         return new BaseResponseDto(request, "User successfully registered", userResponse);
         ;
     }
-
-    @Get('admin-only')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @RolesDecorator(Role.FREELANCER)
-    async adminOnlyEndpoint() {
-        return 'This is an admin-only endpoint';
-    }
 }
