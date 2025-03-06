@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Role } from "src/common/entities/user.entity";
 
 export class RegisterDto {
@@ -22,6 +22,7 @@ export class RegisterDto {
     description: string;
 
     @IsArray()
+    @IsOptional()
     specialities: string[];
 
     @IsEnum(Role)

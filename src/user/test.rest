@@ -1,14 +1,14 @@
+### POST Register User
 POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email" : "rizkim0075@gmail.com",
+    "email" : "admin@gmail.com",
     "password" : "pw1234",
     "name": "Rizki Maulana",
     "phone": "1234",
     "description":"haha",
-    "specialities": ["Videography"],
-    "role":"FREELANCER"
+    "role":"ADMIN"
 }
 
 ### Login
@@ -16,14 +16,14 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email" : "ichijou.ririka@gmail.com",
+    "email" : "rizkim0071@gmail.com",
     "password" : "pw1234"
 }
 
 ### Getting User
 GET http://localhost:3000/users/ichijou.ririka@gmail.com
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTE0OTkyNSwiZXhwIjoxNzQxMTUzNTI1fQ.S_RvMCmZyfHZAPn_PXxdquyw2CGcJstiybsRq1JP4W8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0MTI0OTc2MiwiZXhwIjoxNzQxMjUzMzYyfQ.eVs3LVggqtlCneeGsgLceKq84YAvoW1H6CrddAbXG-c
 
 ### PUT Edit User
 PUT http://localhost:3000/users/rizkim0075@gmail.com
@@ -54,3 +54,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2hpam91L
 GET  http://localhost:3000/users?roles=SMS,FREELANCER
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2hpam91LnJpcmlrYUBnbWFpbC5jb20iLCJlbWFpbCI6ImljaGlqb3UucmlyaWthQGdtYWlsLmNvbSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzQxMjQyOTY1LCJleHAiOjE3NDEyNDY1NjV9.do5WiOZDHfrGQGfCu_h3jmxVLuDvRd5uMTjvtaejXCg
+
+### DELETE User
+DELETE http://localhost:3000/users/ichijou.ririka@gmail.com
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcxQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MUBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTI1MDk5MSwiZXhwIjoxNzQxMjU0NTkxfQ.gopRLYEVOS-WRu1pRloh-3ZOGmaqzYr3koKhoSg62yY

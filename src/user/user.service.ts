@@ -67,7 +67,6 @@ export class UserService {
         const user: User | null = await this.userRepository.findOne({
             where: {
                 email,
-                deletedAt: undefined
             }
         })
         if (!user) throw new FailedException(`User dengan email ${email} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.path);
@@ -134,6 +133,20 @@ export class UserService {
 
         users = await this.userRepository.find({ where: whereCondition });
         return users.map(user => this.turnUserToUserResponse(user));
+    }
+
+    async deleteUser(email: string) {
+        const user = await this.userRepository.findOne({
+            where: {
+                email
+            }
+        })
+
+        if (!user) {
+            throw new FailedException("User tidak ditemukan", HttpStatus.NOT_FOUND, this.request.path);
+        }        
+        
+        return await this.userRepository.softDelete({ email });
     }
 
     turnUserToUserResponse(user: User) {

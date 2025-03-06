@@ -28,8 +28,6 @@ import { Reflector } from '@nestjs/core';
       const { user } = context.switchToHttp().getRequest();
   
       // user.roles might be an array of roles, e.g. ["USER", "ADMIN"]
-      console.log("User Roles")
-      console.log(user.roles);
       const hasRole = requiredRoles.some(role => user.roles?.includes(role));
   
       if (!hasRole) {
