@@ -49,3 +49,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2hpam91L
     "oldPassword": "ririka",
     "newPassword": "ririka"
 }
+
+### GET List Users
+GET  http://localhost:3000/users?roles=SMS,FREELANCER
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2hpam91LnJpcmlrYUBnbWFpbC5jb20iLCJlbWFpbCI6ImljaGlqb3UucmlyaWthQGdtYWlsLmNvbSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzQxMjQyOTY1LCJleHAiOjE3NDEyNDY1NjV9.do5WiOZDHfrGQGfCu_h3jmxVLuDvRd5uMTjvtaejXCg

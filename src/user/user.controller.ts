@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Inject, Param, Post, Put, Req, Scope, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Inject, Param, ParseArrayPipe, Post, Put, Query, Req, Scope, UseGuards } from '@nestjs/common';
 import { RegisterDto } from './dto/request/register.dto';
 import { UserService } from './user.service';
 import { BaseResponseDto } from 'src/common/dto/success-response.dto';
@@ -10,6 +10,8 @@ import { Role } from 'src/common/entities/user.entity';
 import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { UpdatePasswordDto } from './dto/request/update-password.dto';
+import { BaseUserResponseDto } from './dto/response/user-response.dto';
+import { ParseRoleArrayPipe } from 'src/common/pipes/roles.pipe';
 
 @Controller({ path: 'users', scope: Scope.REQUEST})
 export class UserController {
@@ -51,4 +53,14 @@ export class UserController {
         const userResponse = await this.userService.updatePassword(updatePasswordDto);
         return new BaseResponseDto(this.request, `Password User telah diperbarui`, userResponse);
     }
+
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    async getUsers(
+        @Query('roles', ParseRoleArrayPipe) roles?: Role[], 
+        @Query('includeDeleted') includeDeleted: boolean = false
+    ) {
+        const userResponse = await this.userService.getUsers(roles, includeDeleted);
+        return new BaseResponseDto(this.request, `Daftar User berhasil didapatkan`, userResponse);
+    }   
 }

@@ -124,6 +124,18 @@ export class UserService {
         return this.turnUserToUserResponse(await this.userRepository.save(user));
     }
 
+    async getUsers(roles?: Role[], includeDeleted: boolean = false) {
+        let users;
+        const whereCondition: any = includeDeleted ? {} : { deletedAt: undefined };
+
+        if (roles && roles.length > 0) {
+            whereCondition.role = In(roles);
+        }
+
+        users = await this.userRepository.find({ where: whereCondition });
+        return users.map(user => this.turnUserToUserResponse(user));
+    }
+
     turnUserToUserResponse(user: User) {
         let userResponse = new BaseUserResponseDto({
             id: user.id,
