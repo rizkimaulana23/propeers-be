@@ -9,6 +9,7 @@ import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.inter
 import { Role } from 'src/common/entities/user.entity';
 import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { UpdatePasswordDto } from './dto/request/update-password.dto';
 
 @Controller({ path: 'users', scope: Scope.REQUEST})
 export class UserController {
@@ -39,5 +40,15 @@ export class UserController {
         }
         const userResponse = await this.userService.updateUser(updateUserDto);
         return new BaseResponseDto(this.request, `User dengan email ${email} berhasil diperbarui`, userResponse);
+    }
+
+    @Post('update-password')
+    @UseGuards(JwtAuthGuard)
+    async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
+        if (this.request.user?.roles !== Role.ADMIN) {
+            if (updatePasswordDto.email !== this.request.user?.email) throw new FailedException("Tidak dapat mengganti password selain akun milik diri sendiri", HttpStatus.UNAUTHORIZED, this.request.path)
+        }
+        const userResponse = await this.userService.updatePassword(updatePasswordDto);
+        return new BaseResponseDto(this.request, `Password User telah diperbarui`, userResponse);
     }
 }

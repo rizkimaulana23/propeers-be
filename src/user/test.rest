@@ -16,7 +16,7 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email" : "rizkim0075@gmail.com",
+    "email" : "ichijou.ririka@gmail.com",
     "password" : "pw1234"
 }
 
@@ -37,4 +37,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wM
     "phone": "1234",
     "description":"haha",
     "specialities": ["Videography"]
+}
+
+### POST Update Password
+POST http://localhost:3000/users/update-password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2hpam91LnJpcmlrYUBnbWFpbC5jb20iLCJlbWFpbCI6ImljaGlqb3UucmlyaWthQGdtYWlsLmNvbSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzQxMjQyOTY1LCJleHAiOjE3NDEyNDY1NjV9.do5WiOZDHfrGQGfCu_h3jmxVLuDvRd5uMTjvtaejXCg
+
+{
+    "email": "ichijou.ririka@gmail.com",
+    "oldPassword": "ririka",
+    "newPassword": "ririka"
 }

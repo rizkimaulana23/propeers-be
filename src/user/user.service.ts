@@ -12,6 +12,7 @@ import { SmsResponseDto } from './dto/response/sms-response.dto';
 import { BaseUserResponseDto } from './dto/response/user-response.dto';
 import { FreelancerResponseDto } from './dto/response/freelancer-response.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { UpdatePasswordDto } from './dto/request/update-password.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -99,6 +100,27 @@ export class UserService {
             user.bankAccountName = updateUserDto.bankAccountName;
             user.bankAccountNumber = updateUserDto.bankAccountNumber;
         }
+        return this.turnUserToUserResponse(await this.userRepository.save(user));
+    }
+
+    async updatePassword(updatePasswordDto: UpdatePasswordDto) {
+        const user = await this.userRepository.findOne({
+            where: { email: updatePasswordDto.email }
+        })
+        if (!user) throw new FailedException(
+            `User dengan email ${updatePasswordDto.email} tidak ditemukan`,
+            HttpStatus.NOT_FOUND,
+            this.request.path
+        )
+        
+        const isPasswordMatching = await bcrypt.compare(updatePasswordDto.oldPassword, user.hashedPassword);
+        if (!isPasswordMatching) throw new FailedException(
+            "Password lama tidak cocok",
+            HttpStatus.UNAUTHORIZED,
+            this.request.path
+        )
+         
+        user.hashedPassword = await bcrypt.hash(updatePasswordDto.newPassword, 10);
         return this.turnUserToUserResponse(await this.userRepository.save(user));
     }
 
