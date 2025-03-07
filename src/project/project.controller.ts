@@ -31,6 +31,6 @@ export class ProjectController {
     async updateProject(@Body() updateProjectDto: UpdateProjectDto, @Param('id') id: number) {
         const projectResponse = await this.projectService.updateProject(updateProjectDto);
         return new BaseResponseDto(this.request, `Project dengan ID ${id} berhasil diperbarui`, projectResponse);
-    }
+    } 
 
 }
