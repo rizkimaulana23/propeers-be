@@ -1,9 +1,10 @@
 import { ProjectStatus } from "src/common/entities/project.entity";
 import { ProjectReferencesResponseDto } from "./project-references-response.dto";
 import { ActivityResponseDto } from "./activity.dto";
+import { BaseUserResponseDto } from "src/user/dto/response/user-response.dto";
 
 export class ProjectResponseDto {
-    id: string;
+    id: number;
 
     projectName: string;
 
@@ -17,7 +18,9 @@ export class ProjectResponseDto {
 
     status: ProjectStatus;
 
-    projectReferences: ProjectReferencesResponseDto[];
+    client: BaseUserResponseDto;
 
-    activity: ActivityResponseDto[];
+    constructor(partial: Partial<ProjectResponseDto>) {
+        Object.assign(this, partial);
+    }
 }
