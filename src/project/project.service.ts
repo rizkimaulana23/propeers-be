@@ -27,7 +27,7 @@ export class ProjectService {
     ) {}
 
     async createProject(createProjectDto: CreateProjectDto) {
-        const { name, startDate, finishedDate, fee, mou, clientId } = createProjectDto;
+        const { name, startDate, description, finishedDate, fee, mou, clientId } = createProjectDto;
         const client = await this.userRepository.findOne({ where: { id: clientId } });
         if (!client) throw new FailedException(`Client dengan ID ${clientId} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
         if (client.role !== Role.CLIENT) throw new FailedException(`User dengan ID ${clientId} bukan merupakan client`, HttpStatus.BAD_REQUEST, this.request.path);
@@ -38,18 +38,22 @@ export class ProjectService {
             finishedDate,
             fee,
             mou,
-            client
+            client,
+            description
         })
-        return await this.projectRepository.save(project);
+        return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
     }
 
     async updateProject(updateProjectDto: UpdateProjectDto) {
-        const { id, name, startDate, finishedDate, fee, mou } = updateProjectDto;
+        const { id, name, description, startDate, finishedDate, fee, mou, clientId } = updateProjectDto;
         const project: Project | null = await this.projectRepository.findOne({
             where: {
                 id
             }
         })
+        const client = await this.userRepository.findOne({ where: { id: clientId } });
+        if (!client) throw new FailedException(`Client dengan ID ${clientId} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
+        if (client.role !== Role.CLIENT) throw new FailedException(`User dengan ID ${clientId} bukan merupakan client`, HttpStatus.BAD_REQUEST, this.request.path);
 
         if (!project) {
             throw new FailedException(
@@ -58,22 +62,28 @@ export class ProjectService {
                 this.request.path);
         }
 
+
         project.projectName = name;
         project.startDate = startDate;
         project.finishedDate = finishedDate;
         project.fee = fee;
         project.mou = mou;
+        project.description = description;
+        project.client = client;
 
-        return await this.projectRepository.save(project);
+        return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
     }
 
     turnProjectIntoProjectResponse (project: Project) {
+        console.log(project)
         const response = new ProjectResponseDto({
             id: project.id,
+            projectName: project.projectName,
             startDate: project.startDate,
             finishedDate: project.finishedDate,
             fee: project.fee,
             mou: project.mou,
+            description: project.description,
             client: this.userService.turnUserToUserResponse(project.client)
         });
         return response;

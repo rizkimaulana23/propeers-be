@@ -37,7 +37,7 @@ export class Project extends BaseEntity {
     @Column({ nullable: false, type: 'enum', enum: ProjectStatus, default: ProjectStatus.CREATED })
     status: ProjectStatus;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { eager: true })
     @JoinColumn({ name: 'clientId' })
     client: User;
 

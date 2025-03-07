@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Put, Scope, UseGuards } from '@nestjs/common';
+import { Body, Controller, Inject, Param, Post, Put, Scope, UseGuards } from '@nestjs/common';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -8,6 +8,7 @@ import { ProjectService } from './project.service';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { REQUEST } from '@nestjs/core';
 import { BaseResponseDto } from 'src/common/dto/success-response.dto';
+import { UpdateProjectDto } from './dto/request/update-project.dto';
 
 @Controller({ path: 'projects', scope: Scope.REQUEST})
 export class ProjectController {
@@ -27,8 +28,9 @@ export class ProjectController {
     @Put(':id')
     @RolesDecorator(Role.DIREKSI)
     @UseGuards(JwtAuthGuard,RolesGuard)
-    async updateProject() {
-        
+    async updateProject(@Body() updateProjectDto: UpdateProjectDto, @Param('id') id: number) {
+        const projectResponse = await this.projectService.updateProject(updateProjectDto);
+        return new BaseResponseDto(this.request, `Project dengan ID ${id} berhasil diperbarui`, projectResponse);
     }
 
 }
