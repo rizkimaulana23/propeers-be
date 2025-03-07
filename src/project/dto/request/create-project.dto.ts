@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString, IsUrl, Matches } from "class-validator";
+import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches } from "class-validator";
 import { ProjectStatus } from "src/common/entities/project.entity";
 
 export class CreateProjectDto {
@@ -6,6 +6,10 @@ export class CreateProjectDto {
     @IsString()
     @IsNotEmpty()
     name: string;
+
+    @IsString()
+    @IsOptional()
+    description: string;
 
     @IsDateString()
     @IsNotEmpty()
@@ -24,4 +28,8 @@ export class CreateProjectDto {
     @IsUrl()
     @IsNotEmpty()
     mou: string;
+
+    @IsNumber()
+    @IsNotEmpty()
+    clientId: number;
 }
