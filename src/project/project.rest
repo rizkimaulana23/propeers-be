@@ -3,12 +3,17 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email" : "direksi@gmail.com",
-    "password" : "direksi"
+    "email" : "rizkim0072@gmail.com",
+    "password" : "pw1234"
 }
 
+### GET Read Project Detail
+GET http://localhost:3000/projects/10
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTMzODE5NSwiZXhwIjoxNzQxMzQxNzk1fQ.YiiJeOvDyhTIbRz--HbvaCf7_rz25IKt-0ZsuZ8QeOw
 
-### CREATE PROJECT
+
+### POST Create Project
 POST http://localhost:3000/projects/create-project
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTMzMTM4OCwiZXhwIjoxNzQxMzM0OTg4fQ.7s2Te2KWI0cJle4CTD5gSWSPDSQ9EJjUqyUckfT3e2Y

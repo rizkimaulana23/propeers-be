@@ -26,6 +26,12 @@ export class ProjectService {
         private readonly userService: UserService
     ) {}
 
+    async readProject(id: number) {
+        const project = await this.projectRepository.findOne({ where: { id }});
+        if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.path);
+        return this.turnProjectIntoProjectResponse(project);
+    }
+
     async createProject(createProjectDto: CreateProjectDto) {
         const { name, startDate, description, finishedDate, fee, mou, clientId } = createProjectDto;
         const client = await this.userRepository.findOne({ where: { id: clientId } });
