@@ -38,7 +38,7 @@ export class Project extends BaseEntity {
     @JoinColumn({ name: 'clientId' })
     client: User;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     clientId: number;
 
     @OneToOne(() => ContentPlan, contentPlan => contentPlan.project)

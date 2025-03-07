@@ -3,8 +3,8 @@ POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email" : "admin@gmail.com",
-    "password" : "pw1234",
+    "email" : "direksi@gmail.com",
+    "password" : "direksi",
     "name": "Rizki Maulana",
     "phone": "1234",
     "description":"haha",

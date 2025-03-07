@@ -1,0 +1,22 @@
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email" : "direksi@gmail.com",
+    "password" : "direksi"
+}
+
+
+### CREATE PROJECT
+POST http://localhost:3000/projects/create-project
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDEzMjMwNTgsImV4cCI6MTc0MTMyNjY1OH0.AnXyyUtTXdCsB60vqSh3Vk5-0E673lB1wG6s87w_Lb0
+
+{
+    "name": "Artsi",
+    "startDate": "2024-10-21",
+    "finishedDate": "2024-11-21",
+    "fee": 10000000,
+    "mou": "https://docs.google.com/document/d/1HGoqGKWcSipQPCo_wE-eqAp2qcjXMHl1/edit?tab=t.0"
+}
