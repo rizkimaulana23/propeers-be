@@ -10,9 +10,12 @@ Content-Type: application/json
 ### GET Read Project Detail
 GET http://localhost:3000/projects/10
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcyQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MkBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTMzODE5NSwiZXhwIjoxNzQxMzQxNzk1fQ.YiiJeOvDyhTIbRz--HbvaCf7_rz25IKt-0ZsuZ8QeOw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTM0MDYxOCwiZXhwIjoxNzQxMzQ0MjE4fQ.kPQyKSffLXSNusjwp5PDo6j8-e6Z7kRRhHGtXHf7bMo
 
-
+### GET List Project
+GET http://localhost:3000/projects/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTM0MDYxOCwiZXhwIjoxNzQxMzQ0MjE4fQ.kPQyKSffLXSNusjwp5PDo6j8-e6Z7kRRhHGtXHf7bMo
 ### POST Create Project
 POST http://localhost:3000/projects/create-project
 Content-Type: application/json

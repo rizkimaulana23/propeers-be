@@ -36,6 +36,24 @@ export class ProjectController {
 
     }
 
+    @Get('')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async readProjects() {
+        const response: ProjectResponseDto[] = await this.projectService.readProjects();
+        let filteredResponse: any[] = [];
+
+        if (this.request.user?.roles !== Role.DIREKSI) {
+            response.map((project) => {
+                const { fee, ...rest } = project;
+                filteredResponse.push(rest)
+            })
+        } else {
+            filteredResponse = response;
+        }
+
+        return new BaseResponseDto(this.request, "Daftar project berhasil didapatkan", filteredResponse);
+    }
+
     @Post('create-project')
     @RolesDecorator(Role.DIREKSI)
     @UseGuards(JwtAuthGuard, RolesGuard)

@@ -32,6 +32,11 @@ export class ProjectService {
         return this.turnProjectIntoProjectResponse(project);
     }
 
+    async readProjects() {
+        const projects = await this.projectRepository.find();
+        return projects.map((project) => this.turnProjectIntoProjectResponse(project))
+    }
+
     async createProject(createProjectDto: CreateProjectDto) {
         const { name, startDate, description, finishedDate, fee, mou, clientId } = createProjectDto;
         const client = await this.userRepository.findOne({ where: { id: clientId } });
@@ -81,7 +86,6 @@ export class ProjectService {
     }
 
     turnProjectIntoProjectResponse (project: Project) {
-        console.log(project)
         const response = new ProjectResponseDto({
             id: project.id,
             projectName: project.projectName,

@@ -150,6 +150,7 @@ export class UserService {
     }
 
     turnUserToUserResponse(user: User) {
+        if (!user) return undefined;
         let userResponse = new BaseUserResponseDto({
             id: user.id,
             email: user.email,
