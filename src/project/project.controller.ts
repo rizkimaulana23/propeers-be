@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Scope, UseGuards } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Put, Scope, UseGuards } from '@nestjs/common';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -23,4 +23,12 @@ export class ProjectController {
         const projectResponse = await this.projectService.createProject(createProjectDto);
         return new BaseResponseDto(this.request, "Project berhasil dibuat", projectResponse);
     }
+
+    @Put(':id')
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard,RolesGuard)
+    async updateProject() {
+        
+    }
+
 }
