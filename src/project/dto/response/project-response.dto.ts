@@ -8,6 +8,8 @@ export class ProjectResponseDto {
 
     projectName: string;
 
+    description: string;
+
     startDate: Date;
 
     finishedDate: Date;

@@ -15,18 +15,26 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQ
 
 {
     "name": "Artsi",
+    "description": "Project Management Software development project.",
     "startDate": "2024-10-21",
     "finishedDate": "2024-11-21",
     "fee": 10000000,
     "mou": "https://docs.google.com/document/d/1HGoqGKWcSipQPCo_wE-eqAp2qcjXMHl1/edit?tab=t.0",
-    "clientId": 1
+    "clientId": 9
 }
 
 ### UPDATE PROJECT
 PUT http://localhost:3000/projects/6
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTMyOTA4MywiZXhwIjoxNzQxMzMyNjgzfQ.T6MpyRe47ZQmj7QhHkGsgWdq0iMefZWHnD7C9aD3MOs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTMzNDUwMywiZXhwIjoxNzQxMzM4MTAzfQ.EiMetgPYLw6w4jJ7hUFAKaSbgZU_Fo0zHh2MnNu7V_I
 
 {
-    
+    "id": 9,
+    "name": "ARTSI",
+    "description": "Project Management Software development project.",
+    "startDate": "2024-10-21",
+    "finishedDate": "2024-11-21",
+    "fee": 10000000,
+    "mou": "https://docs.google.com/document/d/1HGoqGKWcSipQPCo_wE-eqAp2qcjXMHl1/edit?tab=t.0",
+    "clientId": 8
 }
