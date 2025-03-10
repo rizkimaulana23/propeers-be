@@ -31,7 +31,7 @@
 
 Digunakan untuk mendapatkan JWT dan digunakan sebagai session untuk front-end.
 
-- URL: `/api/authenticate`
+- URL: `/auth/login`
 - Role: All Users
 - Headers:
     
