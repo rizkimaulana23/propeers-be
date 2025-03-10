@@ -19,6 +19,7 @@ export class RegisterDto {
     phone: string;
 
     @IsString()
+    @IsOptional()
     description: string;
 
     @IsArray()
