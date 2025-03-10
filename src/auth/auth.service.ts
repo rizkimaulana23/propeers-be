@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt'
 
 interface JwtPayload {
-    sub: string;
+    sub: number;
     email: string;
     role: string;
 }
@@ -35,7 +35,7 @@ export class AuthService {
 
     async login(user: User) {
         const payload: JwtPayload = {
-            sub: user.email,
+            sub: user.id,
             email: user.email,
             role: user.role
         };
