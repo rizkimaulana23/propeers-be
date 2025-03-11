@@ -41,6 +41,9 @@ export class User extends BaseEntity {
     @Column({ nullable: false, type: 'enum', enum: Role, default: Role.FREELANCER })
     role: Role;
 
+    @Column({ nullable: true })
+    photo: string; 
+
     // Fields for Talent (SMS/FREELANCER roles)
     @Column({ nullable: true, type: 'enum', enum: TalentStatus })
     talentStatus: TalentStatus;
