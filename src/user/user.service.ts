@@ -88,6 +88,7 @@ export class UserService {
         user.name = updateUserDto.name;
         user.email = updateUserDto.email;
         user.description = updateUserDto.description;
+        user.photo = updateUserDto.photo;
         if (user.role === Role.FREELANCER) {
             user.bankName = updateUserDto.bankName;
             user.bankAccountName = updateUserDto.bankAccountName;
@@ -157,7 +158,8 @@ export class UserService {
             description: user.description,
             name: user.name,
             phone: user.phone,
-            role: user.role
+            role: user.role,
+            photo: user.photo
         });
 
         if (user.role === Role.SMS) {

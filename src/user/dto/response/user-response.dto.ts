@@ -7,6 +7,7 @@ export class BaseUserResponseDto {
     phone: string;
     description: string;
     role: Role;
+    photo: string;
 
     constructor(partial: Partial<BaseUserResponseDto>) {
         Object.assign(this, partial);

@@ -18,9 +18,14 @@ export class UpdateUserDto {
     phone: string;
 
     @IsString()
+    @IsOptional()
+    photo: string;
+
+    @IsString()
     description: string;
 
     @IsArray()
+    @IsOptional()
     specialities: string[];
 
     @IsString()
