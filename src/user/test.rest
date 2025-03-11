@@ -21,9 +21,9 @@ Content-Type: application/json
 }
 
 ### Getting User
-GET http://localhost:3000/users/ichijou.ririka@gmail.com
+GET http://localhost:4000/users/direksi@gmail.com
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0MTI0OTc2MiwiZXhwIjoxNzQxMjUzMzYyfQ.eVs3LVggqtlCneeGsgLceKq84YAvoW1H6CrddAbXG-c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDE2NzMwNzUsImV4cCI6MTc0MTY3NjY3NX0.YA3dYg6GcTvyi2t5ts0-cf5B-HddlIfy7ta7jjRPOgA
 
 ### PUT Edit User
 PUT http://localhost:3000/users/rizkim0075@gmail.com
