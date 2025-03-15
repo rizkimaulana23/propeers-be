@@ -25,7 +25,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
+      NODE_OPTIONS: --experimental-vm-modules
       DB_HOST: db
       DB_PORT: 5432
       DB_USERNAME: ${DB_USERNAME:-postgres}
@@ -34,6 +35,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:-artesa_secret_key}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-3600}
       PORT: ${PORT:-3000}
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - "${PORT:-3000}:3000"
     networks:

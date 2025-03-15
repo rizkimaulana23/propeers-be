@@ -1,5 +1,10 @@
 # Development stage
-FROM node:18-bullseye AS development
+FROM node:20-bullseye AS development
+
+WORKDIR /usr/src/app
+
+# Required for the crypto module to work correctly
+ENV NODE_OPTIONS=--experimental-vm-modules
 
 # Set working directory
 WORKDIR /usr/src/app
