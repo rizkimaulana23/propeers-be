@@ -6,6 +6,7 @@ import { ProjectReferences } from "./projectReferences.entity";
 import { Activity } from "./activity.entity";
 import { Commission } from "./commission.entity";
 import AssignedRoles from "./assignedRoles.entity";
+import { IsUrl } from "class-validator";
 
 export enum ProjectStatus {
     CREATED = 'CREATED',
@@ -31,8 +32,20 @@ export class Project extends BaseEntity {
     @Column({ type: 'float', nullable: false })
     fee: number;
 
+    @IsUrl()
     @Column({ nullable: false })
     mou: string;
+
+    @IsUrl()
+    @Column({ nullable: true })
+    canvaWhiteboard: string;
+
+    @IsUrl()
+    @Column({ nullable: true })
+    boardPinterest: string;
+
+    @Column({ nullable: true })
+    bonus: string;
 
     @Column({ nullable: false, type: 'enum', enum: ProjectStatus, default: ProjectStatus.CREATED })
     status: ProjectStatus;

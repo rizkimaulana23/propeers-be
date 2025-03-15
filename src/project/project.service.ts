@@ -94,6 +94,10 @@ export class ProjectService {
             fee: project.fee,
             mou: project.mou,
             description: project.description,
+            boardPinterest: project.boardPinterest,
+            bonus: project.bonus,
+            canvaWhiteboard: project.canvaWhiteboard,
+            status: project.status,
             client: this.userService.turnUserToUserResponse(project.client)
         });
         return response;

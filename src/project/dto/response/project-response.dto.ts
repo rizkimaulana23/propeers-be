@@ -18,6 +18,12 @@ export class ProjectResponseDto {
 
     mou: string;
 
+    canvaWhiteboard: string;
+
+    boardPinterest: string;
+
+    bonus: string;
+
     status: ProjectStatus;
 
     client: BaseUserResponseDto;
