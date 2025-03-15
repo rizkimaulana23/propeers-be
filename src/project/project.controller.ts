@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, Put, Scope, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Scope, UseGuards } from '@nestjs/common';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -70,5 +70,11 @@ export class ProjectController {
         return new BaseResponseDto(this.request, `Project dengan ID ${id} berhasil diperbarui`, projectResponse);
     } 
 
+    @Delete(':id')
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async deleteProject(@Param('id') id: number) {
+        return new BaseResponseDto(this.request, await this.projectService.deleteProject(id), null);
+    }
 
 }

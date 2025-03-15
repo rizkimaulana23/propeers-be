@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { Project } from 'src/common/entities/project.entity';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { CreateProjectDto } from './dto/request/create-project.dto';
 import { ProjectReferences } from 'src/common/entities/projectReferences.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -83,6 +83,16 @@ export class ProjectService {
         project.client = client;
 
         return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
+    }
+
+    async deleteProject(id: number) {
+        const project: Project | null = await this.projectRepository.findOne({ where: {
+            id
+        }});
+        if (!project) throw new FailedException(`Project dengan ID ${id} tidak ada.`, HttpStatus.NOT_FOUND, this.request.path);
+        const result: UpdateResult = await this.projectRepository.softDelete(project.id);
+        if (result.affected && result.affected > 0) return `Project dengan ID ${id} berhasil dihapus.`;
+        throw new FailedException(`Project dengan ID ${id} gagal dihapus.`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.path);
     }
 
     turnProjectIntoProjectResponse (project: Project) {

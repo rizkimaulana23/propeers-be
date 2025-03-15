@@ -3,8 +3,8 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email" : "rizkim0072@gmail.com",
-    "password" : "pw1234"
+    "email" : "direksi@gmail.com",
+    "password" : "direksi"
 }
 
 ### GET Read Project Detail
@@ -46,3 +46,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQ
     "mou": "https://docs.google.com/document/d/1HGoqGKWcSipQPCo_wE-eqAp2qcjXMHl1/edit?tab=t.0",
     "clientId": 8
 }
+
+### DELETE PROJECT
+DELETE http://localhost:3000/projects/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDIwMzIxMTUsImV4cCI6MTc0MjAzNTcxNX0.CFMTtylEPrz-I9mNbvjXRUIJgXz_Ex9Fk_5isCUDGe0
+
