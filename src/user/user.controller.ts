@@ -46,7 +46,7 @@ export class UserController {
         return new BaseResponseDto(this.request, `User dengan email ${email} berhasil diperbarui`, userResponse);
     }
 
-    @Post('update-password')
+    @Put('change-password')
     @UseGuards(JwtAuthGuard)
     async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
         if (this.request.user?.roles !== Role.ADMIN) {

@@ -10,7 +10,7 @@ Content-Type: application/json
 ### GET Read Project Detail
 GET http://localhost:3000/projects/10
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTM0MDYxOCwiZXhwIjoxNzQxMzQ0MjE4fQ.kPQyKSffLXSNusjwp5PDo6j8-e6Z7kRRhHGtXHf7bMo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDIwOTkzMzYsImV4cCI6MTc0MjEwMjkzNn0.bw8A6zktILf0SIzuAwRzrxhxvwvxQl7_BEjl7Qm0cqg
 
 ### GET List Project
 GET http://localhost:3000/projects/
@@ -19,7 +19,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQ
 ### POST Create Project
 POST http://localhost:3000/projects/create-project
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTMzMTM4OCwiZXhwIjoxNzQxMzM0OTg4fQ.7s2Te2KWI0cJle4CTD5gSWSPDSQ9EJjUqyUckfT3e2Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDIwOTkzMzYsImV4cCI6MTc0MjEwMjkzNn0.bw8A6zktILf0SIzuAwRzrxhxvwvxQl7_BEjl7Qm0cqg
 
 {
     "name": "Artsi",
