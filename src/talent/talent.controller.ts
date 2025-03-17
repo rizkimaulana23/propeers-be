@@ -24,4 +24,19 @@ export class TalentController {
         return new BaseResponseDto(this.request, 'User berhasil di-assign', assignedRole);
     }
 
+    @Get()
+    // @RolesDecorator(Role.DIREKSI, Role.GM)
+    // @UseGuards(JwtAuthGuard)
+    async readTalents() {
+        const result = await this.talentService.readTalents();
+        return new BaseResponseDto(this.request, 'List Talent Berhasil didapatkan', result);
+    }
+
+    @Get("project")
+    // @UseGuards(JwtAuthGuard)
+    async readTalentsbyProject(@Query('projectId') projectId: number) {
+        const result = await this.talentService.readTalentsbyProject(projectId);
+        return new BaseResponseDto(this.request, `List Talent pada Project dengan ID ${projectId} berhasil didapatkan`, result);
+    }
+
 }

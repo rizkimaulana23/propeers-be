@@ -24,6 +24,60 @@ export class TalentService {
     @Inject(REQUEST) private readonly request: Request,
   ) {}
 
+  async readTalents(includeDeleted: boolean = false) {
+    let talents;
+    const whereCondition: any = includeDeleted ? {} : { deletedAt: undefined };
+    whereCondition.role = In(['FREELANCER', 'SMS']);
+
+    talents = await this.userRepository.find({
+      where: whereCondition,
+      relations: ['assignedRoles', 'assignedRoles.project'],
+    });
+
+    if (talents.length === 0) {
+      throw new FailedException(
+        'Talent Tidak Ditemukan',
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    return talents.map((talent) => this.turnTalentToTalentResponse(talent));
+  }
+
+  async readTalentsbyProject(projectId: number) {
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+    });
+    if (!project)
+      throw new FailedException(
+        `Project dengan ID ${projectId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+
+    const talents = await this.userRepository.find({
+      where: { role: In(['FREELANCER', 'SMS']) },
+      relations: ['assignedRoles', 'assignedRoles.project'],
+    });
+
+    if (talents.length === 0) {
+      throw new FailedException(
+        'Talent Tidak Ditemukan',
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const talentsAssigned = talents.filter((talent) => {
+      return talent.assignedRoles.some((a) => a.projectId === projectId);
+    });
+
+    return talentsAssigned.map((talent) =>
+      this.turnTalentToTalentResponse(talent),
+    );
+  }
+
   async createAssignedRole(createAssignedRole: CreateAssignedRoleDto) {
     const { talentId, projectId, role } = createAssignedRole;
 
