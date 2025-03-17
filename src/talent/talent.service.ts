@@ -167,6 +167,21 @@ export class TalentService {
     return this.turnTalentToTalentResponse(talent);
   }
 
+  async deleteAssignedRole(assignedRoleId: number) {
+    const assignedRole = await this.assignedRolesRepository.findOne({
+      where: { id: assignedRoleId },
+    });
+    if (!assignedRole)
+      throw new FailedException(
+        `Assigned Role dengan ID ${assignedRoleId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+
+    await this.assignedRolesRepository.softRemove(assignedRole);
+    return;
+  }
+
   turnTalentToTalentResponse(talent: User) {
     if (!talent) return undefined;
 

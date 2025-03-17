@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Query, Scope, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+  Scope,
+  UseGuards,
+} from '@nestjs/common';
 import { TalentService } from './talent.service';
 import { CreateAssignedRoleDto } from './dto/request/create-assigned-role.dto';
 // import { AssignedRoleResponseDto } from './dto/response/assigned-role-response.dto';
@@ -9,42 +20,66 @@ import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.inter
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 
-@Controller({ path: 'talent', scope: Scope.REQUEST})
+@Controller({ path: 'talent', scope: Scope.REQUEST })
 export class TalentController {
-    constructor(
-        private talentService: TalentService,
-        @Inject(REQUEST) private readonly request: AuthenticatedRequest
-    ) {}
-    
-    @Post("assign-talent")
-    // @RolesDecorator(Role.DIREKSI, Role.GM)
-    // @UseGuards(JwtAuthGuard)
-    async createAssignedRole(@Body() createAssignedRole: CreateAssignedRoleDto) {
-        const assignedRole = await this.talentService.createAssignedRole(createAssignedRole);
-        return new BaseResponseDto(this.request, 'User berhasil di-assign', assignedRole);
-    }
+  constructor(
+    private talentService: TalentService,
+    @Inject(REQUEST) private readonly request: AuthenticatedRequest,
+  ) {}
 
-    @Get()
-    // @RolesDecorator(Role.DIREKSI, Role.GM)
-    // @UseGuards(JwtAuthGuard)
-    async readTalents() {
-        const result = await this.talentService.readTalents();
-        return new BaseResponseDto(this.request, 'List Talent Berhasil didapatkan', result);
-    }
+  @Post('assign-talent')
+  // @RolesDecorator(Role.DIREKSI, Role.GM)
+  // @UseGuards(JwtAuthGuard)
+  async createAssignedRole(@Body() createAssignedRole: CreateAssignedRoleDto) {
+    const assignedRole =
+      await this.talentService.createAssignedRole(createAssignedRole);
+    return new BaseResponseDto(
+      this.request,
+      'User berhasil di-assign',
+      assignedRole,
+    );
+  }
 
-    @Get("project")
-    // @UseGuards(JwtAuthGuard)
-    async readTalentsbyProject(@Query('projectId') projectId: number) {
-        const result = await this.talentService.readTalentsbyProject(projectId);
-        return new BaseResponseDto(this.request, `List Talent pada Project dengan ID ${projectId} berhasil didapatkan`, result);
-    }
+  @Get()
+  // @RolesDecorator(Role.DIREKSI, Role.GM)
+  // @UseGuards(JwtAuthGuard)
+  async readTalents() {
+    const result = await this.talentService.readTalents();
+    return new BaseResponseDto(
+      this.request,
+      'List Talent Berhasil didapatkan',
+      result,
+    );
+  }
 
-    @Get("detail")
-    // @RolesDecorator(Role.DIREKSI, Role.GM)
-    // @UseGuards(JwtAuthGuard)
-    async readTalent(@Query('talentId') talentId: number) {
-        const result = await this.talentService.readTalent(talentId);
-        return new BaseResponseDto(this.request, `Talent Detail dengan ID ${talentId} berhasil didapatkan`, result);
-    }
+  @Get('project')
+  // @UseGuards(JwtAuthGuard)
+  async readTalentsbyProject(@Query('projectId') projectId: number) {
+    const result = await this.talentService.readTalentsbyProject(projectId);
+    return new BaseResponseDto(
+      this.request,
+      `List Talent pada Project dengan ID ${projectId} berhasil didapatkan`,
+      result,
+    );
+  }
 
+  @Get('detail')
+  // @RolesDecorator(Role.DIREKSI, Role.GM)
+  // @UseGuards(JwtAuthGuard)
+  async readTalent(@Query('talentId') talentId: number) {
+    const result = await this.talentService.readTalent(talentId);
+    return new BaseResponseDto(
+      this.request,
+      `Talent Detail dengan ID ${talentId} berhasil didapatkan`,
+      result,
+    );
+  }
+
+  @Delete('unassign-talent/:assignedRoleId')
+  // @RolesDecorator(Role.DIREKSI, Role.GM)
+  // @UseGuards(JwtAuthGuard)
+  async deleteAssignedRole(@Param('assignedRoleId') assignedRoleId: number) {
+    await this.talentService.deleteAssignedRole(assignedRoleId);
+    return new BaseResponseDto(this.request, 'User berhasil di-unassign', null);
+  }
 }
