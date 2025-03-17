@@ -18,6 +18,7 @@ import { UserModule } from './user/user.module';
 import AssignedRoles from './common/entities/assignedRoles.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ProjectModule } from './project/project.module';
+import { TalentModule } from './talent/talent.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ProjectModule } from './project/project.module';
     AuthModule,
     UserModule,
     ProjectModule,
+    TalentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
