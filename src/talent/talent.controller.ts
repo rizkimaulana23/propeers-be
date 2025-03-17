@@ -39,4 +39,12 @@ export class TalentController {
         return new BaseResponseDto(this.request, `List Talent pada Project dengan ID ${projectId} berhasil didapatkan`, result);
     }
 
+    @Get("detail")
+    // @RolesDecorator(Role.DIREKSI, Role.GM)
+    // @UseGuards(JwtAuthGuard)
+    async readTalent(@Query('talentId') talentId: number) {
+        const result = await this.talentService.readTalent(talentId);
+        return new BaseResponseDto(this.request, `Talent Detail dengan ID ${talentId} berhasil didapatkan`, result);
+    }
+
 }

@@ -78,6 +78,22 @@ export class TalentService {
     );
   }
 
+  async readTalent(talentId: number) {
+    const talent = await this.userRepository.findOne({
+      where: { id: talentId },
+      relations: ['assignedRoles', 'assignedRoles.project'],
+    });
+
+    if (!talent)
+      throw new FailedException(
+        `Talent dengan ID ${talentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+
+    return this.turnTalentToTalentResponse(talent);
+  }
+
   async createAssignedRole(createAssignedRole: CreateAssignedRoleDto) {
     const { talentId, projectId, role } = createAssignedRole;
 
