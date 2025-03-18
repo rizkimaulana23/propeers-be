@@ -1,26 +1,27 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
-import { ContentPlan } from "./contentPlan.entity";
 import { BaseEntity } from "./base.entity";
 import { Submission } from "./submission.entity";
+import { Project } from "./project.entity";
+import { ContentPillar, JenisPostingan } from "src/content/dto/request/create-content.dto";
 
-@Entity('deliverable')
-export class Deliverable extends BaseEntity {
+@Entity('content')
+export class Content extends BaseEntity {
     @Column({ nullable: false })
     title: string;
 
     @Column({ nullable: false })
     deadline: Date;
 
-    @Column({ nullable: false })
-    type: string;
+    @Column({ nullable: false , type:"enum", enum: JenisPostingan})
+    type: JenisPostingan;
 
-    @Column({ nullable: false })
-    pillar: string;
+    @Column({ nullable: false, type: "enum", enum: ContentPillar })
+    pillar: ContentPillar;
 
     @Column({ nullable: false })
     uploadDate: Date;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, default: 'CREATED'})
     status: string;
 
     @Column({ nullable: true })
@@ -35,13 +36,13 @@ export class Deliverable extends BaseEntity {
     @Column({ nullable: true })
     shareAmount: number;
 
-    @ManyToOne(() => ContentPlan, contentPlan => contentPlan.deliverables)
-    @JoinColumn({ name: 'contentPlanId' })
-    contentPlan: ContentPlan;
+    @ManyToOne(() => Project, project => project.deliverables)
+    @JoinColumn({ name: 'projectId' })
+    project: Project;
 
     @Column({ nullable: true })
-    contentPlanId: number; 
+    projectId: number; 
 
-    @OneToMany(() => Submission, (submision) => submision.deliverable)
+    @OneToMany(() => Submission, (submision) => submision.content)
     submisssions: Submission[];
 }

@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany } from "typeorm";
 import { BaseEntity } from "./base.entity";
-import { Deliverable } from "./deliverables.entity";
+import { Content } from "./content.entity";
 
 @Entity('submission')
 export class Submission extends BaseEntity {
@@ -28,10 +28,10 @@ export class Submission extends BaseEntity {
     @Column({ nullable: true, type: 'timestamp' })
     clientRevisionCreatedDate: Date;
 
-    @OneToMany(() => Deliverable, (deliverable) => deliverable.submisssions)
-    @JoinColumn({ name: 'deliverableId' })
-    deliverable: Deliverable;
+    @OneToMany(() => Content, (content) => content.submisssions)
+    @JoinColumn({ name: 'contentId' })
+    content: Content;
 
     @Column({ nullable: true })
-    deliverableId: string;
+    contentId: string;
 }

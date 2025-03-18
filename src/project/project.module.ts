@@ -18,6 +18,7 @@ import { Speciality } from 'src/common/entities/speciality.entity';
     UserModule 
   ],
   controllers: [ProjectController],
-  providers: [ProjectService]
+  providers: [ProjectService],
+  exports: [ProjectService] 
 })
 export class ProjectModule {}
