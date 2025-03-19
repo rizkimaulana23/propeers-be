@@ -4,7 +4,7 @@ import { Role } from '../entities/user.entity';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
-    id: string;
+    id: number;
     email: string;
     roles: Role;
   };

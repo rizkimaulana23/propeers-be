@@ -12,6 +12,7 @@ import { ProjectResponseDto } from './dto/response/project-response.dto';
 import { BaseUserResponseDto } from 'src/user/dto/response/user-response.dto';
 import { UserService } from 'src/user/user.service';
 import { UpdateProjectDto } from './dto/request/update-project.dto';
+import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 
 @Injectable({ scope: Scope.REQUEST})
 export class ProjectService {
@@ -22,7 +23,7 @@ export class ProjectService {
         private readonly userRepository: Repository<User>,
         @InjectRepository(ProjectReferences)
         private readonly projectReferencesRepository: Repository<ProjectReferences>,
-        @Inject(REQUEST) private readonly request: Request,
+        @Inject(REQUEST) private readonly request: AuthenticatedRequest,
         private readonly userService: UserService
     ) {}
 
@@ -33,7 +34,22 @@ export class ProjectService {
     }
 
     async readProjects() {
-        const projects = await this.projectRepository.find();
+        let projects;
+        const userId = this.request.user?.id;
+
+        if (this.request.user?.roles === Role.DIREKSI) {
+            projects = await this.projectRepository.find();
+        } else if (this.request.user?.roles === Role.CLIENT) {
+            projects = await this.projectRepository.find({ where: {
+                clientId: userId
+            }})
+        } else {
+            projects = await this.projectRepository.createQueryBuilder('project')
+                .innerJoin('project.assignedRoles', 'assignedRoles')
+                .where('assignedRoles.talentId = :userId', { userId })
+                .getMany();
+        }
+        
         return projects.map((project) => this.turnProjectIntoProjectResponse(project))
     }
 
