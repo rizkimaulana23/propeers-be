@@ -3,12 +3,12 @@ POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email" : "direksi@gmail.com",
-    "password" : "direksi",
+    "email" : "free@gmail.com",
+    "password" : "test",
     "name": "Rizki Maulana",
     "phone": "1234",
     "description":"haha",
-    "role":"ADMIN"
+    "role":"FREELANCER"
 }
 
 ### Login
@@ -16,8 +16,8 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email" : "rizkim0071@gmail.com",
-    "password" : "pw1234"
+    "email" : "free@gmail.com",
+    "password" : "test"
 }
 
 ### Getting User
