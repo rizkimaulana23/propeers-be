@@ -69,11 +69,19 @@ export class TalentService {
       );
     }
 
-    const talentsAssigned = talents.filter((talent) => {
+    const talentsWithProject = talents.filter((talent) => {
       return talent.assignedRoles.some((a) => a.projectId === projectId);
     });
 
-    return talentsAssigned.map((talent) =>
+    const talentWithFilteredAssignedRole = talentsWithProject.map((talent) => {
+      talent.assignedRoles = talent.assignedRoles.filter(
+        (a) => a.projectId === projectId,
+      );
+      return talent;
+    });
+
+
+    return talentWithFilteredAssignedRole.map((talent) =>
       this.turnTalentToTalentResponse(talent),
     );
   }
