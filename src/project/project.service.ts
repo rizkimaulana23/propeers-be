@@ -46,10 +46,11 @@ export class ProjectService {
         } else {
             projects = await this.projectRepository.createQueryBuilder('project')
                 .innerJoin('project.assignedRoles', 'assignedRoles')
+                .leftJoinAndSelect('project.client', 'client')
                 .where('assignedRoles.talentId = :userId', { userId })
                 .getMany();
         }
-        
+        console.log(projects.client)
         return projects.map((project) => this.turnProjectIntoProjectResponse(project))
     }
 
@@ -112,6 +113,7 @@ export class ProjectService {
     }
 
     turnProjectIntoProjectResponse (project: Project) {
+        const client = this.userRepository.findOne({ where: { id: project.clientId }})
         const response = new ProjectResponseDto({
             id: project.id,
             projectName: project.projectName,
