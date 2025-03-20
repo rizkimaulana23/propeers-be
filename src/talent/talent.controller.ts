@@ -75,11 +75,11 @@ export class TalentController {
     );
   }
 
-  @Delete('unassign-talent/:assignedRoleId')
+  @Delete('unassign-talent')
   // @RolesDecorator(Role.DIREKSI, Role.GM)
   // @UseGuards(JwtAuthGuard)
-  async deleteAssignedRole(@Param('assignedRoleId') assignedRoleId: number) {
-    await this.talentService.deleteAssignedRole(assignedRoleId);
+  async deleteAssignedRole(@Query('talentId') talentId: number, @Query('projectId') projectId: number) {
+    await this.talentService.deleteAssignedRole(talentId, projectId);
     return new BaseResponseDto(this.request, 'User berhasil di-unassign', null);
   }
 }

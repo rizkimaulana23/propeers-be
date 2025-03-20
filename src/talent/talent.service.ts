@@ -80,7 +80,6 @@ export class TalentService {
       return talent;
     });
 
-
     return talentWithFilteredAssignedRole.map((talent) =>
       this.turnTalentToTalentResponse(talent),
     );
@@ -103,7 +102,7 @@ export class TalentService {
   }
 
   async createAssignedRole(createAssignedRole: CreateAssignedRoleDto) {
-    const { talentId, projectId, role } = createAssignedRole;
+    let { talentId, projectId, role } = createAssignedRole;
 
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
@@ -119,6 +118,7 @@ export class TalentService {
       where: { id: talentId },
       relations: ['assignedRoles', 'assignedRoles.project'],
     });
+
     if (!talent)
       throw new FailedException(
         `Talent dengan ID ${talentId} tidak ditemukan`,
@@ -126,16 +126,18 @@ export class TalentService {
         this.request.path,
       );
 
-    // Validasi Role agar sesuai dengan Specialities talent
-    const specialities = talent.specialities.map((s) => s.speciality);
-    if (!specialities.includes(role)) {
-      throw new FailedException(
-        `Role ${role} tidak sesuai dengan specialities talent`,
-        HttpStatus.BAD_REQUEST,
-        this.request.path,
-      );
-    }
+    if (talent.role === Role.FREELANCER) {
 
+      // Validasi Role agar sesuai dengan Specialities talent
+      const specialities = talent.specialities.map((s) => s.speciality);
+      if (!specialities.includes(role)) {
+        throw new FailedException(
+          `Role ${role} tidak sesuai dengan specialities talent`,
+          HttpStatus.BAD_REQUEST,
+          this.request.path,
+        );
+      }
+    }
     // Validate talent jika sudah di-assign ke project
     const existingAssignment = talent.assignedRoles.find(
       (a) => a.projectId === projectId,
@@ -175,10 +177,43 @@ export class TalentService {
     return this.turnTalentToTalentResponse(talent);
   }
 
-  async deleteAssignedRole(assignedRoleId: number) {
+  async deleteAssignedRole(talentId: number, projectId: number) {
+    const talent = await this.userRepository.findOne({
+      where: { id: talentId },
+      relations: ['assignedRoles', 'assignedRoles.project'],
+    });
+
+    if (!talent)
+      throw new FailedException(
+        `Talent dengan ID ${talentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+    });
+    if (!project)
+      throw new FailedException(
+        `Project dengan ID ${projectId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+
+    const assignedRoleId = talent.assignedRoles.find(
+      (a) => a.projectId === projectId,
+    )?.id;
+    if (!assignedRoleId)
+      throw new FailedException(
+        `Talent dengan ID ${talentId} tidak di-assign ke project dengan ID ${projectId}`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+
     const assignedRole = await this.assignedRolesRepository.findOne({
       where: { id: assignedRoleId },
     });
+
     if (!assignedRole)
       throw new FailedException(
         `Assigned Role dengan ID ${assignedRoleId} tidak ditemukan`,
