@@ -21,4 +21,7 @@ export class Commission extends BaseEntity {
 
     @Column({ nullable: false })
     talentId: number;
+
+    @Column({nullable: true})
+    isTransferred: boolean;
 }

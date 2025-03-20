@@ -19,6 +19,7 @@ import AssignedRoles from './common/entities/assignedRoles.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ProjectModule } from './project/project.module';
 import { TalentModule } from './talent/talent.module';
+import { FinanceModule } from './finance/finance.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { TalentModule } from './talent/talent.module';
     UserModule,
     ProjectModule,
     TalentModule,
+    FinanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

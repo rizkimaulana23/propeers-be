@@ -55,8 +55,8 @@ export class ProjectController {
     }
 
     @Post('create-project')
-    @RolesDecorator(Role.DIREKSI)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+    // @RolesDecorator(Role.DIREKSI)
+    // @UseGuards(JwtAuthGuard, RolesGuard)
     async createProject(@Body() createProjectDto: CreateProjectDto) {
         const projectResponse = await this.projectService.createProject(createProjectDto);
         return new BaseResponseDto(this.request, "Project berhasil dibuat", projectResponse);
