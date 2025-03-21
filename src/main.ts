@@ -13,7 +13,11 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const reflector = new Reflector();
 
-  app.enableCors();
+  app.enableCors({
+    origin: '*', // Consider restricting this in production
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   
   // Global pipes
   app.useGlobalPipes(new ValidationPipe({
@@ -22,6 +26,7 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
 
-  await app.listen(configService.get('PORT', 3000));
+  const port = Number(process.env.PORT) || configService.get('PORT', 3000);
+  await app.listen(port);
 }
 bootstrap();
