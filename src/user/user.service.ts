@@ -133,7 +133,7 @@ export class UserService {
             if (!isPasswordMatching) {
                 throw new FailedException(
                     "Password lama tidak cocok",
-                    HttpStatus.UNAUTHORIZED,
+                    HttpStatus.BAD_REQUEST,
                     this.request.path
                 );
             }
