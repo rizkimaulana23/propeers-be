@@ -5,6 +5,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
+import '../resolver';
 
 dotenv.config();
 
