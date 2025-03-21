@@ -17,7 +17,7 @@ export class AuthController {
     async login(@Body() LoginDto: LoginDto, @Req() request: Request) {
         const user = await this.authService.validateUser(LoginDto);
         if (!user) {
-            throw new FailedException("User tidak dapat divalidasi", HttpStatus.BAD_REQUEST, request.path);
+            throw new FailedException("Email atau password salah!", HttpStatus.BAD_REQUEST, request.path);
         }
         return this.authService.login(user);
     }
