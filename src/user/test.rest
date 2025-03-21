@@ -3,12 +3,12 @@ POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email" : "free@gmail.com",
+    "email" : "client2@gmail.com",
     "password" : "test",
-    "name": "Rizki Maulana",
+    "name": "Client 2",
     "phone": "1234",
     "description":"haha",
-    "role":"FREELANCER"
+    "role":"CLIENT"
 }
 
 ### Login
@@ -16,7 +16,7 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "email" : "free@gmail.com",
+    "email" : "direksi@gmail.com",
     "password" : "test"
 }
 
@@ -40,14 +40,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wM
 }
 
 ### POST Update Password
-POST http://localhost:3000/users/update-password
+POST http://localhost:3000/users/change-password
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2hpam91LnJpcmlrYUBnbWFpbC5jb20iLCJlbWFpbCI6ImljaGlqb3UucmlyaWthQGdtYWlsLmNvbSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzQxMjQyOTY1LCJleHAiOjE3NDEyNDY1NjV9.do5WiOZDHfrGQGfCu_h3jmxVLuDvRd5uMTjvtaejXCg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MjU2MzM5MSwiZXhwIjoxNzQyNTY2OTkxfQ.Tjlwx6u53TGt4lIxLdGihE0m0dmAN-Jqv1CxNQDlnRw
 
 {
-    "email": "ichijou.ririka@gmail.com",
-    "oldPassword": "ririka",
-    "newPassword": "ririka"
+    "email": "direksi@gmail.com",
+    "oldPassword": "test",
+    "newPassword": "test"
 }
 
 ### GET List Users

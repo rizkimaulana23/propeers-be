@@ -13,6 +13,7 @@ import { BaseUserResponseDto } from './dto/response/user-response.dto';
 import { FreelancerResponseDto } from './dto/response/freelancer-response.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { UpdatePasswordDto } from './dto/request/update-password.dto';
+import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -21,7 +22,7 @@ export class UserService {
         private readonly userRepository: Repository<User>,
         @InjectRepository(Speciality)
         private readonly specialityRepository: Repository<Speciality>,
-        @Inject(REQUEST) private readonly request: Request
+        @Inject(REQUEST) private readonly request: AuthenticatedRequest
     ) {}
 
     async register(registerDto: RegisterDto){
@@ -112,14 +113,32 @@ export class UserService {
             HttpStatus.NOT_FOUND,
             this.request.path
         )
+
+        const isAdmin = this.request.user?.roles === Role.ADMIN;
+    
+        if (!isAdmin) {
+            if (!updatePasswordDto.oldPassword) {
+                throw new FailedException(
+                    "Harap Masukkan Password Lama", 
+                    HttpStatus.BAD_REQUEST, 
+                    this.request.path
+                );
+            }
+            
+            const isPasswordMatching = await bcrypt.compare(
+                updatePasswordDto.oldPassword, 
+                user.hashedPassword
+            );
+            
+            if (!isPasswordMatching) {
+                throw new FailedException(
+                    "Password lama tidak cocok",
+                    HttpStatus.UNAUTHORIZED,
+                    this.request.path
+                );
+            }
+        }
         
-        const isPasswordMatching = await bcrypt.compare(updatePasswordDto.oldPassword, user.hashedPassword);
-        if (!isPasswordMatching) throw new FailedException(
-            "Password lama tidak cocok",
-            HttpStatus.UNAUTHORIZED,
-            this.request.path
-        )
-         
         user.hashedPassword = await bcrypt.hash(updatePasswordDto.newPassword, 10);
         return this.turnUserToUserResponse(await this.userRepository.save(user));
     }
