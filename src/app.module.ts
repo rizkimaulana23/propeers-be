@@ -42,6 +42,7 @@ import { FinanceModule } from './finance/finance.module';
         logging: configService.get('NODE_ENV') !== 'production',
       }),
     }),
+    TypeOrmModule.forFeature([Speciality]),
     AuthModule,
     UserModule,
     ProjectModule,
