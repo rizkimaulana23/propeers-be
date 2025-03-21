@@ -1,0 +1,55 @@
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email" : "free@gmail.com",
+    "password" : "test"
+}
+
+### GET Read Project Detail
+GET http://localhost:3000/projects/10
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDIwOTkzMzYsImV4cCI6MTc0MjEwMjkzNn0.bw8A6zktILf0SIzuAwRzrxhxvwvxQl7_BEjl7Qm0cqg
+
+### GET List Project
+GET http://localhost:3000/projects/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIxLCJlbWFpbCI6ImZyZWVAZ21haWwuY29tIiwicm9sZSI6IkZSRUVMQU5DRVIiLCJpYXQiOjE3NDIzOTYwMjgsImV4cCI6MTc0MjM5OTYyOH0.CBzWY7OTbF_JiNawhk23iWyZKepycTF7vSf5fXO_vRQ
+
+### POST Create Project
+POST http://localhost:3000/projects/create-project
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDIwOTkzMzYsImV4cCI6MTc0MjEwMjkzNn0.bw8A6zktILf0SIzuAwRzrxhxvwvxQl7_BEjl7Qm0cqg
+
+{
+    "name": "Artsi",
+    "description": "Project Management Software development project.",
+    "startDate": "2024-10-21",
+    "finishedDate": "2024-11-21",
+    "fee": 10000000,
+    "mou": "https://docs.google.com/document/d/1HGoqGKWcSipQPCo_wE-eqAp2qcjXMHl1/edit?tab=t.0",
+    "clientId": 9
+}
+
+### UPDATE PROJECT
+PUT http://localhost:3000/projects/6
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaXJla3NpQGdtYWlsLmNvbSIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MTMzNDUwMywiZXhwIjoxNzQxMzM4MTAzfQ.EiMetgPYLw6w4jJ7hUFAKaSbgZU_Fo0zHh2MnNu7V_I
+
+{
+    "id": 9,
+    "name": "ARTSI",
+    "description": "Project Management Software development project.",
+    "startDate": "2024-10-21",
+    "finishedDate": "2024-11-21",
+    "fee": 10000000,
+    "mou": "https://docs.google.com/document/d/1HGoqGKWcSipQPCo_wE-eqAp2qcjXMHl1/edit?tab=t.0",
+    "clientId": 8
+}
+
+### DELETE PROJECT
+DELETE http://localhost:3000/projects/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDIwMzIxMTUsImV4cCI6MTc0MjAzNTcxNX0.CFMTtylEPrz-I9mNbvjXRUIJgXz_Ex9Fk_5isCUDGe0
+

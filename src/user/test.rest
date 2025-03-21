@@ -1,0 +1,61 @@
+### POST Register User
+POST http://localhost:3000/users/register
+Content-Type: application/json
+
+{
+    "email" : "client2@gmail.com",
+    "password" : "test",
+    "name": "Client 2",
+    "phone": "1234",
+    "description":"haha",
+    "role":"CLIENT"
+}
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email" : "direksi@gmail.com",
+    "password" : "test"
+}
+
+### Getting User
+GET http://localhost:4000/users/direksi@gmail.com
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDE2NzMwNzUsImV4cCI6MTc0MTY3NjY3NX0.YA3dYg6GcTvyi2t5ts0-cf5B-HddlIfy7ta7jjRPOgA
+
+### PUT Edit User
+PUT http://localhost:3000/users/rizkim0075@gmail.com
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDc1QGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3NUBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTE1MjM3MCwiZXhwIjoxNzQxMTU1OTcwfQ.Cw33C9rb3x99FVxQNokbX0kZZb0VhKSWR8WwFSXvlEI
+
+{
+    "id": 13,
+    "email" : "ichijou.ririka@gmail.com",
+    "name": "Ichijou Ririka",
+    "phone": "1234",
+    "description":"haha",
+    "specialities": ["Videography"]
+}
+
+### POST Update Password
+POST http://localhost:3000/users/change-password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MjU2MzM5MSwiZXhwIjoxNzQyNTY2OTkxfQ.Tjlwx6u53TGt4lIxLdGihE0m0dmAN-Jqv1CxNQDlnRw
+
+{
+    "email": "direksi@gmail.com",
+    "oldPassword": "test",
+    "newPassword": "test"
+}
+
+### GET List Users
+GET  http://localhost:3000/users?roles=SMS,FREELANCER
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpY2hpam91LnJpcmlrYUBnbWFpbC5jb20iLCJlbWFpbCI6ImljaGlqb3UucmlyaWthQGdtYWlsLmNvbSIsInJvbGUiOiJGUkVFTEFOQ0VSIiwiaWF0IjoxNzQxMjQyOTY1LCJleHAiOjE3NDEyNDY1NjV9.do5WiOZDHfrGQGfCu_h3jmxVLuDvRd5uMTjvtaejXCg
+
+### DELETE User
+DELETE http://localhost:3000/users/ichijou.ririka@gmail.com
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyaXpraW0wMDcxQGdtYWlsLmNvbSIsImVtYWlsIjoicml6a2ltMDA3MUBnbWFpbC5jb20iLCJyb2xlIjoiRlJFRUxBTkNFUiIsImlhdCI6MTc0MTI1MDk5MSwiZXhwIjoxNzQxMjU0NTkxfQ.gopRLYEVOS-WRu1pRloh-3ZOGmaqzYr3koKhoSg62yY

@@ -1,99 +1,271 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# ArtSI
+## Success Base Response
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```json
+{
+	"timestamp": "2024-12-01T22:33:23",
+	"status": 200,
+	"message": "Message raised",
+	"path": "/login",
+	"result": {
+		
+	}
+}
 ```
 
-## Compile and run the project
+## Failed Base Response
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```json
+{
+	"timestamp": "2024-12-01T22:33:23",
+	"status": 404,
+	"error": "Error raised from system",
+	"message": "Message raised",
+	"path": "/login"
+}
 ```
 
-## Run tests
+# Authentication
 
-```bash
-# unit tests
-$ npm run test
+## POST Authentication
 
-# e2e tests
-$ npm run test:e2e
+Digunakan untuk mendapatkan JWT dan digunakan sebagai session untuk front-end.
 
-# test coverage
-$ npm run test:cov
+- URL: `/auth/login`
+- Role: All Users
+- Headers:
+    
+    ```json
+    {
+    	"email": "example@email.com",
+    	"password": "pw1234"
+    }
+    ```
+    
+
+### Success Response
+
+```json
+{
+	"timestamp": "2024-12-01T22:33:23",
+	"status": 200,
+	"message": "Message raised",
+	"path": "/api/authenticate",
+	"result": {
+		"jwt" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+	}
+}
 ```
 
-## Deployment
+### Failed Response
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
+```json
+{
+	"timestamp": "2024-12-01T22:33:23",
+	"status": 404,
+	"error": "User not found",
+	"message": "Message raised",
+	"path": "/api/authenticate"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+# User
 
-## Resources
+## GET All Users
 
-Check out a few resources that may come in handy when working with NestJS:
+Digunakan untuk mendapatkan semua user. Dapat menggunakan query parameter untuk filtering berdasarkan role-nya.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- URL: `/api/users?role=role1,role2`
+- Role: Admin, Direksi, Social Media Manager (Freelancer saja)
 
-## Support
+### Success Response
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Success Response dapat berbeda-beda tergantung dengan role dari user yang diambil. Apabila pada role tersebut tidak ada data untuk suatu field tertentu, akan dikirimkan dengan `null`.
 
-## Stay in touch
+```json
+{
+	"timestamp": "2024-12-01T22:33:23",
+	"status": 200,
+	"message": "User berhasil didapatkan",
+	"path": "/api/users",
+	"result": [
+		{
+			"id": "USER001",
+			"email": "example@email.com",
+			"name": "Full Name",
+			"noTelephone": "+62 1234567890",
+			"role": "CLIENT",
+			"description": "Saya adalah client",
+			"status": "Active",
+			"speciality": [ "Video Editor", "Content Creator" ],
+			"namaBank": "BRI",
+			"noRek": "1234567890"
+		},
+	]
+}
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## GET Users
 
-## License
+Digunakan untuk mendapatkan users dengan email tertentu. 
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- URL: `/api/users/:email`
+- Role: All User
+    
+    Tiap role memiliki akses yang berbeda dalam mendapatkan informasinya.
+    
+    - Admin, Direksi, General Manager: Dapat mengakses semua akun
+    - Talent, Client: hanya dapat mengakses akunnya sendiri
+
+### Success Response
+
+```json
+{
+	"timestamp": "2024-12-01T22:33:23",
+	"status": 200,
+	"message": "User berhasil didapatkan",
+	"path": "/api/users/example@email.com",
+	"result": {
+			"id": "USER001",
+			"email": "example@email.com",
+			"name": "Full Name",
+			"noTelephone": "+62 1234567890",
+			"role": "CLIENT",
+			"description": "Saya adalah client",
+			"status": "Active",
+			"speciality": [ "Video Editor", "Content Creator" ],
+			"namaBank": "BRI",
+			"noRek": "1234567890"
+		}
+}
+```
+
+## POST Create Users
+
+Digunakan untuk membuat users baru.
+
+- URL: `api/users/register`
+- Role: Admin
+- Headers:
+    
+    Headers yang dibutuhkan tergantung Role dari user yang ingin dibuat.
+    
+    - Direksi, General Manager, Client, Social Media Manager
+        
+        ```json
+         {
+        	 "email": "rizki@gmail.com",
+        	 "password": "pw1234",
+        	 "name": "Rizki Maulana",
+        	 "deskripsi": "Saya adalah Rizki Maulana",
+        	 "role": "DIREKSI"
+         }
+        ```
+        
+    - Freelancer
+        
+        ```json
+         {
+        	 "email": "rizki@gmail.com",
+        	 "password": "pw1234",
+        	 "name": "Rizki Maulana",
+        	 "deskripsi": "Saya adalah Rizki Maulana",
+        	 "speciality": "Videographer",
+        	 "role": "DIREKSI"
+         }
+        ```
+        
+
+### Success Response
+
+### Failed Response
+
+## PUT Edit Users
+
+Digunakan untuk
+
+- URL: `/api/users/:email`
+- Role: All User
+- Headers:
+    
+    Headers yang dibutuhkan bergantung pada role-nya:
+    
+    ```json
+    
+    ```
+    
+
+### Success Response
+
+### Failed Response
+
+## POST Change Password
+
+Digunakan untuk mengganti password suatu akun.
+
+- URL: `/api/users/change-password`
+- Role: All User
+- Headers:
+    
+    ```json
+    {
+    	"oldPassword": "OldPass123",
+    	"newPassword": "NewPass123"
+    }
+    ```
+    
+
+### Success Response
+
+```json
+{
+	"timestamp": "2024-12-01T22:33:23",
+	"status": 200,
+	"message": "Password berhasil diganti",
+	"path": "/api/users/change-password",
+	"result": null
+}
+```
+
+### Failed Response
+
+- Input password lama salah
+    
+    ```json
+    {
+    	"timestamp": "2024-12-01T22:33:23",
+    	"status": 400,
+    	"error": "",
+    	"message": "Password lama tidak sesuai",
+    	"path": "/login"
+    }
+    ```
+    
+
+# Project
+
+## GET All Projects
+
+## GET Project
+
+## POST Create Project
+
+## PUT Edit Project
+
+## DELETE Delete Project
+
+# Finance
+
+## GET Talent Commission
+
+## PUT Talent Comission
+
+## Update Talent Comission
+
+# Talent
+
+## POST Assign Talent to Project
+
+## PUT Assign Talent to Project
+
+## DELETE Assign Talent to Project

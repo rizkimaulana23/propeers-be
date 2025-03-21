@@ -1,25 +1,25 @@
-# Use official Node.js image as a base
-FROM node:18-alpine
+# Development stage
+FROM node:20-bullseye AS development
+
+WORKDIR /usr/src/app
+
+# Required for the crypto module to work correctly
+ENV NODE_OPTIONS=--experimental-vm-modules
 
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --only=production
+# Install dependencies (including development dependencies)
 RUN npm install
-RUN npm install -g @nestjs/cli
 
-# Copy the rest of the application
+# Copy source code
 COPY . .
-
-# Build the NestJS application
-RUN npm run build
 
 # Expose the port
 EXPOSE 3000
 
-# Start the application
-CMD ["node", "dist/main"]
+# Start the application in development mode
+CMD ["npm", "run", "start:dev"]
