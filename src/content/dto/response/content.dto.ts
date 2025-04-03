@@ -1,5 +1,5 @@
 import { ProjectResponseDto } from "src/project/dto/response/project-response.dto";
-import { ContentPillar, JenisPostingan } from "../request/create-content.dto";
+import { ContentPillar, JenisPostingan, TargetAudience } from "../request/create-content.dto";
 
 export class ContentResponseDto {
 
@@ -7,13 +7,21 @@ export class ContentResponseDto {
 
         title: string;
 
+        description: string;
+
+        caption: string;
+
         deadline: Date;
     
         type: JenisPostingan;
     
         pillar: ContentPillar;
+
+        targetAudience: TargetAudience;
     
         uploadDate: Date;
+
+        status: string;
     
         viewsAmount: number;
     

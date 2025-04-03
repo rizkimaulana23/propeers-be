@@ -28,14 +28,13 @@ export class ContentService {
 
         const newContent = this.contentRepository.create({
             title: dto.title,
+            description: dto.description,
+            caption: dto.caption,
+            targetAudience: dto.targetAudience,
             deadline: dto.deadline,
             type: dto.type,
             pillar: dto.pillar,
             uploadDate: dto.uploadDate,
-            viewsAmount: dto.viewsAmount,
-            likesAmount: dto.likesAmount,
-            commentAmount: dto.commentAmount,
-            shareAmount: dto.shareAmount,
             project: project
         })
 

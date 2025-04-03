@@ -1,22 +1,40 @@
 import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from "class-validator";
 
 export enum JenisPostingan {
-    IG_FEED = 'IG_FEED',
-    IG_REELS = 'IG_REELS',
-    IG_STORY = 'IG_STORY',
-    TT_POST = 'TT_POST'
+    IG_FEED = 'Instagram Feed',
+    IG_REELS = 'Instagram Reels',
+    IG_STORY = 'Instagram Story',
+    TT_POST = 'TikTok Post'
 }
 
 export enum ContentPillar {
-    ENTERTAINMENT = 'ENTERTAINMENT',
-    PRODUCT_INFO = 'PRODUCT_INFO',
-    EVENT = 'EVENT',
-    GIVEAWAY = 'GIVEAWAY'
+    ENTERTAINMENT = 'Entertainment',
+    PRODUCT_INFO = 'Product Information',
+    EVENT = 'Event',
+    GIVEAWAY = 'Giveaway'
 } 
+
+export enum TargetAudience {
+    AWARENESS = 'Awareness',
+    INTEREST = 'Interest',
+    CONSIDERATION = 'Consideration',
+    INTENT = 'Intent',
+    EVALUATION = 'Evaluation',
+    PURCHASE = 'Purchase'
+}
+
 export class CreateContentDto {
     @IsString()
     @IsNotEmpty()
     title: string;
+
+    @IsString()
+    @IsOptional()
+    description: string;
+
+    @IsString()
+    @IsOptional()
+    caption: string;
 
     @IsDateString()
     @IsNotEmpty()
@@ -31,26 +49,14 @@ export class CreateContentDto {
     @IsNotEmpty()
     pillar: ContentPillar;
 
+    @IsEnum(TargetAudience)
+    @IsNotEmpty()
+    targetAudience: TargetAudience;
+
     @IsDateString()
     @IsNotEmpty()
     @Matches(/^\d{4}-\d{2}-\d{2}$/) 
     uploadDate: Date;
-
-    @IsNumber()
-    @IsOptional()
-    viewsAmount: number;
-
-    @IsNumber()
-    @IsOptional()
-    likesAmount: number;
-
-    @IsNumber()
-    @IsOptional()
-    commentAmount: number;
-
-    @IsNumber()
-    @IsOptional()
-    shareAmount: number;
 
     @IsNumber()
     projectId: number;

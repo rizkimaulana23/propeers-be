@@ -2,12 +2,18 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { Submission } from "./submission.entity";
 import { Project } from "./project.entity";
-import { ContentPillar, JenisPostingan } from "src/content/dto/request/create-content.dto";
+import { ContentPillar, JenisPostingan, TargetAudience } from "src/content/dto/request/create-content.dto";
 
 @Entity('content')
 export class Content extends BaseEntity {
     @Column({ nullable: false })
     title: string;
+
+    @Column({ nullable: true })
+    description: string;
+
+    @Column({ nullable: true })
+    caption: string;
 
     @Column({ nullable: false })
     deadline: Date;
@@ -20,6 +26,9 @@ export class Content extends BaseEntity {
 
     @Column({ nullable: false })
     uploadDate: Date;
+
+    @Column({ nullable: false, type: 'enum', enum: TargetAudience })
+    targetAudience: TargetAudience;
 
     @Column({ nullable: false, default: 'CREATED'})
     status: string;
