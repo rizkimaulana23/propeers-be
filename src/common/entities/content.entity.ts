@@ -45,7 +45,7 @@ export class Content extends BaseEntity {
     @Column({ nullable: true })
     shareAmount: number;
 
-    @ManyToOne(() => Project, project => project.deliverables)
+    @ManyToOne(() => Project, project => project.deliverables, { eager: true })
     @JoinColumn({ name: 'projectId' })
     project: Project;
 
