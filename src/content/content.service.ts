@@ -41,6 +41,33 @@ export class ContentService {
         return this.turnContentIntoContentResponseDto(await this.contentRepository.save(newContent));
     }
 
+    async getListContentForProject(projectId: number) {
+        const contents: Content[] = await this.contentRepository.find({
+            where: {
+                projectId
+            }
+        })
+
+        const contentResponses: ContentResponseDto[] = contents.map((content) => 
+            this.turnContentIntoContentResponseDto(content)
+        )
+
+        return contentResponses;
+    }
+
+    async getContentDetails(id: number) {
+        const content: Content | null = await this.contentRepository.findOne({
+            where: {
+                id
+            }
+        })
+        if (!content) 
+            throw new FailedException(`Content dengan ID ${id} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.url);
+
+
+        return this.turnContentIntoContentResponseDto(content)
+    }
+
     turnContentIntoContentResponseDto(content: Content): ContentResponseDto {
         const projectResponse: ProjectResponseDto = this.projectService.turnProjectIntoProjectResponse(content.project);
         return new ContentResponseDto({ 

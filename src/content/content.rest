@@ -20,4 +20,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpb
   "pillar": "ENTERTAINMENT",
   "projectId": 3
 }
+
+
+### GET Content List for Projects
+GET http://localhost:3000/contents/projects/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MzY2ODM3OSwiZXhwIjoxNzQzNjcxOTc5fQ.jYKdsT6kxh-v1p-Bh603pNYIdIQocqWWDOuBgKSYLhk
+
     

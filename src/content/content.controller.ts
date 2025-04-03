@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -23,5 +23,19 @@ export class ContentController {
     async createContent(@Body() dto: CreateContentDto)  {
         const result = await this.contentService.createContent(dto);
         return new BaseResponseDto(this.request, `Content berhasil dibuat`, result);
+    }
+
+    @Get('/projects/:projectId')
+    @UseGuards(JwtAuthGuard)
+    async getListContentPerProject(@Param('projectId') projectId: number) {
+        const result = await this.contentService.getListContentForProject(projectId);
+        return new BaseResponseDto(this.request, `Content untuk Project dengan ID ${projectId} berhasil didapatkan`, result);
+    }
+
+    @Get('/:id')
+    @UseGuards(JwtAuthGuard)
+    async getContentDetail(@Param('id') id: number) {
+        const result = await this.contentService.getContentDetails(id);
+        return new BaseResponseDto(this.request, `Content dengan ID ${id} berhasil didapatkan`, result);
     }
 }

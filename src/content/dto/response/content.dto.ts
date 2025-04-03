@@ -18,6 +18,8 @@ export class ContentResponseDto {
         pillar: ContentPillar;
 
         targetAudience: TargetAudience;
+
+        uploadLink: string;
     
         uploadDate: Date;
 
@@ -30,6 +32,16 @@ export class ContentResponseDto {
         commentAmount: number;
     
         shareAmount: number;
+
+        references: string[];
+
+        performance: string;
+
+        performanceNote: string;
+
+        evaluationDate: Date;
+
+        descriptiveEvaluation: string;
 
         project: ProjectResponseDto;
 
