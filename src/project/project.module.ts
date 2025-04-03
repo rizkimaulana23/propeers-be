@@ -19,6 +19,6 @@ import { Speciality } from 'src/common/entities/speciality.entity';
   ],
   controllers: [ProjectController],
   providers: [ProjectService],
-  exports: [ProjectService]
+  exports: [ProjectService] 
 })
 export class ProjectModule {}

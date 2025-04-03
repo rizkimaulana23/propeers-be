@@ -1,0 +1,23 @@
+### Post Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "direksi@gmail.com",
+    "password": "test"
+}
+
+### POST Create Content
+POST http://localhost:3000/contents
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpbCI6ImRpcmVrc2lAZ21haWwuY29tIiwicm9sZSI6IkRJUkVLU0kiLCJpYXQiOjE3NDIyNzQyMzgsImV4cCI6MTc0MjI3NzgzOH0.26LTlvmyYOheCCsu-sGC9X_c3zpxqbHN1WI7QDN7BA0
+
+{
+  "title": "New Instagram Feed Post",
+  "deadline": "2024-03-20",
+  "uploadDate": "2024-03-22",
+  "type": "IG_FEED",
+  "pillar": "ENTERTAINMENT",
+  "projectId": 3
+}
+    
