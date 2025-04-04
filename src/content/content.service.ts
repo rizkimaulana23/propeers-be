@@ -9,6 +9,7 @@ import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
 import { ContentResponseDto } from './dto/response/content.dto';
 import { ProjectService } from 'src/project/project.service';
 import { ProjectResponseDto } from 'src/project/dto/response/project-response.dto';
+import { UpdateContentPlanDto } from './dto/request/update-content.dto';
 
 @Injectable({scope: Scope.REQUEST})
 export class ContentService {
@@ -66,6 +67,28 @@ export class ContentService {
 
 
         return this.turnContentIntoContentResponseDto(content)
+    }
+
+    async updateContent(id: number, dto: UpdateContentPlanDto) {
+        const content: Content | null = await this.contentRepository.findOne({ 
+            where: {
+                id
+            }
+        })
+        if (!content) 
+            throw new FailedException(`Content dengan ID ${id} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.url);
+
+        const result = await this.contentRepository.update({ id }, { ...dto });
+        
+        const updatedContent: Content | null = await this.contentRepository.findOne({ 
+            where: {
+                id
+            }
+        })
+        if (!updatedContent) {
+            throw new FailedException(`Failed to update content with ID ${id}`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.url);
+        }
+        return this.turnContentIntoContentResponseDto(updatedContent);
     }
 
     turnContentIntoContentResponseDto(content: Content): ContentResponseDto {

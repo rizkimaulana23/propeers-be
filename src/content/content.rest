@@ -26,4 +26,25 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJlbWFpb
 GET http://localhost:3000/contents/projects/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MzY2ODM3OSwiZXhwIjoxNzQzNjcxOTc5fQ.jYKdsT6kxh-v1p-Bh603pNYIdIQocqWWDOuBgKSYLhk
 
-    
+### PUT Content
+PUT http://localhost:3000/contents/3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0MzczODgxNiwiZXhwIjoxNzQzNzQyNDE2fQ.yvD4RaNbBoMIQp_zYKxwhoC_U1-AM6uej_bURxpbwHk
+
+{
+    "title": "Content 1",
+    "description": "Content 1 Deskripsi",
+    "caption": "Content 1 Caption",
+    "references": [],
+    "uploadLink": null,
+    "deadline": "2025-03-30",
+    "type": "Instagram Reels",
+    "pillar": "Entertainment",
+    "uploadDate": "2025-04-03",
+    "targetAudience": "Interest",
+    "status": "CREATED",
+    "performance": "Performance Update",
+    "performanceNote": null,
+    "evaluationDate": null,
+    "descriptiveEvaluation": null
+}
