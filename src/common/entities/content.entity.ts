@@ -27,7 +27,7 @@ export class Content extends BaseEntity {
     @Column({ nullable: true })
     uploadLink: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, type: 'date' })
     deadline: Date;
 
     @Column({ nullable: false , type:"enum", enum: JenisPostingan})
@@ -36,7 +36,7 @@ export class Content extends BaseEntity {
     @Column({ nullable: false, type: "enum", enum: ContentPillar })
     pillar: ContentPillar;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, type: 'date' }) 
     uploadDate: Date;
 
     @Column({ nullable: false, type: 'enum', enum: TargetAudience })
@@ -63,7 +63,7 @@ export class Content extends BaseEntity {
     @Column({ nullable: true })
     performanceNote: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'date' })
     evaluationDate: Date;
 
     @Column({ nullable: true })
