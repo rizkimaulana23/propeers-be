@@ -27,6 +27,9 @@ export class ContentService {
         if (!project) 
             throw new FailedException(`Project dengan ID ${dto.projectId} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.url);
 
+        if (dto.uploadDate < dto.deadline) 
+            throw new FailedException(`Deadline should be earlier or the same as Upload Date.`, HttpStatus.BAD_REQUEST, this.request.url);
+
         const newContent = this.contentRepository.create({
             title: dto.title,
             description: dto.description,
@@ -77,6 +80,9 @@ export class ContentService {
         })
         if (!content) 
             throw new FailedException(`Content dengan ID ${id} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.url);
+
+        if (dto.uploadDate < dto.deadline) 
+            throw new FailedException(`Deadline should be earlier or the same as Upload Date.`, HttpStatus.BAD_REQUEST, this.request.url);
 
         const result = await this.contentRepository.update({ id }, { ...dto });
         
