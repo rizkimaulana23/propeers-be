@@ -5,6 +5,14 @@ import { Project } from "./project.entity";
 import { ContentPillar, JenisPostingan, TargetAudience } from "src/content/dto/request/create-content.dto";
 import { IsUrl } from "class-validator";
 
+export enum ContentStatus {
+    IN_PROGRESS = 'In Progress',
+    FINISHED = 'Finished',
+    LATE = 'Late',
+    UPLOADED = 'Uploaded',
+    CANCELLED = 'Cancelled'
+}
+
 @Entity('content')
 export class Content extends BaseEntity {
     @Column({ nullable: false })
@@ -42,8 +50,8 @@ export class Content extends BaseEntity {
     @Column({ nullable: false, type: 'enum', enum: TargetAudience })
     targetAudience: TargetAudience;
 
-    @Column({ nullable: false, default: 'CREATED'})
-    status: string;
+    @Column({ nullable: false, type: 'enum', enum: ContentStatus, default: ContentStatus.IN_PROGRESS })
+    status: ContentStatus;
 
     @Column({ nullable: false, default: 0 })
     viewsAmount: number;
