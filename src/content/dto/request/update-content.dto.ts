@@ -1,5 +1,6 @@
 import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, IsUrl, Matches } from "class-validator";
 import { ContentPillar, JenisPostingan, TargetAudience } from "./create-content.dto";
+import { ContentStatus } from "src/common/entities/content.entity";
 
 export class UpdateContentPlanDto {
 
@@ -43,7 +44,7 @@ export class UpdateContentPlanDto {
 
     @IsString()
     @IsNotEmpty()
-    status: string;
+    status: ContentStatus;
 
     @IsArray()
     @IsUrl({}, { each: true })
