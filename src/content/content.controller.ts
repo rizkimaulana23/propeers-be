@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -46,5 +46,13 @@ export class ContentController {
     async updateContent(@Param('id') id: number, @Body() updateContentPlanDto: UpdateContentPlanDto) {
         const result = await this.contentService.updateContent(id, updateContentPlanDto);
         return new BaseResponseDto(this.request, `Content dengan ID ${id} berhasil diperbarui`, result);
+    }
+
+    @Delete('/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @RolesDecorator(Role.DIREKSI, Role.GM)
+    async deleteContent(@Param('id') id: number) {
+        const result = await this.contentService.deleteContent(id);
+        return new BaseResponseDto(this.request, `Content with ID ${id} succesfully deleted.`, result);
     }
 }

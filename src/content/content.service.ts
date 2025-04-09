@@ -1,15 +1,16 @@
-import { HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { CreateContentDto } from './dto/request/create-content.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from 'src/common/entities/project.entity';
-import { Repository } from 'typeorm';
-import { Content } from 'src/common/entities/content.entity';
+import { DeleteResult, Repository } from 'typeorm';
+import { Content, ContentStatus } from 'src/common/entities/content.entity';
 import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
 import { ContentResponseDto } from './dto/response/content.dto';
 import { ProjectService } from 'src/project/project.service';
 import { ProjectResponseDto } from 'src/project/dto/response/project-response.dto';
 import { UpdateContentPlanDto } from './dto/request/update-content.dto';
+import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 
 @Injectable({scope: Scope.REQUEST})
 export class ContentService {
@@ -19,7 +20,7 @@ export class ContentService {
         @InjectRepository(Content)
         private readonly contentRepository: Repository<Content>,
         private readonly projectService: ProjectService,
-        @Inject(REQUEST) private readonly request: Request,
+        @Inject(REQUEST) private readonly request: AuthenticatedRequest,
     ) {}
 
     async createContent(dto: CreateContentDto) {
@@ -95,6 +96,27 @@ export class ContentService {
             throw new FailedException(`Failed to update content with ID ${id}`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.url);
         }
         return this.turnContentIntoContentResponseDto(updatedContent);
+    }
+
+    async deleteContent(id: number) {
+        const content: Content | null = await this.contentRepository.findOne({
+            where: {
+                id
+            }
+        });
+
+        if (!content) 
+            throw new FailedException(`Content with ID ${id} can't be found.`, HttpStatus.NOT_FOUND, this.request.url);
+
+        if (content.status === ContentStatus.FINISHED || content.status === ContentStatus.UPLOADED)
+            throw new FailedException(`Can't delete Content with  Finished or Uploaded status.`, HttpStatus.BAD_REQUEST, this.request.url);
+
+        const result: DeleteResult = await this.contentRepository.softDelete(content.id);
+
+        if (result.affected && result.affected > 0) 
+            return `Content dengan ID ${id} berhasil dihapus.`;
+
+        throw new FailedException(`Content dengan ID ${id} failed to be deleted.`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.path);
     }
 
     turnContentIntoContentResponseDto(content: Content): ContentResponseDto {
