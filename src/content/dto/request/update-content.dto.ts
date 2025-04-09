@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, IsUrl, Matches } from "class-validator";
+import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, IsUrl, Matches, ValidateIf } from "class-validator";
 import { ContentPillar, JenisPostingan, TargetAudience } from "./create-content.dto";
 import { ContentStatus } from "src/common/entities/content.entity";
 
@@ -33,8 +33,8 @@ export class UpdateContentPlanDto {
     @IsNotEmpty()
     targetAudience: TargetAudience;
 
+    @ValidateIf((o) => o.uploadLink !== null && o.uploadLink !== undefined && o.uploadLink !== '')
     @IsUrl()
-    @IsOptional()
     uploadLink: string;
 
     @IsDateString()
