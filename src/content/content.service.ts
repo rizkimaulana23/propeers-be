@@ -85,6 +85,9 @@ export class ContentService {
         if (dto.uploadDate < dto.deadline) 
             throw new FailedException(`Deadline should be earlier or the same as Upload Date.`, HttpStatus.BAD_REQUEST, this.request.url);
 
+        if (content.status === ContentStatus.FINISHED && (dto.uploadLink !== null || dto.uploadLink !== undefined || dto.uploadLink !== ''))
+            this.contentRepository.update({ id }, { status: ContentStatus.UPLOADED});
+        
         const result = await this.contentRepository.update({ id }, { ...dto });
         
         const updatedContent: Content | null = await this.contentRepository.findOne({ 
