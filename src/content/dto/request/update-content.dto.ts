@@ -42,10 +42,6 @@ export class UpdateContentPlanDto {
     @IsOptional()
     uploadDate: Date;
 
-    @IsString()
-    @IsNotEmpty()
-    status: ContentStatus;
-
     @IsArray()
     @IsUrl({}, { each: true })
     references: string[];
