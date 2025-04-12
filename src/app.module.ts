@@ -19,6 +19,7 @@ import { ProjectModule } from './project/project.module';
 import { TalentModule } from './talent/talent.module';
 import { ContentModule } from './content/content.module';
 import { Content } from './common/entities/content.entity';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { Content } from './common/entities/content.entity';
     ProjectModule,
     TalentModule,
     ContentModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
