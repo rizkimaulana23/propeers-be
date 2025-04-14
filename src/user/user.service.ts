@@ -187,7 +187,8 @@ export class UserService {
                 status: user.talentStatus,
                 bankName: user.bankName,
                 bankAccountName: user.bankAccountName,
-                bankAccountNumber: user.bankAccountNumber
+                bankAccountNumber: user.bankAccountNumber,
+                specialities: user.specialities.map((s) => s.speciality)
             })
 
             return smsResponse;

@@ -61,7 +61,7 @@ export class DashboardController {
         return new BaseResponseDto(this.request, "Task Calendar data fetched successfully.", result);
     }
 
-    @Get('card')
+    @Get('card')    
     @UseGuards(JwtAuthGuard)
     async getCardData() {
         const result = await this.dashboardService.getCardData();

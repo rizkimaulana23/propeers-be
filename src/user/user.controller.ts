@@ -31,7 +31,6 @@ export class UserController {
     @Get(':email')
     @UseGuards(JwtAuthGuard)
     async getUser(@Param('email') email: string) {
-        console.log(this.request.user)
         const userResponse = await this.userService.getUser(email);
         return new BaseResponseDto(this.request, `User dengan email ${email} berhasil didapatkan`, userResponse);
     }
