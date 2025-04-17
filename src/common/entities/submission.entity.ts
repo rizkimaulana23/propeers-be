@@ -8,7 +8,7 @@ export class Submission extends BaseEntity {
     submissionCount: number;
 
     @Column({ nullable: false })
-    title: string;
+    catatanSubmisi: string;
 
     @Column({ nullable: false })
     submissionUrl: string;
