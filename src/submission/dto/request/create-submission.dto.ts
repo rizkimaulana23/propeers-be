@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsUrl } from 'class-validator';
 
 export class CreateSubmissionDto {
   @IsNotEmpty()
@@ -7,6 +7,7 @@ export class CreateSubmissionDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsUrl({}, { message: 'Submission URL harus berupa URL yang valid' })
   submissionUrl: string;
 
   @IsString()

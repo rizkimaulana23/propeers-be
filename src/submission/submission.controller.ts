@@ -12,6 +12,7 @@ import { BaseResponseDto } from '../common/dto/success-response.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { REQUEST } from '@nestjs/core';
 import { AuthenticatedRequest } from '../common/interfaces/custom-request.interface';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller({ path: 'submission', scope: Scope.REQUEST })
 export class SubmissionController {
@@ -21,7 +22,7 @@ export class SubmissionController {
   ) {}
 
   @Post('submit')
-  //   @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   // @RolesDecorator(Role.FREELANCER, Role.SMS)
   async createSubmission(@Body() createSubmissionDto: CreateSubmissionDto) {
     const submission =

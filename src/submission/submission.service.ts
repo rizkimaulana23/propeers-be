@@ -8,6 +8,8 @@ import { SubmissionResponseDto } from './dto/response/submission-response.dto';
 import { FailedException } from '../common/exceptions/FailedExceptions.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
+import { Role } from 'src/common/entities/user.entity';
 
 @Injectable()
 export class SubmissionService {
@@ -16,13 +18,12 @@ export class SubmissionService {
     private readonly submissionRepository: Repository<Submission>,
     @InjectRepository(Content)
     private readonly contentRepository: Repository<Content>,
-    @Inject(REQUEST) private readonly request: Request,
+    @Inject(REQUEST) private readonly request: AuthenticatedRequest,
   ) {}
 
   async createSubmission(createSubmissionDto: CreateSubmissionDto) {
     const { contentId, submissionUrl, catatanSubmisi } = createSubmissionDto;
 
-    // Find the content
     const content = await this.contentRepository.findOne({
       where: { id: contentId },
     });
@@ -35,18 +36,19 @@ export class SubmissionService {
       );
     }
 
-    // Get the current submission count for this content
     const submissionCount = await this.submissionRepository.count({
       where: { contentId: contentId.toString() },
     });
 
-    // Create new submission
+    const isUserSMS = this.request.user?.roles === Role.SMS;
+    console.log("User roles:", this.request.user?.roles);
+
     const newSubmission = this.submissionRepository.create({
       contentId: contentId.toString(),
       submissionUrl,
       catatanSubmisi,
-      submissionCount: submissionCount + 1, // Increment submission count
-      isVerified: false, // Default is unverified
+      submissionCount: submissionCount + 1,
+      isVerified: isUserSMS,
     });
 
     const savedSubmission = await this.submissionRepository.save(newSubmission);
