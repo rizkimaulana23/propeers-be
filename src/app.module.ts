@@ -20,6 +20,7 @@ import { TalentModule } from './talent/talent.module';
 import { ContentModule } from './content/content.module';
 import { Content } from './common/entities/content.entity';
 import { SubmissionModule } from './submission/submission.module';
+import { FinanceModule } from './finance/finance.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { SubmissionModule } from './submission/submission.module';
     TalentModule,
     ContentModule,
     SubmissionModule,
+    FinanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

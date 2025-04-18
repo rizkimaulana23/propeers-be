@@ -12,6 +12,7 @@ import { Request } from 'express';
 import { CommissionResponseDTO } from './dto/response/commission-response.dto';
 import { UserService } from 'src/user/user.service';
 import { ProjectService } from 'src/project/project.service';
+import { UpdateKomisiTalentDTO } from './dto/request/update-komisi-talent.dto';
 // import { In } from 'typeorm';
 
 
@@ -66,6 +67,53 @@ export class FinanceService {
         await this.commisionRepository.save(commision);
         
         return this.turnCommissionToCommissionResponse(commision);
+    }
+
+    async updateKomisiTalent(updateKomisiTalentDto : UpdateKomisiTalentDTO) {
+        const {commissionAmount, talentId, projectId} = updateKomisiTalentDto;
+
+        const komisiTalent: Commission | null = await this.commisionRepository.findOne({
+            where: {
+                talentId,
+                projectId
+            }
+        })
+
+        if (!komisiTalent) {
+            throw new FailedException(
+                `Commision dari proyek dengan ID ${updateKomisiTalentDto.projectId} dan talent dengan ID ${updateKomisiTalentDto.talentId} tidak ditemukan`, 
+                HttpStatus.NOT_FOUND, 
+                this.request.path);
+        }
+
+        const project = await this.projectRepository.findOne({
+            where: { id: projectId },
+        });
+    
+        if (!project)
+            throw new FailedException(
+            `Project dengan ID ${projectId} tidak ditemukan`,
+            HttpStatus.NOT_FOUND,
+            this.request.path,
+        );
+
+        const talent = await this.userRepository.findOne({
+            where: { id: talentId },
+            relations: ['assignedRoles', 'assignedRoles.project'],
+        });
+      
+        if (!talent)
+            throw new FailedException(
+            `Talent dengan ID ${talentId} tidak ditemukan`,
+            HttpStatus.NOT_FOUND,
+            this.request.path,
+        );
+
+        komisiTalent.commissionAmount = commissionAmount;
+        komisiTalent.project = project;
+        komisiTalent.talent = talent;
+
+        return this.turnCommissionToCommissionResponse(await this.commisionRepository.save(komisiTalent));
     }
 
     turnCommissionToCommissionResponse(commision: Commission) {
