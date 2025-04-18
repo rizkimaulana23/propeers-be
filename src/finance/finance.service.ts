@@ -37,6 +37,7 @@ export class FinanceService {
 
         const project = await this.projectRepository.findOne({
             where: { id: projectId },
+            relations: ['commissions'],
         });
     
         if (!project)
@@ -45,6 +46,22 @@ export class FinanceService {
             HttpStatus.NOT_FOUND,
             this.request.path,
         );
+
+        let totalKomisi = 0;
+
+        if (project.commissions.length != 0){
+            for (const komisi of project.commissions) {
+                totalKomisi += Number(komisi.commissionAmount);
+            }
+        }
+
+        if (totalKomisi + commissionAmount > project.fee){
+            throw new FailedException(
+                `Jumlah komisi yang dimasukkan melebihi available budget`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                this.request.path,
+            );
+        }
 
         const talent = await this.userRepository.findOne({
             where: { id: talentId },
@@ -56,7 +73,7 @@ export class FinanceService {
             `Talent dengan ID ${talentId} tidak ditemukan`,
             HttpStatus.NOT_FOUND,
             this.request.path,
-            );
+        );
 
         const commision = this.commisionRepository.create({
             commissionAmount: commissionAmount,
