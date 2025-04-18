@@ -8,6 +8,7 @@ import {
   Put,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/request/create-submission.dto';
@@ -53,6 +54,17 @@ export class SubmissionController {
       this.request,
       `Submission dengan ID ${id} berhasil diperbarui`,
       submission,
+    );
+  }
+
+  @Delete('delete/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async deleteSubmission(@Param('id', ParseIntPipe) id: number) {
+    const message = await this.submissionService.deleteSubmission(id);
+    return new BaseResponseDto(
+      this.request,
+      message,
+      null
     );
   }
 }

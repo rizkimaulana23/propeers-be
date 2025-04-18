@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { Submission } from '../common/entities/submission.entity';
 import { Content } from '../common/entities/content.entity';
 import { CreateSubmissionDto } from './dto/request/create-submission.dto';
@@ -83,6 +83,32 @@ export class SubmissionService {
     const updatedSubmission = await this.submissionRepository.save(submission);
 
     return this.turnSubmissionToSubmissionResponse(updatedSubmission);
+  }
+
+  async deleteSubmission(id: number): Promise<string> {
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+    });
+
+    if (!submission) {
+      throw new FailedException(
+        `Submission dengan ID ${id} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const result: UpdateResult = await this.submissionRepository.softDelete(id);
+
+    if (result.affected && result.affected > 0) {
+      return `Submission dengan ID ${id} berhasil dihapus.`;
+    }
+
+    throw new FailedException(
+      `Submission dengan ID ${id} gagal dihapus.`,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      this.request.path,
+    );
   }
 
   turnSubmissionToSubmissionResponse(submission: Submission) {
