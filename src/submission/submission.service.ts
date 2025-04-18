@@ -10,6 +10,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { Role } from 'src/common/entities/user.entity';
+import { UpdateSubmissionDto } from './dto/request/update-submission.dto';
 
 @Injectable()
 export class SubmissionService {
@@ -41,7 +42,7 @@ export class SubmissionService {
     });
 
     const isUserSMS = this.request.user?.roles === Role.SMS;
-    console.log("User roles:", this.request.user?.roles);
+    console.log('User roles:', this.request.user?.roles);
 
     const newSubmission = this.submissionRepository.create({
       contentId: contentId.toString(),
@@ -54,6 +55,34 @@ export class SubmissionService {
     const savedSubmission = await this.submissionRepository.save(newSubmission);
 
     return this.turnSubmissionToSubmissionResponse(savedSubmission);
+  }
+
+  async updateSubmission(id: number, updateSubmissionDto: UpdateSubmissionDto) {
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+    });
+
+    if (!submission) {
+      throw new FailedException(
+        `Submission dengan ID ${id} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const { submissionUrl, catatanSubmisi } = updateSubmissionDto;
+
+    if (submissionUrl !== undefined) {
+      submission.submissionUrl = submissionUrl;
+    }
+
+    if (catatanSubmisi !== undefined) {
+      submission.catatanSubmisi = catatanSubmisi;
+    }
+
+    const updatedSubmission = await this.submissionRepository.save(submission);
+
+    return this.turnSubmissionToSubmissionResponse(updatedSubmission);
   }
 
   turnSubmissionToSubmissionResponse(submission: Submission) {
