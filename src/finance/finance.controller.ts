@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Put } from '@nestjs/common';
 import { FinanceService } from './finance.service';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { REQUEST } from '@nestjs/core';
@@ -26,10 +26,10 @@ export class FinanceController {
     );
   }
 
-  @Put('update-komisi/:idProject/:idTalent')
+  @Put('update-komisi/:projectId/:talentId')
   // @RolesDecorator(Role.DIREKSI)
   // @UseGuards(JwtAuthGuard)
-  async updateKomisiTalent(@Body() updateKomisiTalent: UpdateKomisiTalentDTO, @Param('idProject') idProject: number, @Param('idTalent') idTalent: number) {
+  async updateKomisiTalent(@Body() updateKomisiTalent: UpdateKomisiTalentDTO, @Param('projectId') idProject: number, @Param('talentId') idTalent: number) {
     const komisiUpdated = await this.financeService.updateKomisiTalent(updateKomisiTalent);
     return new BaseResponseDto(
       this.request,
@@ -41,12 +41,24 @@ export class FinanceController {
   @Put('update-transferred/:projectId/:talentId')
   // @RolesDecorator(Role.DIREKSI)
   // @UseGuards(JwtAuthGuard)
-  async updateTransferredKomisi(@Param('idProject') projectId: number, @Param('idTalent') talentId: number) {
+  async updateTransferredKomisi(@Param('projectId') projectId: number, @Param('talentId') talentId: number) {
     const komisiUpdated = await this.financeService.updateTransferredKomisi(projectId, talentId);
     return new BaseResponseDto(
       this.request,
       'Berhasil mengupdate transferred komisi',
       komisiUpdated,
+    );
+  }
+
+  @Get('detail/:projectId')
+  // @RolesDecorator(Role.DIREKSI)
+  // @UseGuards(JwtAuthGuard)
+  async detailProportionFinance(@Param('projectId') projectId: number) {
+    const detailFinance = await this.financeService.detailFinanceProject(projectId);
+    return new BaseResponseDto(
+      this.request,
+      'Berhasil mengambil detail finance',
+      detailFinance,
     );
   }
 }
