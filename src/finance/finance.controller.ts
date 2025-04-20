@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Put } from '@nestjs/common';
+import { Body, Controller, Inject, Param, Post, Put } from '@nestjs/common';
 import { FinanceService } from './finance.service';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { REQUEST } from '@nestjs/core';
@@ -26,10 +26,10 @@ export class FinanceController {
     );
   }
 
-  @Put('update-komisi')
+  @Put('update-komisi/:idProject/:idTalent')
   // @RolesDecorator(Role.DIREKSI)
   // @UseGuards(JwtAuthGuard)
-  async updateKomisiTalent(@Body() updateKomisiTalent: UpdateKomisiTalentDTO) {
+  async updateKomisiTalent(@Body() updateKomisiTalent: UpdateKomisiTalentDTO, @Param('idProject') idProject: number, @Param('idTalent') idTalent: number) {
     const komisiUpdated = await this.financeService.updateKomisiTalent(updateKomisiTalent);
     return new BaseResponseDto(
       this.request,
