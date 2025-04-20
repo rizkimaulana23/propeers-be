@@ -133,23 +133,62 @@ export class FinanceService {
         return this.turnCommissionToCommissionResponse(await this.commisionRepository.save(komisiTalent));
     }
 
+    async updateTransferredKomisi(talentId : number , projectId : number) {
+        const komisiTalent: Commission | null = await this.commisionRepository.findOne({
+            where: {
+                talentId,
+                projectId
+            }
+        })
+
+        if (!komisiTalent) {
+            throw new FailedException(
+                `Commision dari proyek dengan ID ${projectId} dan talent dengan ID ${talentId} tidak ditemukan`, 
+                HttpStatus.NOT_FOUND, 
+                this.request.path);
+        }
+
+        const project = await this.projectRepository.findOne({
+            where: { id: projectId },
+        });
+    
+        if (!project)
+            throw new FailedException(
+            `Project dengan ID ${projectId} tidak ditemukan`,
+            HttpStatus.NOT_FOUND,
+            this.request.path,
+        );
+
+        const talent = await this.userRepository.findOne({
+            where: { id: talentId },
+            relations: ['assignedRoles', 'assignedRoles.project'],
+        });
+      
+        if (!talent)
+            throw new FailedException(
+            `Talent dengan ID ${talentId} tidak ditemukan`,
+            HttpStatus.NOT_FOUND,
+            this.request.path,
+        );
+
+        komisiTalent.isTransferred = true;
+        komisiTalent.project = project;
+        komisiTalent.talent = talent;
+
+        return this.turnCommissionToCommissionResponse(await this.commisionRepository.save(komisiTalent));
+    }
+
     turnCommissionToCommissionResponse(commision: Commission) {
         if (!commision) return undefined;
         
         const response = new CommissionResponseDTO({
             id: commision.id,
             commisionAmount: commision.commissionAmount,
+            isTransferred: commision.isTransferred,
             project: this.projectService.turnProjectIntoProjectResponse(commision.project),
             talent: this.userService.turnUserToUserResponse(commision.talent)
         })
 
         return response;
-      }
-
-
-
-
-
-
-
+    }
 }

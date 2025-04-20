@@ -37,5 +37,17 @@ export class FinanceController {
       komisiUpdated,
     );
   }
+
+  @Put('update-transferred/:projectId/:talentId')
+  // @RolesDecorator(Role.DIREKSI)
+  // @UseGuards(JwtAuthGuard)
+  async updateTransferredKomisi(@Param('idProject') projectId: number, @Param('idTalent') talentId: number) {
+    const komisiUpdated = await this.financeService.updateTransferredKomisi(talentId, projectId);
+    return new BaseResponseDto(
+      this.request,
+      'Berhasil mengupdate transferred komisi',
+      komisiUpdated,
+    );
+  }
 }
 
