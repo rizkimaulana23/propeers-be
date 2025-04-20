@@ -114,6 +114,22 @@ export class FinanceService {
             this.request.path,
         );
 
+        let totalKomisi = 0;
+
+        if (project.commissions != null){
+            for (const komisi of project.commissions) {
+                totalKomisi += Number(komisi.commissionAmount);
+            }
+        }
+
+        if (totalKomisi - komisiTalent.commissionAmount + commissionAmount > project.fee){
+            throw new FailedException(
+                `Jumlah komisi yang dimasukkan melebihi available budget`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                this.request.path,
+            );
+        }
+
         const talent = await this.userRepository.findOne({
             where: { id: talentId },
             relations: ['assignedRoles', 'assignedRoles.project'],
@@ -126,6 +142,14 @@ export class FinanceService {
             this.request.path,
         );
 
+        if (komisiTalent.isTransferred == true){
+            throw new FailedException(
+                `Tidak dapat memperbarui komisi karena komisi sudah ditransfer`, 
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                this.request.path
+            );
+        }
+
         komisiTalent.commissionAmount = commissionAmount;
         komisiTalent.project = project;
         komisiTalent.talent = talent;
@@ -133,7 +157,7 @@ export class FinanceService {
         return this.turnCommissionToCommissionResponse(await this.commisionRepository.save(komisiTalent));
     }
 
-    async updateTransferredKomisi(talentId : number , projectId : number) {
+    async updateTransferredKomisi(projectId : number, talentId : number) {
         const komisiTalent: Commission | null = await this.commisionRepository.findOne({
             where: {
                 talentId,

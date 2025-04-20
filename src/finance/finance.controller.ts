@@ -42,7 +42,7 @@ export class FinanceController {
   // @RolesDecorator(Role.DIREKSI)
   // @UseGuards(JwtAuthGuard)
   async updateTransferredKomisi(@Param('idProject') projectId: number, @Param('idTalent') talentId: number) {
-    const komisiUpdated = await this.financeService.updateTransferredKomisi(talentId, projectId);
+    const komisiUpdated = await this.financeService.updateTransferredKomisi(projectId, talentId);
     return new BaseResponseDto(
       this.request,
       'Berhasil mengupdate transferred komisi',

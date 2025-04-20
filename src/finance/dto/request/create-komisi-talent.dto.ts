@@ -6,8 +6,8 @@ export class CreateKomisiTalentDto {
     commissionAmount: number;
 
     @IsNotEmpty()
-    talentId: number;
-
-    @IsNotEmpty()
     projectId: number;
+    
+    @IsNotEmpty()
+    talentId: number;
 }

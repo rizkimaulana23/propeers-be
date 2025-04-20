@@ -5,9 +5,10 @@ export class UpdateKomisiTalentDTO {
     @IsNumber()
     commissionAmount: number;
 
-    @IsNotEmpty()
-    talentId: number;
 
     @IsNotEmpty()
     projectId: number;
+
+    @IsNotEmpty()
+    talentId: number;
 }
