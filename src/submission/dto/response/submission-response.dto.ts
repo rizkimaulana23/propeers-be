@@ -4,6 +4,10 @@ export class SubmissionResponseDto {
   catatanSubmisi: string;
   submissionUrl: string;
   isVerified: boolean;
+  smsRevision: string;
+  smsRevisionCreatedDate: Date;
+  clientRevision: string;
+  clientRevisionCreatedDate: Date;
   contentId: number;
   createdAt: Date;
 
