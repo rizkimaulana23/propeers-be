@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Submission } from '../common/entities/submission.entity';
 import { Content } from '../common/entities/content.entity';
 import { CreateSubmissionDto } from './dto/request/create-submission.dto';
@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { Role } from 'src/common/entities/user.entity';
 import { UpdateSubmissionDto } from './dto/request/update-submission.dto';
+import { CreateRevisionDto } from './dto/request/create-revision.dto';
 
 @Injectable()
 export class SubmissionService {
@@ -38,14 +39,13 @@ export class SubmissionService {
     }
 
     const submissionCount = await this.submissionRepository.count({
-      where: { contentId: contentId.toString() },
+      where: { contentId: contentId },
     });
 
     const isUserSMS = this.request.user?.roles === Role.SMS;
-    console.log('User roles:', this.request.user?.roles);
 
     const newSubmission = this.submissionRepository.create({
-      contentId: contentId.toString(),
+      contentId: contentId,
       submissionUrl,
       catatanSubmisi,
       submissionCount: submissionCount + 1,
@@ -66,6 +66,16 @@ export class SubmissionService {
       throw new FailedException(
         `Submission dengan ID ${id} tidak ditemukan`,
         HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const userRole = this.request.user?.roles;
+
+    if (userRole === Role.FREELANCER && submission.isVerified === true) {
+      throw new FailedException(
+        `Freelancer tidak dapat mengubah submission yang sudah terverifikasi`,
+        HttpStatus.FORBIDDEN,
         this.request.path,
       );
     }
@@ -111,6 +121,69 @@ export class SubmissionService {
     );
   }
 
+  async createRevision(createRevisionDto: CreateRevisionDto) {
+    const { submissionId, revisionText } = createRevisionDto;
+
+    const submission = await this.submissionRepository.findOne({
+      where: { id: submissionId },
+    });
+
+    if (!submission) {
+      throw new FailedException(
+        `Submission dengan ID ${submissionId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const userRole = this.request.user?.roles;
+    const now = new Date();
+
+    // Handle revisions based on user role
+    if (userRole === Role.SMS) {
+      // SMS can create revisions multiple times
+      submission.smsRevision = revisionText;
+      submission.smsRevisionCreatedDate = now;
+    } else if (userRole === Role.CLIENT) {
+      // Client can only create revision if submission is verified
+      if (!submission.isVerified) {
+        throw new FailedException(
+          'Client hanya dapat membuat revisi pada submission yang sudah terverifikasi',
+          HttpStatus.FORBIDDEN,
+          this.request.path,
+        );
+      }
+
+      // Check if client has already revised any submission for this contentId
+      const existingClientRevisions = await this.submissionRepository.find({
+        where: {
+          contentId: submission.contentId,
+          clientRevision: Not(IsNull()),
+        },
+      });
+
+      if (existingClientRevisions.length > 0) {
+        throw new FailedException(
+          'Client hanya dapat membuat revisi satu kali per content',
+          HttpStatus.FORBIDDEN,
+          this.request.path,
+        );
+      }
+
+      submission.clientRevision = revisionText;
+      submission.clientRevisionCreatedDate = now;
+    } else {
+      throw new FailedException(
+        'Hanya SMS dan Client yang dapat membuat revisi',
+        HttpStatus.FORBIDDEN,
+        this.request.path,
+      );
+    }
+
+    const updatedSubmission = await this.submissionRepository.save(submission);
+    return this.turnSubmissionToSubmissionResponse(updatedSubmission);
+  }
+
   turnSubmissionToSubmissionResponse(submission: Submission) {
     if (!submission) return undefined;
 
@@ -120,7 +193,11 @@ export class SubmissionService {
       catatanSubmisi: submission.catatanSubmisi,
       submissionUrl: submission.submissionUrl,
       isVerified: submission.isVerified,
-      contentId: parseInt(submission.contentId),
+      smsRevision: submission.smsRevision,
+      smsRevisionCreatedDate: submission.smsRevisionCreatedDate,
+      clientRevision: submission.clientRevision,
+      clientRevisionCreatedDate: submission.clientRevisionCreatedDate,
+      contentId: submission.contentId,
       createdAt: submission.createdAt,
     });
   }

@@ -33,5 +33,5 @@ export class Submission extends BaseEntity {
     content: Content;
 
     @Column({ nullable: true })
-    contentId: string;
+    contentId: number;
 }

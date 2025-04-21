@@ -18,6 +18,7 @@ import { REQUEST } from '@nestjs/core';
 import { AuthenticatedRequest } from '../common/interfaces/custom-request.interface';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { UpdateSubmissionDto } from './dto/request/update-submission.dto';
+import { CreateRevisionDto } from './dto/request/create-revision.dto';
 
 @Controller({ path: 'submission', scope: Scope.REQUEST })
 export class SubmissionController {
@@ -26,7 +27,7 @@ export class SubmissionController {
     @Inject(REQUEST) private readonly request: AuthenticatedRequest,
   ) {}
 
-  @Post('submit')
+  @Post('create')
   @UseGuards(JwtAuthGuard, RolesGuard)
   // @RolesDecorator(Role.FREELANCER, Role.SMS)
   async createSubmission(@Body() createSubmissionDto: CreateSubmissionDto) {
@@ -57,14 +58,23 @@ export class SubmissionController {
     );
   }
 
+  @Post('revision')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async createRevision(@Body() createRevisionDto: CreateRevisionDto) {
+    const submission =
+      await this.submissionService.createRevision(createRevisionDto);
+
+    return new BaseResponseDto(
+      this.request,
+      'Revisi berhasil dibuat',
+      submission,
+    );
+  }
+
   @Delete('delete/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   async deleteSubmission(@Param('id', ParseIntPipe) id: number) {
     const message = await this.submissionService.deleteSubmission(id);
-    return new BaseResponseDto(
-      this.request,
-      message,
-      null
-    );
+    return new BaseResponseDto(this.request, message, null);
   }
 }
