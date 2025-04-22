@@ -12,3 +12,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsI
 ### GET Deliverable Chart
 GET http://localhost:3000/dashboard/deliverable-chart
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0NDQ2NDE4MiwiZXhwIjoxNzQ0NDY3NzgyfQ.D-a9Rld68-2EVBLYx_44PbjzlThh4K_AaxlBZZmsrh4
+
+### GET Summary Active Project
+GET http://localhost:3000/dashboard/summary-active-project-bar
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0NTMxMTE3OSwiZXhwIjoxNzQ1MzE0Nzc5fQ.PPizTrP-Ni9UNmbzUXHB-huIr3_ImEE-XngHB6Ojgsw

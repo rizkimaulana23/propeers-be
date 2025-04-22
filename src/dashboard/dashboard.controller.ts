@@ -21,7 +21,8 @@ export class DashboardController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @RolesDecorator(Role.DIREKSI, Role.SMS)
     async getSummaryActiveProject() {
-        
+        const result = await this.dashboardService.getSummaryActiveProject();
+        return new BaseResponseDto(this.request, "Summary Active Project data successfully fetched", result);
     }
 
     @Get('income-chart')

@@ -12,11 +12,12 @@ import { Content } from 'src/common/entities/content.entity';
 import AssignedRoles from 'src/common/entities/assignedRoles.entity';
 import { User } from 'src/common/entities/user.entity';
 import { Commission } from 'src/common/entities/commission.entity';
+import { Submission } from 'src/common/entities/submission.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Project, Content, AssignedRoles, User, Commission
+      Project, Content, AssignedRoles, User, Commission, Submission, Content
     ]),
     ContentModule,
     FinanceModule,
