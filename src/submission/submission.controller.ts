@@ -9,6 +9,7 @@ import {
   Param,
   ParseIntPipe,
   Delete,
+  Get,
 } from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/request/create-submission.dto';
@@ -19,6 +20,7 @@ import { AuthenticatedRequest } from '../common/interfaces/custom-request.interf
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { UpdateSubmissionDto } from './dto/request/update-submission.dto';
 import { CreateRevisionDto } from './dto/request/create-revision.dto';
+import { UpdateRevisionDto } from './dto/request/update-revision.dto';
 
 @Controller({ path: 'submission', scope: Scope.REQUEST })
 export class SubmissionController {
@@ -67,6 +69,51 @@ export class SubmissionController {
     return new BaseResponseDto(
       this.request,
       'Revisi berhasil dibuat',
+      submission,
+    );
+  }
+
+  @Put('revision/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async updateRevision(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateRevisionDto: UpdateRevisionDto,
+  ) {
+    const submission = await this.submissionService.updateRevision(
+      id,
+      updateRevisionDto,
+    );
+
+    return new BaseResponseDto(
+      this.request,
+      'Revisi berhasil diupdate',
+      submission,
+    );
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async getSubmissionDetails(@Param('id', ParseIntPipe) id: number) {
+    const submission = await this.submissionService.getSubmissionDetails(id);
+
+    return new BaseResponseDto(
+      this.request,
+      `Submission dengan ID ${id} berhasil didapatkan`,
+      submission,
+    );
+  }
+
+  @Get('latest/:contentId')
+  @UseGuards(JwtAuthGuard)
+  async getLatestSubmissionForContent(
+    @Param('contentId', ParseIntPipe) contentId: number,
+  ) {
+    const submission =
+      await this.submissionService.getLatestSubmissionForContent(contentId);
+
+    return new BaseResponseDto(
+      this.request,
+      `Submission terbaru untuk Content dengan ID ${contentId} berhasil didapatkan`,
       submission,
     );
   }

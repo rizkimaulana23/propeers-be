@@ -12,6 +12,7 @@ import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.inter
 import { Role } from 'src/common/entities/user.entity';
 import { UpdateSubmissionDto } from './dto/request/update-submission.dto';
 import { CreateRevisionDto } from './dto/request/create-revision.dto';
+import { UpdateRevisionDto } from './dto/request/update-revision.dto';
 
 @Injectable()
 export class SubmissionService {
@@ -122,7 +123,8 @@ export class SubmissionService {
   }
 
   async createRevision(createRevisionDto: CreateRevisionDto) {
-    const { submissionId, revisionText } = createRevisionDto;
+    const { submissionId, revisionText, updatedDeadline, updatedUploadDate } =
+      createRevisionDto;
 
     const submission = await this.submissionRepository.findOne({
       where: { id: submissionId },
@@ -136,6 +138,18 @@ export class SubmissionService {
       );
     }
 
+    const content = await this.contentRepository.findOne({
+      where: { id: submission.contentId },
+    });
+
+    if (!content) {
+      throw new FailedException(
+        `Content dengan ID ${submission.contentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
     const userRole = this.request.user?.roles;
     const now = new Date();
 
@@ -144,6 +158,28 @@ export class SubmissionService {
       // SMS can create revisions multiple times
       submission.smsRevision = revisionText;
       submission.smsRevisionCreatedDate = now;
+
+      // Update related content if dates are provided
+      if (updatedDeadline || updatedUploadDate) {
+        if (updatedDeadline) {
+          content.deadline = updatedDeadline;
+        }
+
+        if (updatedUploadDate) {
+          content.uploadDate = updatedUploadDate;
+        }
+
+        // Validate that uploadDate is not before deadline
+        if (content.uploadDate < content.deadline) {
+          throw new FailedException(
+            'Upload date tidak boleh lebih awal dari deadline',
+            HttpStatus.BAD_REQUEST,
+            this.request.path,
+          );
+        }
+
+        await this.contentRepository.save(content);
+      }
     } else if (userRole === Role.CLIENT) {
       // Client can only create revision if submission is verified
       if (!submission.isVerified) {
@@ -172,6 +208,28 @@ export class SubmissionService {
 
       submission.clientRevision = revisionText;
       submission.clientRevisionCreatedDate = now;
+
+      // Update related content if dates are provided
+      if (updatedDeadline || updatedUploadDate) {
+        if (updatedDeadline) {
+          content.deadline = updatedDeadline;
+        }
+
+        if (updatedUploadDate) {
+          content.uploadDate = updatedUploadDate;
+        }
+
+        // Validate that uploadDate is not before deadline
+        if (content.uploadDate < content.deadline) {
+          throw new FailedException(
+            'Upload date tidak boleh lebih awal dari deadline',
+            HttpStatus.BAD_REQUEST,
+            this.request.path,
+          );
+        }
+
+        await this.contentRepository.save(content);
+      }
     } else {
       throw new FailedException(
         'Hanya SMS dan Client yang dapat membuat revisi',
@@ -181,10 +239,196 @@ export class SubmissionService {
     }
 
     const updatedSubmission = await this.submissionRepository.save(submission);
-    return this.turnSubmissionToSubmissionResponse(updatedSubmission);
+    return this.turnSubmissionToSubmissionResponse(updatedSubmission, content);
   }
 
-  turnSubmissionToSubmissionResponse(submission: Submission) {
+  async updateRevision(id: number, updateRevisionDto: UpdateRevisionDto) {
+    // Find submission by ID
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+    });
+
+    if (!submission) {
+      throw new FailedException(
+        `Submission dengan ID ${id} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Find related content
+    const content = await this.contentRepository.findOne({
+      where: { id: submission.contentId },
+    });
+
+    if (!content) {
+      throw new FailedException(
+        `Content dengan ID ${submission.contentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const userRole = this.request.user?.roles;
+    const { revisionText, updatedDeadline, updatedUploadDate } =
+      updateRevisionDto;
+    const now = new Date();
+
+    // Handle update based on user role
+    if (userRole === Role.SMS) {
+      // SMS can update revision anytime
+      if (revisionText) {
+        submission.smsRevision = revisionText;
+        submission.smsRevisionCreatedDate = now;
+      }
+    } else if (userRole === Role.CLIENT) {
+      // Client can only update if submission is verified
+      if (!submission.isVerified) {
+        throw new FailedException(
+          'Client hanya dapat mengubah revisi pada submission yang sudah terverifikasi',
+          HttpStatus.FORBIDDEN,
+          this.request.path,
+        );
+      }
+
+      // Client must have already created a revision
+      if (!submission.clientRevision) {
+        throw new FailedException(
+          'Client hanya dapat mengubah revisi yang sudah dibuat sebelumnya',
+          HttpStatus.FORBIDDEN,
+          this.request.path,
+        );
+      }
+
+      if (revisionText) {
+        submission.clientRevision = revisionText;
+        submission.clientRevisionCreatedDate = now;
+      }
+    } else {
+      throw new FailedException(
+        'Hanya SMS dan Client yang dapat mengubah revisi',
+        HttpStatus.FORBIDDEN,
+        this.request.path,
+      );
+    }
+
+    // Update content dates if provided
+    if (updatedDeadline || updatedUploadDate) {
+      if (updatedDeadline) {
+        content.deadline = updatedDeadline;
+      }
+
+      if (updatedUploadDate) {
+        content.uploadDate = updatedUploadDate;
+      }
+
+      // Validate dates
+      if (content.uploadDate < content.deadline) {
+        throw new FailedException(
+          'Upload date tidak boleh lebih awal dari deadline',
+          HttpStatus.BAD_REQUEST,
+          this.request.path,
+        );
+      }
+
+      await this.contentRepository.save(content);
+    }
+
+    const updatedSubmission = await this.submissionRepository.save(submission);
+    return this.turnSubmissionToSubmissionResponse(updatedSubmission, content);
+  }
+
+  async getSubmissionDetails(id: number) {
+    // Find submission by ID
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+    });
+
+    if (!submission) {
+      throw new FailedException(
+        `Submission dengan ID ${id} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Get user role
+    const userRole = this.request.user?.roles;
+
+    // Client cannot view unverified submissions
+    if (userRole === Role.CLIENT && !submission.isVerified) {
+      throw new FailedException(
+        `Client tidak dapat melihat submission yang belum terverifikasi`,
+        HttpStatus.FORBIDDEN,
+        this.request.path,
+      );
+    }
+
+    // Find related content
+    const content = await this.contentRepository.findOne({
+      where: { id: submission.contentId },
+    });
+
+    if (!content) {
+      throw new FailedException(
+        `Content dengan ID ${submission.contentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Return submission with content details
+    return this.turnSubmissionToSubmissionResponse(submission, content);
+  }
+
+  async getLatestSubmissionForContent(contentId: number) {
+    const userRole = this.request.user?.roles;
+
+    // Base query to find submission for the content
+    const queryBuilder = this.submissionRepository
+      .createQueryBuilder('submission')
+      .where('submission.contentId = :contentId', { contentId })
+      .orderBy('submission.createdAt', 'DESC'); // Order by newest first
+
+    // If client, only show verified submissions
+    if (userRole === Role.CLIENT) {
+      queryBuilder.andWhere('submission.isVerified = :isVerified', {
+        isVerified: true,
+      });
+    }
+
+    // Get the latest submission
+    const submission = await queryBuilder.getOne();
+
+    if (!submission) {
+      throw new FailedException(
+        `Tidak ditemukan submission untuk Content dengan ID ${contentId}`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Get related content
+    const content = await this.contentRepository.findOne({
+      where: { id: contentId },
+    });
+
+    if (!content) {
+      throw new FailedException(
+        `Content dengan ID ${contentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Return submission with content details
+    return this.turnSubmissionToSubmissionResponse(submission, content);
+  }
+
+  turnSubmissionToSubmissionResponse(
+    submission: Submission,
+    content?: Content,
+  ) {
     if (!submission) return undefined;
 
     return new SubmissionResponseDto({
@@ -197,8 +441,11 @@ export class SubmissionService {
       smsRevisionCreatedDate: submission.smsRevisionCreatedDate,
       clientRevision: submission.clientRevision,
       clientRevisionCreatedDate: submission.clientRevisionCreatedDate,
-      contentId: submission.contentId,
       createdAt: submission.createdAt,
+      updatedAt: submission.updatedAt,
+      contentId: submission.contentId,
+      contentDeadline: content?.deadline,
+      contentUploadDate: content?.uploadDate,
     });
   }
 }
