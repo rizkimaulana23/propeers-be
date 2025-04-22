@@ -21,6 +21,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { UpdateSubmissionDto } from './dto/request/update-submission.dto';
 import { CreateRevisionDto } from './dto/request/create-revision.dto';
 import { UpdateRevisionDto } from './dto/request/update-revision.dto';
+import { Role } from 'src/common/entities/user.entity';
 
 @Controller({ path: 'submission', scope: Scope.REQUEST })
 export class SubmissionController {
@@ -116,6 +117,20 @@ export class SubmissionController {
       `Submission terbaru untuk Content dengan ID ${contentId} berhasil didapatkan`,
       submission,
     );
+  }
+
+  @Put(':id/accept')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async acceptSubmission(@Param('id', ParseIntPipe) id: number) {
+    const submission = await this.submissionService.acceptSubmission(id);
+
+    const userRole = this.request.user?.roles;
+    const message =
+      userRole === Role.SMS
+        ? 'Submission berhasil diverifikasi'
+        : 'Submission berhasil diterima client';
+
+    return new BaseResponseDto(this.request, message, submission);
   }
 
   @Delete('delete/:id')

@@ -15,6 +15,9 @@ export class Submission extends BaseEntity {
 
     @Column({ nullable: false, default: false })
     isVerified: boolean;
+    
+    @Column({ nullable: false, default: false })
+    isAcceptedByClient: boolean;
 
     @Column({ nullable: true })
     smsRevision: string;

@@ -4,6 +4,7 @@ export class SubmissionResponseDto {
   catatanSubmisi: string;
   submissionUrl: string;
   isVerified: boolean;
+  isAcceptedByClient: boolean;
   smsRevision: string;
   smsRevisionCreatedDate: Date;
   clientRevision: string;

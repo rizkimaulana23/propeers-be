@@ -230,12 +230,6 @@ export class SubmissionService {
 
         await this.contentRepository.save(content);
       }
-    } else {
-      throw new FailedException(
-        'Hanya SMS dan Client yang dapat membuat revisi',
-        HttpStatus.FORBIDDEN,
-        this.request.path,
-      );
     }
 
     const updatedSubmission = await this.submissionRepository.save(submission);
@@ -304,12 +298,6 @@ export class SubmissionService {
         submission.clientRevision = revisionText;
         submission.clientRevisionCreatedDate = now;
       }
-    } else {
-      throw new FailedException(
-        'Hanya SMS dan Client yang dapat mengubah revisi',
-        HttpStatus.FORBIDDEN,
-        this.request.path,
-      );
     }
 
     // Update content dates if provided
@@ -425,6 +413,59 @@ export class SubmissionService {
     return this.turnSubmissionToSubmissionResponse(submission, content);
   }
 
+  async acceptSubmission(id: number) {
+    // Find submission by ID
+    const submission = await this.submissionRepository.findOne({
+      where: { id },
+    });
+
+    if (!submission) {
+      throw new FailedException(
+        `Submission dengan ID ${id} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Get user role
+    const userRole = this.request.user?.roles;
+
+    // Handle acceptance based on user role
+    if (userRole === Role.SMS) {
+      // SMS sets isVerified to true
+      submission.isVerified = true;
+    } else if (userRole === Role.CLIENT) {
+      // Client can only accept if submission is verified
+      if (!submission.isVerified) {
+        throw new FailedException(
+          'Client hanya dapat menerima submission yang sudah terverifikasi',
+          HttpStatus.FORBIDDEN,
+          this.request.path,
+        );
+      }
+
+      // Client sets isAcceptedByClient to true
+      submission.isAcceptedByClient = true;
+    }
+
+    const updatedSubmission = await this.submissionRepository.save(submission);
+
+    // Find related content
+    const content = await this.contentRepository.findOne({
+      where: { id: submission.contentId },
+    });
+
+    if (!content) {
+      throw new FailedException(
+        `Content dengan ID ${submission.contentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    return this.turnSubmissionToSubmissionResponse(updatedSubmission, content);
+  }
+
   turnSubmissionToSubmissionResponse(
     submission: Submission,
     content?: Content,
@@ -437,6 +478,7 @@ export class SubmissionService {
       catatanSubmisi: submission.catatanSubmisi,
       submissionUrl: submission.submissionUrl,
       isVerified: submission.isVerified,
+      isAcceptedByClient: submission.isAcceptedByClient,
       smsRevision: submission.smsRevision,
       smsRevisionCreatedDate: submission.smsRevisionCreatedDate,
       clientRevision: submission.clientRevision,
