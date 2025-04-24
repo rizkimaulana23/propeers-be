@@ -45,12 +45,15 @@ export class SubmissionService {
 
     const isUserSMS = this.request.user?.roles === Role.SMS;
 
+    const submittedBy = this.request.user?.email || 'Unknown User';
+
     const newSubmission = this.submissionRepository.create({
       contentId: contentId,
       submissionUrl,
       catatanSubmisi,
       submissionCount: submissionCount + 1,
       isVerified: isUserSMS,
+      submittedBy: submittedBy,
     });
 
     const savedSubmission = await this.submissionRepository.save(newSubmission);
@@ -72,6 +75,16 @@ export class SubmissionService {
     }
 
     const userRole = this.request.user?.roles;
+    const userEmail = this.request.user?.email;
+
+    // Cek apakah user adalah pembuat submission
+    if (submission.submittedBy !== userEmail) {
+      throw new FailedException(
+        `Anda tidak memiliki izin untuk mengubah submission ini`,
+        HttpStatus.FORBIDDEN,
+        this.request.path,
+      );
+    }
 
     if (userRole === Role.FREELANCER && submission.isVerified === true) {
       throw new FailedException(
@@ -105,6 +118,26 @@ export class SubmissionService {
       throw new FailedException(
         `Submission dengan ID ${id} tidak ditemukan`,
         HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const userRole = this.request.user?.roles;
+    const userEmail = this.request.user?.email;
+
+    // Cek apakah user adalah pembuat submission
+    if (submission.submittedBy !== userEmail) {
+      throw new FailedException(
+        `Anda tidak memiliki izin untuk menghapus submission ini`,
+        HttpStatus.FORBIDDEN,
+        this.request.path,
+      );
+    }
+
+    if (userRole === Role.FREELANCER && submission.isVerified === true) {
+      throw new FailedException(
+        `Freelancer tidak dapat menghapus submission yang sudah terverifikasi`,
+        HttpStatus.FORBIDDEN,
         this.request.path,
       );
     }
@@ -479,6 +512,7 @@ export class SubmissionService {
       submissionUrl: submission.submissionUrl,
       isVerified: submission.isVerified,
       isAcceptedByClient: submission.isAcceptedByClient,
+      submittedBy: submission.submittedBy,
       smsRevision: submission.smsRevision,
       smsRevisionCreatedDate: submission.smsRevisionCreatedDate,
       clientRevision: submission.clientRevision,

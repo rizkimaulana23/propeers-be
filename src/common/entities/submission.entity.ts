@@ -20,6 +20,9 @@ export class Submission extends BaseEntity {
     isAcceptedByClient: boolean;
 
     @Column({ nullable: true })
+    submittedBy: string;
+
+    @Column({ nullable: true })
     smsRevision: string;
 
     @Column({ nullable: true, type: 'timestamp' })

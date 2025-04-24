@@ -5,6 +5,7 @@ export class SubmissionResponseDto {
   submissionUrl: string;
   isVerified: boolean;
   isAcceptedByClient: boolean;
+  submittedBy: string; 
   smsRevision: string;
   smsRevisionCreatedDate: Date;
   clientRevision: string;
