@@ -134,8 +134,13 @@ export class DashboardService {
                     id: In(assignedRoles.map((assignedRole) => assignedRole.projectId))
                 }
             })
-            projects.forEach((project) => {
-                contents.push(...project.deliverables);
+            const contents: Content[] = await this.contentRepository.find({
+                where: {
+                    projectId: In(projects.map((p) => p.id))
+                }
+            })
+            contents.forEach((content) => {
+                contents.push(content);
             })
         }
 
@@ -242,9 +247,10 @@ export class DashboardService {
                     talentId: this.request.user.id
                 }
             })
+
             projects = await this.projectRepository.find({
                 where: {
-                    assignedRoles: In(assigned)
+                    id: In(assigned.map((ar) => ar.projectId))
                 }
             })
         } else if (this.request.user.roles === Role.CLIENT) {
@@ -259,11 +265,15 @@ export class DashboardService {
         }
 
         const projectIds = projects.map((project) => project.id)
-            deliverables = await this.contentRepository.find({
-                where: {
-                    project: In(projectIds)
-                }
-            });
+
+        deliverables = await this.contentRepository.find({
+            where: {
+                project: In(projectIds)
+            }
+        });
+
+        console.log("babi")
+        console.log(deliverables)
 
         deliverables.map((deliverable) => {
             response.push({
