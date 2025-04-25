@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -9,6 +9,7 @@ import { BaseResponseDto } from 'src/common/dto/success-response.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { UpdateContentPlanDto } from './dto/request/update-content.dto';
+import { UploadContentDto } from './dto/request/upload-content.dto';
 
 @Controller('contents')
 export class ContentController {
@@ -42,15 +43,23 @@ export class ContentController {
 
     @Put('/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @RolesDecorator(Role.DIREKSI, Role.GM)
+    @RolesDecorator(Role.DIREKSI, Role.SMS)
     async updateContent(@Param('id') id: number, @Body() updateContentPlanDto: UpdateContentPlanDto) {
         const result = await this.contentService.updateContent(id, updateContentPlanDto);
         return new BaseResponseDto(this.request, `Content dengan ID ${id} berhasil diperbarui`, result);
     }
 
+    @Patch("/:id/upload")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @RolesDecorator(Role.DIREKSI, Role.SMS)
+    async uploadContent(@Param('id') id: number, @Body() uploadContentDto: UploadContentDto) {
+        const result = await this.contentService.uploadContent(id, uploadContentDto);
+        return new BaseResponseDto(this.request, `Content dengan ID ${id} berhasil diperbarui`, result);
+    }
+
     @Delete('/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @RolesDecorator(Role.DIREKSI, Role.GM)
+    @RolesDecorator(Role.DIREKSI, Role.SMS)
     async deleteContent(@Param('id') id: number) {
         const result = await this.contentService.deleteContent(id);
         return new BaseResponseDto(this.request, `Content with ID ${id} succesfully deleted.`, result);

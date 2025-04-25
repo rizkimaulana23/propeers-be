@@ -48,3 +48,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsI
     "evaluationDate": null,
     "descriptiveEvaluation": null
 }
+
+### PATCH Upload Content
+PATCH http://localhost:3000/contents/2/upload
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiZGlyZWtzaUBnbWFpbC5jb20iLCJyb2xlIjoiRElSRUtTSSIsImlhdCI6MTc0NTU2ODM5NywiZXhwIjoxNzQ1NTcxOTk3fQ.bQZbKzP8zOHkfx2iI1XRiS8-6hbUXUEHDQXs1Cc9Jp8
+
+{
+  "uploadLink": "http://x.com/home"
+}

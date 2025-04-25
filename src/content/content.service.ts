@@ -11,6 +11,7 @@ import { ProjectService } from 'src/project/project.service';
 import { ProjectResponseDto } from 'src/project/dto/response/project-response.dto';
 import { UpdateContentPlanDto } from './dto/request/update-content.dto';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
+import { UploadContentDto } from './dto/request/upload-content.dto';
 
 @Injectable({scope: Scope.REQUEST})
 export class ContentService {
@@ -120,6 +121,35 @@ export class ContentService {
             return `Content dengan ID ${id} berhasil dihapus.`;
 
         throw new FailedException(`Content dengan ID ${id} failed to be deleted.`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.path);
+    }
+
+    async uploadContent(id: number, dto: UploadContentDto) {
+        const content: Content | null = await this.contentRepository.findOne({
+            where: {
+                id
+            }
+        });
+
+        if (!content) 
+            throw new FailedException(`Content with ID ${id} can't be found.`, HttpStatus.NOT_FOUND, this.request.url);
+
+        if (content.status !== ContentStatus.FINISHED)
+            throw new FailedException(`Can't set Content status to Uploaded unless Content is Finished.`, HttpStatus.BAD_REQUEST, this.request.url);
+
+        const result = await this.contentRepository.update({ id }, { 
+            ...dto,
+            status: ContentStatus.UPLOADED    
+        });
+        
+        const updatedContent: Content | null = await this.contentRepository.findOne({ 
+            where: {
+                id
+            }
+        })
+        if (!updatedContent) {
+            throw new FailedException(`Failed to update content with ID ${id}`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.url);
+        }
+        return this.turnContentIntoContentResponseDto(updatedContent);
     }
 
     turnContentIntoContentResponseDto(content: Content): ContentResponseDto {
