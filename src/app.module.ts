@@ -21,6 +21,7 @@ import { ContentModule } from './content/content.module';
 import { Content } from './common/entities/content.entity';
 import { SubmissionModule } from './submission/submission.module';
 import { FinanceModule } from './finance/finance.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { FinanceModule } from './finance/finance.module';
     ProjectModule,
     TalentModule,
     ContentModule,
+    DashboardModule,
     SubmissionModule,
     FinanceModule,
   ],

@@ -13,6 +13,9 @@ export class Submission extends BaseEntity {
     @Column({ nullable: false })
     submissionUrl: string;
 
+    @Column({ nullable: false, type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    submitTimestamp: Date;
+
     @Column({ nullable: false, default: false })
     isVerified: boolean;
     

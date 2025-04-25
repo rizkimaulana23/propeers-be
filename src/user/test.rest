@@ -3,12 +3,13 @@ POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "email" : "client2@gmail.com",
+    "email" : "sms@gmail.com",
     "password" : "test",
-    "name": "Client 2",
+    "name": "Social Media Specialist",
     "phone": "1234",
-    "description":"haha",
-    "role":"CLIENT"
+    "description":"Social Media Specilist",
+    "role":"SMS",
+    "specialities": ["Content Creator"]
 }
 
 ### Login
