@@ -37,7 +37,7 @@ export class ProjectService {
         let projects;
         const userId = this.request.user?.id;
 
-        if (this.request.user?.roles === Role.DIREKSI) {
+        if (this.request.user?.roles === Role.DIREKSI || this.request.user?.roles === Role.GM) {
             projects = await this.projectRepository.find();
         } else if (this.request.user?.roles === Role.CLIENT) {
             projects = await this.projectRepository.find({ where: {
@@ -50,7 +50,6 @@ export class ProjectService {
                 .where('assignedRoles.talentId = :userId', { userId })
                 .getMany();
         }
-        console.log(projects.client)
         return projects.map((project) => this.turnProjectIntoProjectResponse(project))
     }
 
