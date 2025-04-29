@@ -77,4 +77,16 @@ export class ProjectController {
         return new BaseResponseDto(this.request, await this.projectService.deleteProject(id), null);
     }
 
+    @Get('client/:id')
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async getClientProjects(@Param('id') clientId: number) {
+        const projectResponses = await this.projectService.getClientProjects(clientId);
+        return new BaseResponseDto(
+            this.request, 
+            `Daftar project untuk client dengan ID ${clientId} berhasil didapatkan`, 
+            projectResponses
+        );
+    }
+
 }

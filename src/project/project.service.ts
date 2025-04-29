@@ -129,4 +129,32 @@ export class ProjectService {
         });
         return response;
     }
+    
+    async getClientProjects(clientId: number) {
+        const client = await this.userRepository.findOne({ 
+            where: { id: clientId }
+        });
+        
+        if (!client) {
+            throw new FailedException(
+                `Client dengan ID ${clientId} tidak ditemukan`, 
+                HttpStatus.NOT_FOUND, 
+                this.request.path
+            );
+        }
+        
+        if (client.role !== Role.CLIENT) {
+            throw new FailedException(
+                `User dengan ID ${clientId} bukan merupakan client`, 
+                HttpStatus.BAD_REQUEST, 
+                this.request.path
+            );
+        }
+        
+        const projects = await this.projectRepository.find({ 
+            where: { clientId: clientId }
+        });
+        
+        return projects.map(project => this.turnProjectIntoProjectResponse(project));
+    }
 }
