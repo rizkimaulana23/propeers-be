@@ -68,7 +68,8 @@ export class UserService {
         const user: User | null = await this.userRepository.findOne({
             where: {
                 email,
-            }
+            },
+            relations: ['projects'] 
         })
         if (!user) throw new FailedException(`User dengan email ${email} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.path);
         return this.turnUserToUserResponse(user);
@@ -146,12 +147,22 @@ export class UserService {
     async getUsers(roles?: Role[], includeDeleted: boolean = false) {
         let users;
         const whereCondition: any = includeDeleted ? {} : { deletedAt: undefined };
-
+    
         if (roles && roles.length > 0) {
             whereCondition.role = In(roles);
+            
+            const relations = roles.includes(Role.CLIENT) ? ['projects'] : [];
+            users = await this.userRepository.find({ 
+                where: whereCondition,
+                relations
+            });
+        } else {
+            users = await this.userRepository.find({ 
+                where: whereCondition,
+                relations: ['projects'] // Load projects for all users
+            });
         }
-
-        users = await this.userRepository.find({ where: whereCondition });
+        
         return users.map(user => this.turnUserToUserResponse(user));
     }
 
@@ -209,7 +220,26 @@ export class UserService {
                 specialities
             }) 
 
-            return freelancerResponse
+            return freelancerResponse;
+
+            
+        } else if (user.role === Role.CLIENT) {
+            const activeProjects = user.projects ? 
+                user.projects.filter(project => 
+                    project.status === 'CREATED' || project.status === 'ONGOING'
+                ).length : 0;
+            
+            const successProjects = user.projects ? 
+                user.projects.filter(project => 
+                    project.status === 'FINISHED'
+                ).length : 0;
+                
+            return {
+                ...userResponse,
+                activeProjects,
+                successProjects
+            };
+        
         }
         return userResponse;
     }
