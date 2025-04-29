@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { Submission } from '../common/entities/submission.entity';
-import { Content } from '../common/entities/content.entity';
+import { Content, ContentStatus } from '../common/entities/content.entity';
 import { CreateSubmissionDto } from './dto/request/create-submission.dto';
 import { SubmissionResponseDto } from './dto/response/submission-response.dto';
 import { FailedException } from '../common/exceptions/FailedExceptions.dto';
@@ -518,6 +518,16 @@ export class SubmissionService {
 
       // Client sets isAcceptedByClient to true
       submission.isAcceptedByClient = true;
+      
+      const content: Content | null = await this.contentRepository.findOne({ 
+        where: {
+          id: submission.contentId
+        }
+      })
+      if (content) {
+        content.status = ContentStatus.FINISHED;
+        await this.contentRepository.save(content);
+      }
     }
 
     const updatedSubmission = await this.submissionRepository.save(submission);
