@@ -511,7 +511,7 @@ export class SubmissionService {
       if (!submission.isVerified) {
         throw new FailedException(
           'Client hanya dapat menerima submission yang sudah terverifikasi',
-          HttpStatus.FORBIDDEN,
+          HttpStatus.BAD_REQUEST,
           this.request.path,
         );
       }
