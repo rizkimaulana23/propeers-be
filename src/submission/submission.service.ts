@@ -359,6 +359,45 @@ export class SubmissionService {
     return this.turnSubmissionToSubmissionResponse(updatedSubmission, content);
   }
 
+  async getListSubmissions(contentId: number) {
+    // Validate content exists
+    const content = await this.contentRepository.findOne({
+      where: { id: contentId },
+    });
+
+    if (!content) {
+      throw new FailedException(
+        `Content dengan ID ${contentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Get user role for permission check
+    const userRole = this.request.user?.roles;
+
+    // Build query to find submissions
+    const queryBuilder = this.submissionRepository
+      .createQueryBuilder('submission')
+      .where('submission.contentId = :contentId', { contentId })
+      .orderBy('submission.submissionCount', 'DESC'); // Newest submissions first
+
+    // Client can only see verified submissions
+    if (userRole === Role.CLIENT) {
+      queryBuilder.andWhere('submission.isVerified = :isVerified', {
+        isVerified: true,
+      });
+    }
+
+    // Get all submissions (including soft-deleted ones if needed)
+    const submissions = await queryBuilder.getMany();
+
+    // Transform to response DTOs and include content details
+    return submissions.map((submission) =>
+      this.turnSubmissionToSubmissionResponse(submission, content),
+    );
+  }
+
   async getSubmissionDetails(id: number) {
     // Find submission by ID
     const submission = await this.submissionRepository.findOne({
