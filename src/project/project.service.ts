@@ -129,15 +129,15 @@ export class ProjectService {
         });
         return response;
     }
-    
-    async getClientProjects(clientId: number) {
+
+    async getClientProjects(clientEmail: string) {
         const client = await this.userRepository.findOne({ 
-            where: { id: clientId }
+            where: { email: clientEmail }
         });
         
         if (!client) {
             throw new FailedException(
-                `Client dengan ID ${clientId} tidak ditemukan`, 
+                `Client dengan email ${clientEmail} tidak ditemukan`, 
                 HttpStatus.NOT_FOUND, 
                 this.request.path
             );
@@ -145,14 +145,14 @@ export class ProjectService {
         
         if (client.role !== Role.CLIENT) {
             throw new FailedException(
-                `User dengan ID ${clientId} bukan merupakan client`, 
+                `User dengan email ${clientEmail} bukan merupakan client`, 
                 HttpStatus.BAD_REQUEST, 
                 this.request.path
             );
         }
         
         const projects = await this.projectRepository.find({ 
-            where: { clientId: clientId }
+            where: { clientId: client.id }
         });
         
         return projects.map(project => this.turnProjectIntoProjectResponse(project));
