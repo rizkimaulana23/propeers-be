@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Delete,
   Get,
+  Query,
 } from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/request/create-submission.dto';
@@ -90,6 +91,14 @@ export class SubmissionController {
       'Revisi berhasil diupdate',
       submission,
     );
+  }
+
+  @Get('history')
+  @UseGuards(JwtAuthGuard)
+  async getListSubmissions(
+    @Query('contentId', new ParseIntPipe()) contentId: number,
+  ) {
+    return this.submissionService.getListSubmissions(contentId);
   }
 
   @Get(':id')
