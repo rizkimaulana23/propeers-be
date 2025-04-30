@@ -37,6 +37,12 @@ export class Submission extends BaseEntity {
     @Column({ nullable: true, type: 'timestamp' })
     clientRevisionCreatedDate: Date;
 
+    @Column({ nullable: true, type: 'int' })
+    durasiLate: number | null;
+
+    @Column({ nullable: true, type: 'int' })
+    durasiOnTime: number | null;
+
     @OneToMany(() => Content, (content) => content.submisssions)
     @JoinColumn({ name: 'contentId' })
     content: Content;

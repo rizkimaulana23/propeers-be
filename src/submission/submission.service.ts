@@ -44,8 +44,24 @@ export class SubmissionService {
     });
 
     const isUserSMS = this.request.user?.roles === Role.SMS;
-
     const submittedBy = this.request.user?.email || 'Unknown User';
+
+    const submissionDate = new Date();
+    const deadlineDate = new Date(content.deadline);
+    const timeDiff = deadlineDate.getTime() - submissionDate.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    // Set durasiLate atau durasiOnTime berdasarkan perbandingan tanggal
+    let durasiLate: number | null = null;
+    let durasiOnTime: number | null = null;
+
+    if (daysDiff < 0) {
+      // Submission telat (setelah deadline)
+      durasiLate = Math.abs(daysDiff);
+    } else {
+      // Submission tepat waktu (sebelum atau tepat pada deadline)
+      durasiOnTime = daysDiff;
+    }
 
     const newSubmission = this.submissionRepository.create({
       contentId: contentId,
@@ -55,6 +71,13 @@ export class SubmissionService {
       isVerified: isUserSMS,
       submittedBy: submittedBy,
     });
+
+    if (durasiLate !== null) {
+      newSubmission.durasiLate = durasiLate;
+    }
+    if (durasiOnTime !== null) {
+      newSubmission.durasiOnTime = durasiOnTime;
+    }
 
     const savedSubmission = await this.submissionRepository.save(newSubmission);
 
@@ -69,6 +92,18 @@ export class SubmissionService {
     if (!submission) {
       throw new FailedException(
         `Submission dengan ID ${id} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    const content = await this.contentRepository.findOne({
+      where: { id: submission.contentId },
+    });
+
+    if (!content) {
+      throw new FailedException(
+        `Content dengan ID ${submission.contentId} tidak ditemukan`,
         HttpStatus.NOT_FOUND,
         this.request.path,
       );
@@ -102,6 +137,22 @@ export class SubmissionService {
 
     if (catatanSubmisi !== undefined) {
       submission.catatanSubmisi = catatanSubmisi;
+    }
+
+    const submissionDate = new Date();
+    const deadlineDate = new Date(content.deadline);
+    const timeDiff = deadlineDate.getTime() - submissionDate.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    // Update durasiLate atau durasiOnTime berdasarkan perbandingan tanggal
+    if (daysDiff < 0) {
+      // Submission telat (setelah deadline)
+      submission.durasiLate = Math.abs(daysDiff);
+      submission.durasiOnTime = null;
+    } else {
+      // Submission tepat waktu (sebelum atau tepat pada deadline)
+      submission.durasiOnTime = daysDiff;
+      submission.durasiLate = null;
     }
 
     const updatedSubmission = await this.submissionRepository.save(submission);
@@ -518,12 +569,12 @@ export class SubmissionService {
 
       // Client sets isAcceptedByClient to true
       submission.isAcceptedByClient = true;
-      
-      const content: Content | null = await this.contentRepository.findOne({ 
+
+      const content: Content | null = await this.contentRepository.findOne({
         where: {
-          id: submission.contentId
-        }
-      })
+          id: submission.contentId,
+        },
+      });
       if (content) {
         content.status = ContentStatus.FINISHED;
         await this.contentRepository.save(content);
@@ -571,6 +622,8 @@ export class SubmissionService {
       contentId: submission.contentId,
       contentDeadline: content?.deadline,
       contentUploadDate: content?.uploadDate,
+      durasiLate: submission.durasiLate,
+      durasiOnTime: submission.durasiOnTime,
     });
   }
 }
