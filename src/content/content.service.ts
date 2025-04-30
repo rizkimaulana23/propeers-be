@@ -51,6 +51,9 @@ export class ContentService {
         const contents: Content[] = await this.contentRepository.find({
             where: {
                 projectId
+            },
+            order: {
+                createdAt: "DESC"
             }
         })
 
