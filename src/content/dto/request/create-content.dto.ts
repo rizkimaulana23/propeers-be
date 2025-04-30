@@ -1,4 +1,5 @@
 import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MinDate } from "class-validator";
+import { NotBeforeToday } from "src/common/validator/deadline-content.validator";
 
 export enum JenisPostingan {
     IG_FEED = 'Instagram Feed',
@@ -39,7 +40,7 @@ export class CreateContentDto {
     @IsDateString()
     @IsNotEmpty()
     @Matches(/^\d{4}-\d{2}-\d{2}$/) // YYYY-MM-DD format
-    @MinDate(new Date(), {
+    @NotBeforeToday({
         message: 'Deadline must not be earlier than today'
     })
     deadline: Date;

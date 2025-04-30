@@ -1,6 +1,7 @@
 import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, IsUrl, Matches, MinDate, ValidateIf } from "class-validator";
 import { ContentPillar, JenisPostingan, TargetAudience } from "./create-content.dto";
 import { ContentStatus } from "src/common/entities/content.entity";
+import { NotBeforeToday } from "src/common/validator/deadline-content.validator";
 
 export class UpdateContentPlanDto {
 
@@ -19,7 +20,7 @@ export class UpdateContentPlanDto {
     @IsDateString()
     @IsNotEmpty()
     @Matches(/^\d{4}-\d{2}-\d{2}$/)
-    @MinDate(new Date(), {
+    @NotBeforeToday({
         message: 'Deadline must not be earlier than today'
     })
     deadline: Date;
