@@ -15,6 +15,8 @@ export class SubmissionResponseDto {
   updatedAt: Date;
   contentDeadline: Date;
   contentUploadDate: Date;
+  durasiLate: number | null;
+  durasiOnTime: number | null;
 
   constructor(partial: Partial<SubmissionResponseDto>) {
     Object.assign(this, partial);
