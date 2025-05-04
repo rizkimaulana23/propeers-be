@@ -1,15 +1,14 @@
 ### POST Register User
-POST http://localhost:3000/users/register
+POST https://artsi-be.vercel.app/users/register
 Content-Type: application/json
 
 {
-    "email" : "sms@gmail.com",
+    "email" : "client2@gmail.com",
     "password" : "test",
-    "name": "Social Media Specialist",
+    "name": "Client 2",
     "phone": "1234",
-    "description":"Social Media Specilist",
-    "role":"SMS",
-    "specialities": ["Content Creator"]
+    "description":"Client 2",
+    "role":"CLIENT"
 }
 
 ### Login
