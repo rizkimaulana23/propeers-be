@@ -77,4 +77,16 @@ export class ProjectController {
         return new BaseResponseDto(this.request, await this.projectService.deleteProject(id), null);
     }
 
+    @Get('client/:email')
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async getClientProjects(@Param('email') clientEmail: string) {
+        const projectResponses = await this.projectService.getClientProjects(clientEmail);
+        return new BaseResponseDto(
+            this.request, 
+            `Daftar project untuk client dengan email ${clientEmail} berhasil didapatkan`, 
+            projectResponses
+        );
+    }
+
 }

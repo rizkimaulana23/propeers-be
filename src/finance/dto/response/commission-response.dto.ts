@@ -10,6 +10,8 @@ export class CommissionResponseDTO {
 
     talent: BaseUserResponseDto;
 
+    isTransferred: boolean;
+
     constructor(partial: Partial<CommissionResponseDTO>) {
         Object.assign(this, partial);
     }

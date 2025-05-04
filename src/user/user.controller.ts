@@ -28,10 +28,19 @@ export class UserController {
         return new BaseResponseDto(this.request, "User successfully registered", userResponse);
     }
 
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    async getUsers(
+        @Query('roles', ParseRoleArrayPipe) roles?: Role[], 
+        @Query('includeDeleted') includeDeleted: boolean = false
+    ) {
+        const userResponse = await this.userService.getUsers(roles, includeDeleted);
+        return new BaseResponseDto(this.request, `Daftar User berhasil didapatkan`, userResponse);
+    }
+
     @Get(':email')
     @UseGuards(JwtAuthGuard)
     async getUser(@Param('email') email: string) {
-        console.log(this.request.user)
         const userResponse = await this.userService.getUser(email);
         return new BaseResponseDto(this.request, `User dengan email ${email} berhasil didapatkan`, userResponse);
     }
@@ -56,15 +65,6 @@ export class UserController {
         return new BaseResponseDto(this.request, `Password User telah diperbarui`, userResponse);
     }
 
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    async getUsers(
-        @Query('roles', ParseRoleArrayPipe) roles?: Role[], 
-        @Query('includeDeleted') includeDeleted: boolean = false
-    ) {
-        const userResponse = await this.userService.getUsers(roles, includeDeleted);
-        return new BaseResponseDto(this.request, `Daftar User berhasil didapatkan`, userResponse);
-    }
 
     @Delete(':email')
     @RolesDecorator(Role.ADMIN)

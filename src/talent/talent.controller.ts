@@ -5,7 +5,9 @@ import {
   Get,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
+  Put,
   Query,
   Scope,
   UseGuards,
@@ -19,6 +21,7 @@ import { REQUEST } from '@nestjs/core';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
+import { UpdateBriefNotesDto } from './dto/request/update-brief-notes-dto';
 
 @Controller({ path: 'talent', scope: Scope.REQUEST })
 export class TalentController {
@@ -78,8 +81,32 @@ export class TalentController {
   @Delete('unassign-talent')
   // @RolesDecorator(Role.DIREKSI, Role.GM)
   // @UseGuards(JwtAuthGuard)
-  async deleteAssignedRole(@Query('talentId') talentId: number, @Query('projectId') projectId: number) {
+  async deleteAssignedRole(
+    @Query('talentId') talentId: number,
+    @Query('projectId') projectId: number,
+  ) {
     await this.talentService.deleteAssignedRole(talentId, projectId);
     return new BaseResponseDto(this.request, 'User berhasil di-unassign', null);
+  }
+
+  @Put('brief')
+  // @UseGuards(JwtAuthGuard)
+  // @RolesDecorator(Role.ADMIN, Role.SMS) // Hanya admin/SMS yang bisa update brief notes
+  async updateBriefNotes(
+    @Query('talentId', ParseIntPipe) talentId: number,
+    @Query('projectId', ParseIntPipe) projectId: number,
+    @Body() updateBriefNotesDto: UpdateBriefNotesDto,
+  ) {
+    const result = await this.talentService.updateBriefNotes(
+      talentId,
+      projectId,
+      updateBriefNotesDto.briefNotesUrl,
+    );
+
+    return new BaseResponseDto(
+      this.request,
+      'Brief notes berhasil diperbarui',
+      result,
+    );
   }
 }

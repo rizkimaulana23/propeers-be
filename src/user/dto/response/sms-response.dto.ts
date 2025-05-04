@@ -5,6 +5,7 @@ export class SmsResponseDto extends BaseUserResponseDto {
     bankName: string;
     bankAccountNumber: string;
     bankAccountName: string;
+    specialities: string[];
 
     constructor(partial: Partial<SmsResponseDto>) {
         super(partial);

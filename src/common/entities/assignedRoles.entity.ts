@@ -8,7 +8,7 @@ export default class AssignedRoles extends BaseEntity {
     @Column({ nullable: false })
     role: string;
     
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     briefNotesUrl: string;
 
     @ManyToOne(() => User, (user) => user.assignedRoles)

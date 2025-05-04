@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany } from "typeorm";
 import { BaseEntity } from "./base.entity";
-import { Deliverable } from "./deliverables.entity";
+import { Content } from "./content.entity";
 
 @Entity('submission')
 export class Submission extends BaseEntity {
@@ -8,13 +8,22 @@ export class Submission extends BaseEntity {
     submissionCount: number;
 
     @Column({ nullable: false })
-    title: string;
+    catatanSubmisi: string;
 
     @Column({ nullable: false })
     submissionUrl: string;
 
+    @Column({ nullable: false, type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    submitTimestamp: Date;
+
     @Column({ nullable: false, default: false })
     isVerified: boolean;
+    
+    @Column({ nullable: false, default: false })
+    isAcceptedByClient: boolean;
+
+    @Column({ nullable: true })
+    submittedBy: string;
 
     @Column({ nullable: true })
     smsRevision: string;
@@ -28,10 +37,16 @@ export class Submission extends BaseEntity {
     @Column({ nullable: true, type: 'timestamp' })
     clientRevisionCreatedDate: Date;
 
-    @OneToMany(() => Deliverable, (deliverable) => deliverable.submisssions)
-    @JoinColumn({ name: 'deliverableId' })
-    deliverable: Deliverable;
+    @Column({ nullable: true, type: 'int' })
+    durasiLate: number | null;
+
+    @Column({ nullable: true, type: 'int' })
+    durasiOnTime: number | null;
+
+    @OneToMany(() => Content, (content) => content.submisssions)
+    @JoinColumn({ name: 'contentId' })
+    content: Content;
 
     @Column({ nullable: true })
-    deliverableId: string;
+    contentId: number;
 }
