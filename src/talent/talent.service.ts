@@ -162,13 +162,10 @@ export class TalentService {
       );
     }
 
-    const briefNotesUrl = 'link';
-
     const assignedRole = this.assignedRolesRepository.create({
       talent: talent,
       project: project,
       role: role,
-      briefNotesUrl: briefNotesUrl,
     });
 
     await this.assignedRolesRepository.save(assignedRole);
@@ -223,6 +220,69 @@ export class TalentService {
 
     await this.assignedRolesRepository.softRemove(assignedRole);
     return;
+  }
+
+  async updateBriefNotes(talentId: number, projectId: number, briefNotesUrl: string) {
+    // Validasi talent ada
+    const talent = await this.userRepository.findOne({
+      where: { id: talentId },
+      relations: ['assignedRoles', 'assignedRoles.project'],
+    });
+  
+    if (!talent) {
+      throw new FailedException(
+        `Talent dengan ID ${talentId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+  
+    // Validasi project ada
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+    });
+  
+    if (!project) {
+      throw new FailedException(
+        `Project dengan ID ${projectId} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+  
+    // Cari assigned role berdasarkan talent dan project
+    const assignedRole = await this.assignedRolesRepository.findOne({
+      where: { talentId, projectId },
+    });
+  
+    // Validasi assigned role ditemukan
+    if (!assignedRole) {
+      throw new FailedException(
+        `Talent dengan ID ${talentId} tidak di-assign ke project dengan ID ${projectId}`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+  
+    // Update briefNotesUrl
+    assignedRole.briefNotesUrl = briefNotesUrl;
+    await this.assignedRolesRepository.save(assignedRole);
+  
+    // Refresh talent data with updated assigned roles
+    const updatedTalent = await this.userRepository.findOne({
+      where: { id: talentId },
+      relations: ['assignedRoles', 'assignedRoles.project'],
+    });
+  
+    if (!updatedTalent) {
+      throw new FailedException(
+        `Updated talent data not found`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+    
+    return this.turnTalentToTalentResponse(updatedTalent);
   }
 
   turnTalentToTalentResponse(talent: User) {

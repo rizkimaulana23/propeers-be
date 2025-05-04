@@ -1,12 +1,12 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { User } from "./user.entity";
-import { ContentPlan } from "./contentPlan.entity";
 import { ProjectReferences } from "./projectReferences.entity";
 import { Activity } from "./activity.entity";
 import { Commission } from "./commission.entity";
 import AssignedRoles from "./assignedRoles.entity";
 import { IsUrl } from "class-validator";
+import { Content } from "./content.entity";
 
 export enum ProjectStatus {
     CREATED = 'CREATED',
@@ -57,8 +57,8 @@ export class Project extends BaseEntity {
     @Column({ nullable: true })
     clientId: number;
 
-    @OneToOne(() => ContentPlan, contentPlan => contentPlan.project)
-    contentPlan: ContentPlan;
+    @OneToMany(() => Content, content => content.project)
+    deliverables: Content[];
 
     @OneToMany(() => ProjectReferences, projectReferences => projectReferences.project)
     projectReferences: ProjectReferences[];

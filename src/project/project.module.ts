@@ -14,11 +14,11 @@ import { Speciality } from 'src/common/entities/speciality.entity';
   imports: [
     TypeOrmModule.forFeature([
       Project, ProjectReferences, Activity, User
-    ]),
+    ]),   
     UserModule 
   ],
   controllers: [ProjectController],
   providers: [ProjectService],
-  exports: [ProjectService]
+  exports: [ProjectService] 
 })
 export class ProjectModule {}

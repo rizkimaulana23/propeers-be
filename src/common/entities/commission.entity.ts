@@ -8,7 +8,7 @@ export class Commission extends BaseEntity {
     @Column({ nullable: false, type: 'numeric', precision: 10, scale: 2 })
     commissionAmount: number;
 
-    @ManyToOne(() => Project, (project) => project.commissions)
+    @ManyToOne(() => Project, (project) => project.commissions, { eager: true })
     @JoinColumn({ name: 'projectId' })
     project: Project;
 
