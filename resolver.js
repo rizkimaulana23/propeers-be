@@ -1,6 +1,7 @@
-const { resolve } = require('path');
+const path = require('path');
 const moduleAlias = require('module-alias');
 
 moduleAlias.addAliases({
-  'src': resolve(__dirname, './src')
+  'src': path.join(__dirname, 'src'),
+  '@': path.join(__dirname, 'src')
 });
