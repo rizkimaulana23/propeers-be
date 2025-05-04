@@ -42,6 +42,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
         entities: [User, Project, Speciality, Content, ProjectReferences, Notification, Submission, Activity, Commission, AssignedRoles],
         synchronize: configService.get('NODE_ENV') !== 'production',
         logging: configService.get('NODE_ENV') !== 'production',
+        ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
       }),
     }),
     TypeOrmModule.forFeature([Speciality]),

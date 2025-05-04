@@ -1,33 +1,37 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { RolesGuard } from './common/guards/roles.guard';
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
-import { ConfigService } from '@nestjs/config';
-import * as dotenv from 'dotenv';
-import '../resolver';
-
-dotenv.config();
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-  const reflector = new Reflector();
+  app.useGlobalPipes(new ValidationPipe());
+  app.enableCors();
 
-  app.enableCors({
-    origin: '*', // Consider restricting this in production
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-  });
+  const config = new DocumentBuilder()
+    .setTitle('ProPeers API')
+    .setDescription('API for ProPeers application')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
   
-  // Global pipes
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    forbidNonWhitelisted: true,
-  }));
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
-  const port = Number(process.env.PORT) || configService.get('PORT', 3000);
-  await app.listen(port);
+  await app.listen(process.env.PORT || 3000);
+  return app;
 }
-bootstrap();
+
+// Export for serverless use
+let app;
+export default async (req, res) => {
+  if (!app) {
+    app = await bootstrap();
+  }
+  return app.getHttpAdapter().getInstance()(req, res);
+};
+
+// For local development
+if (require.main === module) {
+  bootstrap();
+}
