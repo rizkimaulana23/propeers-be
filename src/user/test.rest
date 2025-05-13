@@ -1,5 +1,5 @@
 ### POST Register User
-POST http://localhost:3000/users/register
+POST https://artsi-be.vercel.app/users/register
 Content-Type: application/json
 
 {
@@ -7,9 +7,8 @@ Content-Type: application/json
     "password" : "test",
     "name": "Social Media Specialist",
     "phone": "1234",
-    "description":"Social Media Specilist",
-    "role":"SMS",
-    "specialities": ["Content Creator"]
+    "description":"Client 2",
+    "role":"CLIENT"
 }
 
 ### Login
