@@ -13,6 +13,8 @@ import { BaseUserResponseDto } from 'src/user/dto/response/user-response.dto';
 import { UserService } from 'src/user/user.service';
 import { UpdateProjectDto } from './dto/request/update-project.dto';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
+import { UpdateProjectDocumentRequestDto } from './dto/request/update-project-document.dto';
+import { ProjectReferencesResponseDto } from './dto/response/project-references-response.dto';
 
 @Injectable({ scope: Scope.REQUEST})
 export class ProjectService {
@@ -111,8 +113,7 @@ export class ProjectService {
         throw new FailedException(`Project dengan ID ${id} gagal dihapus.`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.path);
     }
 
-    turnProjectIntoProjectResponse (project: Project) {
-        const client = this.userRepository.findOne({ where: { id: project.clientId }})
+    turnProjectIntoProjectResponse   (project: Project) {
         const response = new ProjectResponseDto({
             id: project.id,
             projectName: project.projectName,
@@ -125,9 +126,22 @@ export class ProjectService {
             bonus: project.bonus,
             canvaWhiteboard: project.canvaWhiteboard,
             status: project.status,
-            client: this.userService.turnUserToUserResponse(project.client)
+            client: this.userService.turnUserToUserResponse(project.client), 
+            references: this.turnReferencesIntoReferencesDto(project.projectReferences)
         });
         return response;
+    }
+
+    turnReferencesIntoReferencesDto(references: ProjectReferences[]) {
+        const result: ProjectReferencesResponseDto[] = []; 
+        for (const reference of references) {
+            result.push({
+                id: reference.id,
+                title: reference.title,
+                url: reference.url
+            })
+        }
+        return result;
     }
 
     async getClientProjects(clientEmail: string) {
@@ -156,5 +170,52 @@ export class ProjectService {
         });
         
         return projects.map(project => this.turnProjectIntoProjectResponse(project));
+    }
+
+    async updateProjectDocument(projectId: number, dto: UpdateProjectDocumentRequestDto, documentType: string) {
+        const project = await this.projectRepository.findOne({
+            where: {
+                id: projectId
+            }
+        });
+
+        if (!project) 
+            throw new FailedException(`Project with ID ${projectId} was not found.`, HttpStatus.NOT_FOUND, this.request.path);
+
+        switch (documentType) {
+            case 'canva':
+                project.canvaWhiteboard = dto.canvaWhiteboard ?? '';
+                break;
+            case 'pinterest':
+                project.boardPinterest = dto.boardPinterest ?? '';
+                break;
+            case 'bonus':
+                project.bonus = dto.bonus ?? '';
+                break;
+            case 'references':
+                await this.projectReferencesRepository.delete({ projectId: projectId });
+                
+                // Then add the new references
+                if (dto.references) {
+                    for (const reference of dto.references) {
+                        const newReference = this.projectReferencesRepository.create({
+                            projectId: project.id,
+                            title: reference.title,
+                            url: reference.url
+                        });
+                        await this.projectReferencesRepository.save(newReference);
+                    }
+                }
+                return this.turnProjectIntoProjectResponse(project);
+            default:
+                throw new FailedException(
+                    `Document type ${documentType} is not supported.`, 
+                    HttpStatus.BAD_REQUEST, 
+                    this.request.path
+                );
+        }
+
+        await this.projectRepository.save(project);
+        return this.turnProjectIntoProjectResponse(project);
     }
 }

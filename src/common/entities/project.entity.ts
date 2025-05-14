@@ -60,7 +60,7 @@ export class Project extends BaseEntity {
     @OneToMany(() => Content, content => content.project)
     deliverables: Content[];
 
-    @OneToMany(() => ProjectReferences, projectReferences => projectReferences.project)
+    @OneToMany(() => ProjectReferences, projectReferences => projectReferences.project, { eager: true})
     projectReferences: ProjectReferences[];
 
     @OneToMany(() => Activity, (activities) => activities.project)

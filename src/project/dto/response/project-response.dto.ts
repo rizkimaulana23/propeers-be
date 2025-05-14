@@ -28,6 +28,8 @@ export class ProjectResponseDto {
 
     client: BaseUserResponseDto;
 
+    references: ProjectReferencesResponseDto[];
+
     constructor(partial: Partial<ProjectResponseDto>) {
         Object.assign(this, partial);
     }

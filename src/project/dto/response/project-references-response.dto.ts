@@ -1,9 +1,11 @@
 export class ProjectReferencesResponseDto {
-    id: string;
+    id: number;
     
     title: string;
-    
-    type: string;
 
     url: string;
+
+    constructor(partial: Partial<ProjectReferencesResponseDto>) {
+        Object.assign(this, partial);
+    }
 }

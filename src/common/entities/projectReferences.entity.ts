@@ -8,15 +8,12 @@ export class ProjectReferences extends BaseEntity {
     title: string;
 
     @Column({ nullable: false })
-    type: string;
-
-    @Column({ nullable: false })
     url: string;
 
-    @ManyToOne(() => Project, project => project.projectReferences)
+    @ManyToOne(() => Project, project => project.projectReferences, { eager: false })
     @JoinColumn({ name: 'projectId' })
     project: Project;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false, select: false })
     projectId: number;
 }

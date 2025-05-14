@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Scope, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Inject, Param, Patch, Post, Put, Scope, UseGuards } from '@nestjs/common';
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -11,6 +11,15 @@ import { BaseResponseDto } from 'src/common/dto/success-response.dto';
 import { UpdateProjectDto } from './dto/request/update-project.dto';
 import { ProjectResponseDto } from './dto/response/project-response.dto';
 import { filter } from 'rxjs';
+import { UpdateProjectDocumentRequestDto } from './dto/request/update-project-document.dto';
+import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
+
+export enum ProjectDocument {
+    CANVA = "canva",
+    PINTEREST = "pinterest",
+    REFERENCES = "references",
+    BONUS = "bonus"
+}
 
 @Controller({ path: 'projects', scope: Scope.REQUEST})
 export class ProjectController {
@@ -55,8 +64,8 @@ export class ProjectController {
     }
 
     @Post('create-project')
-    // @RolesDecorator(Role.DIREKSI)
-    // @UseGuards(JwtAuthGuard, RolesGuard)
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     async createProject(@Body() createProjectDto: CreateProjectDto) {
         const projectResponse = await this.projectService.createProject(createProjectDto);
         return new BaseResponseDto(this.request, "Project berhasil dibuat", projectResponse);
@@ -89,4 +98,29 @@ export class ProjectController {
         );
     }
 
+    @Patch(':id/:document')
+    @RolesDecorator(Role.DIREKSI, Role.SMS)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async updateProjectDocument(
+        @Param('id') projectId: number, 
+        @Param('document') document: ProjectDocument,
+        @Body() updateDocumentDto: UpdateProjectDocumentRequestDto
+    ) {
+        // Validate the document type using the enum
+        if (!Object.values(ProjectDocument).includes(document)) {
+            throw new FailedException(
+                `Document type ${document} is not valid. Valid types are: ${Object.values(ProjectDocument).join(', ')}`,
+                HttpStatus.BAD_REQUEST,
+                this.request.path
+            );
+        }
+        
+        const projectResponse = await this.projectService.updateProjectDocument(projectId, updateDocumentDto, document);
+        
+        return new BaseResponseDto(
+            this.request, 
+            `Document ${document} for project ID ${projectId} successfully updated`, 
+            projectResponse
+        );
+    }
 }
