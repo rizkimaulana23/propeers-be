@@ -22,6 +22,7 @@ import { Content } from './common/entities/content.entity';
 import { SubmissionModule } from './submission/submission.module';
 import { FinanceModule } from './finance/finance.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -30,7 +31,10 @@ import { DashboardModule } from './dashboard/dashboard.module';
       envFilePath: '.env'
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [
+        ConfigModule,
+        ScheduleModule.forRoot(),
+      ],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',

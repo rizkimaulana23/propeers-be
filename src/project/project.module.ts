@@ -9,16 +9,23 @@ import { User } from 'src/common/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
 import { Speciality } from 'src/common/entities/speciality.entity';
+import { ProjectSubscriber } from './project.subscribers';
+import { ProjectSchedulerService } from './project.schedulers';
+import { Content } from '@/common/entities/content.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Project, ProjectReferences, Activity, User
+      Project, ProjectReferences, Activity, User, Content
     ]),   
     UserModule 
   ],
   controllers: [ProjectController],
-  providers: [ProjectService],
+  providers: [
+    ProjectService, 
+    ProjectSubscriber,
+    ProjectSchedulerService
+  ],
   exports: [ProjectService] 
 })
 export class ProjectModule {}

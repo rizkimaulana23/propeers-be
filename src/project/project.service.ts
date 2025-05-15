@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
-import { Project } from 'src/common/entities/project.entity';
+import { Project, ProjectStatus } from 'src/common/entities/project.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateProjectDto } from './dto/request/create-project.dto';
 import { ProjectReferences } from 'src/common/entities/projectReferences.entity';
@@ -15,6 +15,9 @@ import { UpdateProjectDto } from './dto/request/update-project.dto';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { UpdateProjectDocumentRequestDto } from './dto/request/update-project-document.dto';
 import { ProjectReferencesResponseDto } from './dto/response/project-references-response.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { ProjectSchedulerService } from './project.schedulers';
+import { Content, ContentStatus } from '@/common/entities/content.entity';
 
 @Injectable({ scope: Scope.REQUEST})
 export class ProjectService {
@@ -25,6 +28,10 @@ export class ProjectService {
         private readonly userRepository: Repository<User>,
         @InjectRepository(ProjectReferences)
         private readonly projectReferencesRepository: Repository<ProjectReferences>,
+        @InjectRepository(Content)
+        private readonly contentRepository: Repository<Content>,
+        @Inject() 
+        private readonly projectSchedulers: ProjectSchedulerService,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest,
         private readonly userService: UserService
     ) {}
@@ -103,17 +110,79 @@ export class ProjectService {
         return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
     }
 
+    async finishProject(id: number) {
+        const project: Project | null = await this.projectRepository.findOne({ where: {
+            id
+        }});
+        if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
+        
+        if (project.status !== ProjectStatus.ONGOING) 
+            throw new FailedException(`Hanya Project dengan Status On Going yang bisa diselesaikan`, HttpStatus.BAD_REQUEST, this.request.path);
+
+        const projectContent: Content[] = await this.contentRepository.find({ where: { projectId: project.id }});
+        for (const content of projectContent) {
+            if (content.status !== ContentStatus.UPLOADED) 
+                throw new FailedException(
+                    `Hanya Project yang status semua Content-nya adalah Uploaded yang bisa diubah status ke Finished.`,
+                    HttpStatus.BAD_REQUEST,
+                    this.request.path
+                )
+        }
+        project.status = ProjectStatus.FINISHED;
+        const updatedProject = await this.projectRepository.save(project);
+        
+        return this.turnProjectIntoProjectResponse(updatedProject);
+    }
+
+    async cancelProject(id: number) {
+        const project: Project | null = await this.projectRepository.findOne({ where: {
+            id
+        }});
+        if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
+
+        if (project.status === ProjectStatus.FINISHED) {
+            throw new FailedException(`Project dengan status Finished tidak dapat di-cancel`, HttpStatus.BAD_REQUEST, this.request.path);
+        }
+        
+        project.status = ProjectStatus.CANCELLED;
+        const updatedProject = await this.projectRepository.save(project);
+
+        return this.turnProjectIntoProjectResponse(updatedProject);
+    }
+
+    async uncancelProject(id: number) {
+        const project: Project | null = await this.projectRepository.findOne({ where: {
+            id
+        }});
+        if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
+
+        if (new Date(project.startDate).getTime() <= new Date().getTime()) project.status = ProjectStatus.ONGOING
+        else {
+            const contents: Content[] = await this.contentRepository.find({ where: { projectId: id }})
+            if (contents.length > 0) project.status = ProjectStatus.ONGOING;
+            else project.status = ProjectStatus.CREATED;
+        }
+
+        return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
+    }
+
     async deleteProject(id: number) {
         const project: Project | null = await this.projectRepository.findOne({ where: {
             id
         }});
         if (!project) throw new FailedException(`Project dengan ID ${id} tidak ada.`, HttpStatus.NOT_FOUND, this.request.path);
+
+        if (project.status !== ProjectStatus.CANCELLED) {
+            throw new FailedException(`Hanya Project dengan status Cancelled yang bisa dihapus.`, HttpStatus.BAD_REQUEST, this.request.path);
+        }
+
         const result: UpdateResult = await this.projectRepository.softDelete(project.id);
         if (result.affected && result.affected > 0) return `Project dengan ID ${id} berhasil dihapus.`;
+
         throw new FailedException(`Project dengan ID ${id} gagal dihapus.`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.path);
     }
 
-    turnProjectIntoProjectResponse   (project: Project) {
+    turnProjectIntoProjectResponse(project: Project) {
         const response = new ProjectResponseDto({
             id: project.id,
             projectName: project.projectName,
@@ -133,14 +202,17 @@ export class ProjectService {
     }
 
     turnReferencesIntoReferencesDto(references: ProjectReferences[]) {
-        const result: ProjectReferencesResponseDto[] = []; 
-        for (const reference of references) {
-            result.push({
-                id: reference.id,
-                title: reference.title,
-                url: reference.url
-            })
-        }
+        const result: ProjectReferencesResponseDto[] = [];
+        if (references) {
+            for (const reference of references) {
+                result.push({
+                    id: reference.id,
+                    title: reference.title,
+                    url: reference.url
+                });
+            }
+        } 
+        
         return result;
     }
 
@@ -217,5 +289,9 @@ export class ProjectService {
 
         await this.projectRepository.save(project);
         return this.turnProjectIntoProjectResponse(project);
+    }
+
+    async manuallyUpdateProjectStatus(): Promise<void> {
+        await this.projectSchedulers.scheduledStatusUpdate();
     }
 }

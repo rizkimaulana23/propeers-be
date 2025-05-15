@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
+import { AfterInsert, Column, Entity, getConnection, JoinColumn, ManyToOne, OneToMany, OneToOne, Repository, DataSource } from "typeorm";
 import { BaseEntity } from "./base.entity";
 import { User } from "./user.entity";
 import { ProjectReferences } from "./projectReferences.entity";
@@ -7,6 +7,8 @@ import { Commission } from "./commission.entity";
 import AssignedRoles from "./assignedRoles.entity";
 import { IsUrl } from "class-validator";
 import { Content } from "./content.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Inject } from "@nestjs/common";
 
 export enum ProjectStatus {
     CREATED = 'CREATED',
@@ -71,5 +73,14 @@ export class Project extends BaseEntity {
 
     @OneToMany(() => AssignedRoles, (assignedRoles) => assignedRoles.project)
     assignedRoles: AssignedRoles[];
+
+    // @AfterInsert()
+    // async updateStatusAfterInsert() {
+    //     console.log("masuk")
+    //     console.log(new Date(this.startDate))
+    //     console.log(new Date())
+    //     this.status = ProjectStatus.ONGOING;
+    //     console.log('keluar')
+    // }
 }
 

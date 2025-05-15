@@ -79,13 +79,6 @@ export class ProjectController {
         return new BaseResponseDto(this.request, `Project dengan ID ${id} berhasil diperbarui`, projectResponse);
     } 
 
-    @Delete(':id')
-    @RolesDecorator(Role.DIREKSI)
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    async deleteProject(@Param('id') id: number) {
-        return new BaseResponseDto(this.request, await this.projectService.deleteProject(id), null);
-    }
-
     @Get('client/:email')
     @RolesDecorator(Role.DIREKSI)
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -98,7 +91,7 @@ export class ProjectController {
         );
     }
 
-    @Patch(':id/:document')
+    @Patch(':id/:document') 
     @RolesDecorator(Role.DIREKSI, Role.SMS)
     @UseGuards(JwtAuthGuard, RolesGuard)
     async updateProjectDocument(
@@ -106,7 +99,6 @@ export class ProjectController {
         @Param('document') document: ProjectDocument,
         @Body() updateDocumentDto: UpdateProjectDocumentRequestDto
     ) {
-        // Validate the document type using the enum
         if (!Object.values(ProjectDocument).includes(document)) {
             throw new FailedException(
                 `Document type ${document} is not valid. Valid types are: ${Object.values(ProjectDocument).join(', ')}`,
@@ -122,5 +114,41 @@ export class ProjectController {
             `Document ${document} for project ID ${projectId} successfully updated`, 
             projectResponse
         );
+    }
+
+    @Patch(":id/status/finish")
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async finishProject(@Param('id') id: number) {
+        return new BaseResponseDto(this.request, `Status Project dengan Id ${id} berhasil diubah menjadi Finished `, await this.projectService.finishProject(id));
+    }
+
+    @Patch(":id/status/cancel")
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async cancelProject(@Param('id') id: number) {
+        return new BaseResponseDto(this.request, `Project dengan Id ${id} berhasil di-cancel`, await this.projectService.cancelProject(id));
+    }
+
+    @Patch(":id/status/uncancel")
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async uncancelProject(@Param('id') id: number) {
+
+    }
+
+    @Delete(':id')
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async deleteProject(@Param('id') id: number) {
+        return new BaseResponseDto(this.request, await this.projectService.deleteProject(id), null);
+    }
+
+    @Post('update-status')
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async updateProjectStatus() {
+        await this.projectService.manuallyUpdateProjectStatus();
+        return { message: 'Project statuses updated successfully' };
     }
 }
