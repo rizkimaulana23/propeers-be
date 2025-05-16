@@ -17,8 +17,7 @@ export enum Role {
 
 export enum TalentStatus {
     ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',
-    SUSPENDED = 'SUSPENDED'
+    INACTIVE = 'INACTIVE'
 }
 
 @Entity('users')

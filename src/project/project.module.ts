@@ -12,11 +12,13 @@ import { Speciality } from 'src/common/entities/speciality.entity';
 import { ProjectSubscriber } from './project.subscribers';
 import { ProjectSchedulerService } from './project.schedulers';
 import { Content } from '@/common/entities/content.entity';
+import AssignedRoles from '@/common/entities/assignedRoles.entity';
+import { AssignedRolesSubscribers } from './assignedRoles.subscribers';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Project, ProjectReferences, Activity, User, Content
+      Project, ProjectReferences, Activity, User, Content, AssignedRoles
     ]),   
     UserModule 
   ],
@@ -24,7 +26,8 @@ import { Content } from '@/common/entities/content.entity';
   providers: [
     ProjectService, 
     ProjectSubscriber,
-    ProjectSchedulerService
+    ProjectSchedulerService,
+    AssignedRolesSubscribers
   ],
   exports: [ProjectService] 
 })

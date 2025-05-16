@@ -22,6 +22,7 @@ import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.inter
 import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { UpdateBriefNotesDto } from './dto/request/update-brief-notes-dto';
+import { RolesGuard } from '@/common/guards/roles.guard';
 
 @Controller({ path: 'talent', scope: Scope.REQUEST })
 export class TalentController {
@@ -31,8 +32,8 @@ export class TalentController {
   ) {}
 
   @Post('assign-talent')
-  // @RolesDecorator(Role.DIREKSI, Role.GM)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI, Role.GM)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async createAssignedRole(@Body() createAssignedRole: CreateAssignedRoleDto) {
     const assignedRole =
       await this.talentService.createAssignedRole(createAssignedRole);
@@ -44,8 +45,8 @@ export class TalentController {
   }
 
   @Get()
-  // @RolesDecorator(Role.DIREKSI, Role.GM)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI, Role.GM)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async readTalents() {
     const result = await this.talentService.readTalents();
     return new BaseResponseDto(
@@ -56,7 +57,7 @@ export class TalentController {
   }
 
   @Get('project')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async readTalentsbyProject(@Query('projectId') projectId: number) {
     const result = await this.talentService.readTalentsbyProject(projectId);
     return new BaseResponseDto(
@@ -67,8 +68,8 @@ export class TalentController {
   }
 
   @Get('detail')
-  // @RolesDecorator(Role.DIREKSI, Role.GM)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI, Role.GM)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async readTalent(@Query('talentId') talentId: number) {
     const result = await this.talentService.readTalent(talentId);
     return new BaseResponseDto(
@@ -79,8 +80,8 @@ export class TalentController {
   }
 
   @Delete('unassign-talent')
-  // @RolesDecorator(Role.DIREKSI, Role.GM)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI, Role.GM)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async deleteAssignedRole(
     @Query('talentId') talentId: number,
     @Query('projectId') projectId: number,
@@ -90,8 +91,8 @@ export class TalentController {
   }
 
   @Put('brief')
-  // @UseGuards(JwtAuthGuard)
-  // @RolesDecorator(Role.ADMIN, Role.SMS) // Hanya admin/SMS yang bisa update brief notes
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RolesDecorator(Role.ADMIN, Role.SMS) // Hanya admin/SMS yang bisa update brief notes
   async updateBriefNotes(
     @Query('talentId', ParseIntPipe) talentId: number,
     @Query('projectId', ParseIntPipe) projectId: number,
