@@ -12,6 +12,7 @@ import { ProjectResponseDto } from 'src/project/dto/response/project-response.dt
 import { UpdateContentPlanDto } from './dto/request/update-content.dto';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { UploadContentDto } from './dto/request/upload-content.dto';
+import { EvaluateContentDto } from './dto/request/evaluate-content.dto';
 
 @Injectable({scope: Scope.REQUEST})
 export class ContentService {
@@ -153,6 +154,27 @@ export class ContentService {
             throw new FailedException(`Failed to update content with ID ${id}`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.url);
         }
         return this.turnContentIntoContentResponseDto(updatedContent);
+    }
+
+    async evaluateContent(id: number, dto: EvaluateContentDto) {
+        const content: Content | null = await this.contentRepository.findOne({
+            where: {
+                id
+            }
+        });
+
+        if (!content) 
+            throw new FailedException(`Content with ID ${id} can't be found.`, HttpStatus.NOT_FOUND, this.request.url);
+
+        if (content.status !== ContentStatus.UPLOADED)
+            throw new FailedException(`Can't evaluate Content unless Content status is Uploaded.`, HttpStatus.BAD_REQUEST, this.request.url);
+
+        content.evaluationDate = dto.evaluationDate;
+        content.performance = dto.performanceDescription;
+        content.performanceNote = dto.performanceNote;
+        content.descriptiveEvaluation = dto.descriptiveEvaluation;
+
+        return this.turnContentIntoContentResponseDto(await this.contentRepository.save(content));
     }
 
     turnContentIntoContentResponseDto(content: Content): ContentResponseDto {

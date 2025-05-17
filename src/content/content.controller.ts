@@ -10,6 +10,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { UpdateContentPlanDto } from './dto/request/update-content.dto';
 import { UploadContentDto } from './dto/request/upload-content.dto';
+import { EvaluateContentDto } from './dto/request/evaluate-content.dto';
 
 @Controller('contents')
 export class ContentController {
@@ -55,6 +56,12 @@ export class ContentController {
     async uploadContent(@Param('id') id: number, @Body() uploadContentDto: UploadContentDto) {
         const result = await this.contentService.uploadContent(id, uploadContentDto);
         return new BaseResponseDto(this.request, `Content dengan ID ${id} berhasil diperbarui`, result);
+    }
+
+    @Patch("/:id/evaluate")
+    async evaluateContent(@Param('id') id: number, @Body() dto: EvaluateContentDto) {
+        const result = await this.contentService.evaluateContent(id, dto);
+        return new BaseResponseDto(this.request, `Content dengan ID ${id} berhasil dievaluasi`, result);
     }
 
     @Delete('/:id')
