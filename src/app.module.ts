@@ -24,6 +24,8 @@ import { FinanceModule } from './finance/finance.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,6 +40,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
+        url: isProduction ? process.env.DATABASE_URL : undefined,
         host: configService.get('DB_HOST'),
         port: +configService.get('DB_PORT', 5432),
         username: configService.get('DB_USERNAME'),
