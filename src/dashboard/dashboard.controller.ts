@@ -56,7 +56,7 @@ export class DashboardController {
 
     @Get('task-calendar')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @RolesDecorator(Role.DIREKSI, Role.FREELANCER, Role.SMS)
+    @RolesDecorator(Role.DIREKSI, Role.FREELANCER, Role.SMS, Role.CLIENT)
     async getTaskCalendar () {
         const result: TaskCalendarResponseDto[] = await this.dashboardService.getTaskCalendar();
         return new BaseResponseDto(this.request, "Task Calendar data fetched successfully.", result);

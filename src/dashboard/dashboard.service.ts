@@ -289,7 +289,8 @@ export class DashboardService {
                 projectId: deliverable.project.id,
                 projectName: deliverable.project.projectName,
                 deadline: deliverable.deadline,
-                title: deliverable.title
+                title: deliverable.title,
+                status: deliverable.status
             })
         })
 
@@ -353,7 +354,7 @@ export class DashboardService {
             response.totalClient = await this.getCardTotalClient();
         } else if (this.request.user.roles === Role.GM) {
             response.totalClient = await this.getCardTotalClient();
-            response.activeProject = await this.getCardActiveProject();
+            response.totalTalent = await this.getCardTotalTalent();
         } else if (this.request.user.roles === Role.SMS || this.request.user.roles === Role.FREELANCER) {
             response.activeProject = await this.getCardActiveProject();
             response.totalClient = await this.getCardTotalClient();
