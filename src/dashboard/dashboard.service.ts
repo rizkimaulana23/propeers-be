@@ -5,7 +5,7 @@ import { Content, ContentStatus } from 'src/common/entities/content.entity';
 import { Project, ProjectStatus } from 'src/common/entities/project.entity';
 import { Role, TalentStatus, User } from 'src/common/entities/user.entity';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { TaskCalendarResponseDto } from './dto/TaskCalendarResponseDto';
 import AssignedRoles from 'src/common/entities/assignedRoles.entity';
 import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
@@ -16,6 +16,7 @@ import { IncomeLineChartResponseDto } from './dto/IncomeLineChartResponseDto';
 import { MonthlyProjectBarChartResponseDto } from './dto/MonthlyProjectBarChartResponseDto';
 import { DeliverableChartResponseDto } from './dto/DeliverableChart';
 import { Submission } from 'src/common/entities/submission.entity';
+import { Speciality } from '@/common/entities/speciality.entity';
 
 @Injectable()
 export class DashboardService {
@@ -32,11 +33,12 @@ export class DashboardService {
         private readonly commissionRepository: Repository<Commission>,
         @InjectRepository(Submission)
         private readonly submissionRepository: Repository<Submission>,
+        private dataSource: DataSource,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest,
-    ) {}
+    ) { }
 
     async getSummaryActiveProject() {
-        if (!this.request.user) return; 
+        if (!this.request.user) return;
 
         let projects: Project[];
         if (this.request.user.roles === Role.DIREKSI) {
@@ -44,15 +46,19 @@ export class DashboardService {
                 where: {
                     status: ProjectStatus.ONGOING
                 }
-            }); 
+            });
         } else if (this.request.user.roles === Role.SMS) {
-            const assignedRoles: AssignedRoles[] = await this.assignedRolesRepository.find({ where: {
-                talentId: this.request.user.id
-            }});
-            projects = await this.projectRepository.find({ where: {
-                id: In(assignedRoles.map((ar) => ar.projectId)),
-                status: ProjectStatus.ONGOING
-            }})
+            const assignedRoles: AssignedRoles[] = await this.assignedRolesRepository.find({
+                where: {
+                    talentId: this.request.user.id
+                }
+            });
+            projects = await this.projectRepository.find({
+                where: {
+                    id: In(assignedRoles.map((ar) => ar.projectId)),
+                    status: ProjectStatus.ONGOING
+                }
+            })
         } else {
             projects = []
         }
@@ -62,9 +68,11 @@ export class DashboardService {
         let yellow = 0;
         for (const project of projects) {
             let score = 100;
-            const contents = await this.contentRepository.find({ where: {
-                projectId: project.id
-            }});
+            const contents = await this.contentRepository.find({
+                where: {
+                    projectId: project.id
+                }
+            });
             for (const content of contents) {
                 const submissions: Submission[] = await this.submissionRepository.find({
                     where: {
@@ -76,8 +84,8 @@ export class DashboardService {
                 })
 
                 let hasSubmitted = false;
-                if (submissions.length > 0) hasSubmitted = true; 
-                    
+                if (submissions.length > 0) hasSubmitted = true;
+
                 if (hasSubmitted) {
                     const latestSubmission: Submission = submissions[0];
                     if (latestSubmission.createdAt > content.deadline) {
@@ -98,7 +106,7 @@ export class DashboardService {
             }
             if (score >= 85) green += 1;
             else if (score >= 60 || score < 85) yellow += 1;
-            else red += 1;   
+            else red += 1;
         }
         return {
             red,
@@ -109,15 +117,15 @@ export class DashboardService {
 
     getDifferenceInDays(date1: Date, date2: Date): number {
         const msPerDay = 1000 * 60 * 60 * 24;
-        
+
         const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
         const utc2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
-        
+
         return Math.floor((utc2 - utc1) / msPerDay);
     }
 
     async getDeliverableChart() {
-        if (!this.request.user) return; 
+        if (!this.request.user) return;
 
         let monthlyData: { [key: string]: number } = {};
         let contents: Content[] = [];
@@ -149,9 +157,9 @@ export class DashboardService {
             const month = date.getMonth() + 1;
             const year = date.getFullYear();
             const period = `${year}-${month.toString().padStart(2, '0')}`;
-            
+
             if (period in monthlyData) monthlyData[period]++;
-            else monthlyData[period] = 1; 
+            else monthlyData[period] = 1;
         })
 
         console.log(monthlyData)
@@ -225,8 +233,8 @@ export class DashboardService {
                 }
             }
         }
-        for (const d  in data) {
-            response.push({ specialities: d, amount: data[d] })   
+        for (const d in data) {
+            response.push({ specialities: d, amount: data[d] })
         }
 
         return response;
@@ -304,7 +312,7 @@ export class DashboardService {
                 const month = date.getMonth() + 1;
                 const year = date.getFullYear();
                 const period = `${year}-${month.toString().padStart(2, '0')}`;
-                
+
                 monthlyData[period] = (monthlyData[period] || 0) + project.fee;
             })
         } else {
@@ -319,7 +327,7 @@ export class DashboardService {
                 const month = date.getMonth() + 1;
                 const year = date.getFullYear();
                 const period = `${year}-${month.toString().padStart(2, '0')}`;
-                
+
                 monthlyData[period] = (monthlyData[period] || 0) + commission.commissionAmount;
             })
         }
@@ -357,15 +365,15 @@ export class DashboardService {
 
     async getCardActiveProject() {
         if (!this.request.user) return;
-        
+
         if (this.request.user.roles === Role.DIREKSI) {
             return await this.projectRepository.count({
                 where: {
                     status: ProjectStatus.ONGOING
                 }
-            }) 
+            })
         } else if (this.request.user.roles === Role.FREELANCER || this.request.user.roles === Role.SMS) {
-            const assignedRoles = await this.assignedRolesRepository.find({ 
+            const assignedRoles = await this.assignedRolesRepository.find({
                 where: {
                     talentId: this.request.user.id
                 }
@@ -375,7 +383,7 @@ export class DashboardService {
                     id: In(assignedRoles.map((data) => data.projectId)),
                     status: ProjectStatus.ONGOING
                 }
-            })  
+            })
         }
         return await this.projectRepository.count({
             where: {
@@ -386,15 +394,15 @@ export class DashboardService {
 
     async getCardFinishedProject() {
         if (!this.request.user) return;
-        
+
         if (this.request.user.roles === Role.DIREKSI) {
             return await this.projectRepository.count({
                 where: {
                     status: ProjectStatus.FINISHED
                 }
-            }) 
+            })
         } else if (this.request.user.roles === Role.FREELANCER || this.request.user.roles === Role.SMS) {
-            const assignedRoles = await this.assignedRolesRepository.find({ 
+            const assignedRoles = await this.assignedRolesRepository.find({
                 where: {
                     talentId: this.request.user.id
                 }
@@ -404,7 +412,7 @@ export class DashboardService {
                     id: In(assignedRoles.map((data) => data.projectId)),
                     status: ProjectStatus.FINISHED
                 }
-            })  
+            })
         }
         return await this.projectRepository.count({
             where: {
@@ -431,7 +439,7 @@ export class DashboardService {
 
     async getCardTotalIncome() {
         if (!this.request.user) return 0;
-        
+
         let response = 0;
         if (this.request.user.roles === Role.DIREKSI) {
             const projects: Project[] = await this.projectRepository.find();
@@ -448,5 +456,51 @@ export class DashboardService {
         }
 
         return response;
+    }
+
+    async getSpecialityComparison() {
+        const dict: Record<string, Record<string, number>> = {
+            "total": {},
+            "assigned": {}
+        };
+
+        const result = await this.dataSource
+            .getRepository(Speciality)
+            .createQueryBuilder("s")
+            .select("s.speciality", "speciality")
+            .addSelect("COUNT(u.id)", "count")
+            .leftJoin("user_specialities", "us", "s.speciality = us.specialityId")
+            .leftJoin("users", "u", "u.id = us.userId AND u.role = :role")
+            .setParameter("role", "FREELANCER")
+            .groupBy("s.speciality")
+            .getRawMany();
+
+        for (const row of result) {
+            const count = typeof row.count === 'string' ? parseInt(row.count, 10) : row.count;
+            dict["total"][row.speciality] = count;
+        }
+
+        for (const row of result) {
+            dict["assigned"][row.speciality] = 0;
+        }
+
+        const roleDistribution = await this.dataSource
+            .getRepository(AssignedRoles)
+            .createQueryBuilder('ar')
+            .select('ar.role', 'role')
+            .addSelect('COUNT(DISTINCT u.id)', 'count')
+            .innerJoin('users', 'u', 'ar.talentId = u.id')
+            .where('u.role = :userRole', { userRole: Role.FREELANCER })
+            .groupBy('ar.role')
+            .getRawMany();
+
+        for (const row of roleDistribution) {
+            const count = typeof row.count === 'string' ? parseInt(row.count, 10) : row.count;
+            if (dict["assigned"].hasOwnProperty(row.role)) {
+                dict["assigned"][row.role] = count;
+            }
+        }
+
+        return dict;
     }
 }

@@ -68,4 +68,11 @@ export class DashboardController {
         const result = await this.dashboardService.getCardData();
         return new BaseResponseDto(this.request, "Card Date fetched successfully.", result);
     }
+
+    @Get('speciality-comparison')
+    @UseGuards(JwtAuthGuard)
+    async getSpecialityComparison() {
+        const result = await this.dashboardService.getSpecialityComparison();
+        return new BaseResponseDto(this.request, "Speciality Comparison Date fetched successfully.", result);
+    }
 }
