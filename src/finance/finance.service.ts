@@ -237,9 +237,14 @@ export class FinanceService {
                         mapProportionRole.set(roleKey, newTotal);
                     }
                     else {
-                        mapProportionRole.set(roleKey, komisi.commissionAmount);
+                        if (roleKey == "-"){
+                            mapProportionRole.set("Social Media Specialist", Number(komisi.commissionAmount));
+                        } else {
+                            mapProportionRole.set(roleKey, Number(komisi.commissionAmount));
+                        }
                     };
                 };
+                
                 totalForKomisi += Number(komisi.commissionAmount);
             }
             mapProportionRole.set("Artsy", project.fee - totalForKomisi);
