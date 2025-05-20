@@ -32,8 +32,8 @@ export class Content extends BaseEntity {
     references: string[];
 
     @IsUrl()
-    @Column({ nullable: true })
-    uploadLink: string;
+    @Column({ nullable: true, type: 'text' })
+    uploadLink: string | null;
 
     @Column({ nullable: false, type: 'date' })
     deadline: Date;

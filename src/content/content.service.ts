@@ -142,6 +142,7 @@ export class ContentService {
 
         if (dto.uploadLink === "" || dto.uploadLink === null || dto.uploadLink === undefined) {
             content.status = ContentStatus.FINISHED;
+            content.uploadLink = null;
         } else {
             content.status = ContentStatus.UPLOADED;
             content.uploadLink = dto.uploadLink;
