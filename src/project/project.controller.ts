@@ -134,7 +134,14 @@ export class ProjectController {
     @RolesDecorator(Role.DIREKSI)
     @UseGuards(JwtAuthGuard, RolesGuard)
     async uncancelProject(@Param('id') id: number) {
+        return new BaseResponseDto(this.request, `Project dengan Id ${id} berhasil di-uncancel`, await this.projectService.uncancelProject(id));
+    }
 
+    @Patch(":id/status/unfinish")
+    @RolesDecorator(Role.DIREKSI)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async unfinishProject(@Param('id') id: number) {
+        return new BaseResponseDto(this.request, `Status Project dengan Id ${id} yang berstatus Finished berhasil diubah `, await this.projectService.unfinishProject(id));
     }
 
     @Delete(':id')
