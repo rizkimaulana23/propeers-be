@@ -48,7 +48,7 @@ const isProduction = process.env.NODE_ENV === 'production';
         database: configService.get('DB_DATABASE'),
         entities: [User, Project, Speciality, Content, ProjectReferences, Notification, Submission, Activity, Commission, AssignedRoles],
         synchronize: true,
-        logging: configService.get('NODE_ENV') === 'development',
+        logging: false,
         ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
       }),
     }),

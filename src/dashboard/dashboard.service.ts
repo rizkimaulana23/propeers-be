@@ -67,46 +67,10 @@ export class DashboardService {
         let green = 0;
         let yellow = 0;
         for (const project of projects) {
-            let score = 100;
-            const contents = await this.contentRepository.find({
-                where: {
-                    projectId: project.id
-                }
-            });
-            for (const content of contents) {
-                const submissions: Submission[] = await this.submissionRepository.find({
-                    where: {
-                        contentId: content.id
-                    },
-                    order: {
-                        submissionCount: "DESC"
-                    }
-                })
-
-                let hasSubmitted = false;
-                if (submissions.length > 0) hasSubmitted = true;
-
-                if (hasSubmitted) {
-                    const latestSubmission: Submission = submissions[0];
-                    if (latestSubmission.createdAt > content.deadline) {
-                        const difference = this.getDifferenceInDays(latestSubmission.createdAt, content.deadline);
-                        score = score - (difference * 5);
-                    } else {
-                        score += 10;
-                    }
-                } else {
-                    const now = new Date();
-                    if (now > content.deadline) {
-                        const difference = this.getDifferenceInDays(now, content.deadline);
-                        score = score - (difference * 5);
-                    } else {
-                        score += 10;
-                    }
-                }
-            }
-            if (score >= 85) green += 1;
-            else if (score >= 60 || score < 85) yellow += 1;
-            else red += 1;
+            console.log("Summary Project " + project.id + " - score : " + project.score)
+            if (project.score <= 50) red++;
+            else if (project.score <= 85) yellow++;
+            else green++;
         }
         return {
             red,

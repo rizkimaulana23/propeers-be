@@ -21,12 +21,12 @@ export enum ProjectDocument {
     BONUS = "bonus"
 }
 
-@Controller({ path: 'projects', scope: Scope.REQUEST})
+@Controller({ path: 'projects', scope: Scope.REQUEST })
 export class ProjectController {
     constructor(
         private readonly projectService: ProjectService,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest
-    ) {}
+    ) { }
 
     @Get(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -73,11 +73,11 @@ export class ProjectController {
 
     @Put(':id')
     @RolesDecorator(Role.DIREKSI)
-    @UseGuards(JwtAuthGuard,RolesGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     async updateProject(@Body() updateProjectDto: UpdateProjectDto, @Param('id') id: number) {
         const projectResponse = await this.projectService.updateProject(updateProjectDto);
         return new BaseResponseDto(this.request, `Project dengan ID ${id} berhasil diperbarui`, projectResponse);
-    } 
+    }
 
     @Get('client/:email')
     @RolesDecorator(Role.DIREKSI)
@@ -85,17 +85,17 @@ export class ProjectController {
     async getClientProjects(@Param('email') clientEmail: string) {
         const projectResponses = await this.projectService.getClientProjects(clientEmail);
         return new BaseResponseDto(
-            this.request, 
-            `Daftar project untuk client dengan email ${clientEmail} berhasil didapatkan`, 
+            this.request,
+            `Daftar project untuk client dengan email ${clientEmail} berhasil didapatkan`,
             projectResponses
         );
     }
 
-    @Patch(':id/:document') 
+    @Patch(':id/:document')
     @RolesDecorator(Role.DIREKSI, Role.SMS)
     @UseGuards(JwtAuthGuard, RolesGuard)
     async updateProjectDocument(
-        @Param('id') projectId: number, 
+        @Param('id') projectId: number,
         @Param('document') document: ProjectDocument,
         @Body() updateDocumentDto: UpdateProjectDocumentRequestDto
     ) {
@@ -106,12 +106,12 @@ export class ProjectController {
                 this.request.path
             );
         }
-        
+
         const projectResponse = await this.projectService.updateProjectDocument(projectId, updateDocumentDto, document);
-        
+
         return new BaseResponseDto(
-            this.request, 
-            `Document ${document} for project ID ${projectId} successfully updated`, 
+            this.request,
+            `Document ${document} for project ID ${projectId} successfully updated`,
             projectResponse
         );
     }
@@ -150,5 +150,11 @@ export class ProjectController {
     async updateProjectStatus() {
         await this.projectService.manuallyUpdateProjectStatus();
         return { message: 'Project statuses updated successfully' };
+    }
+
+    @Get("/:id/performance")
+    @UseGuards(JwtAuthGuard)
+    async getPerformance(@Param('id') id: number) {
+        return new BaseResponseDto(this.request, "Successfully retrieved Project performance", await this.projectService.getPerformanceProject(id));
     }
 }

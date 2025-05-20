@@ -25,6 +25,7 @@ export class SubmissionService {
   ) {}
 
   async createSubmission(createSubmissionDto: CreateSubmissionDto) {
+    console.log("Masuk Create Submission")
     const { contentId, submissionUrl, catatanSubmisi } = createSubmissionDto;
 
     const content = await this.contentRepository.findOne({
@@ -51,15 +52,12 @@ export class SubmissionService {
     const timeDiff = deadlineDate.getTime() - submissionDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-    // Set durasiLate atau durasiOnTime berdasarkan perbandingan tanggal
     let durasiLate: number | null = null;
     let durasiOnTime: number | null = null;
 
     if (daysDiff < 0) {
-      // Submission telat (setelah deadline)
       durasiLate = Math.abs(daysDiff);
     } else {
-      // Submission tepat waktu (sebelum atau tepat pada deadline)
       durasiOnTime = daysDiff;
     }
 
