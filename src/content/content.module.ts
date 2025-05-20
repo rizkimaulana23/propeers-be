@@ -6,15 +6,20 @@ import { Content } from 'src/common/entities/content.entity';
 import { Project } from 'src/common/entities/project.entity';
 import { ProjectService } from 'src/project/project.service';
 import { ProjectModule } from 'src/project/project.module';
+import { SubmissionSubscriber } from './submission.subscribers';
+import { Submission } from '@/common/entities/submission.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Content, Project
+      Content, Project, Submission
     ]),
     ProjectModule
   ],
-  providers: [ContentService],
+  providers: [
+    ContentService,
+    SubmissionSubscriber
+  ],
   controllers: [ContentController]
 })
 export class ContentModule {}

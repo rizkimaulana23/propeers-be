@@ -14,11 +14,12 @@ import { ProjectSchedulerService } from './project.schedulers';
 import { Content } from '@/common/entities/content.entity';
 import AssignedRoles from '@/common/entities/assignedRoles.entity';
 import { AssignedRolesSubscribers } from './assignedRoles.subscribers';
+import { Submission } from '@/common/entities/submission.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Project, ProjectReferences, Activity, User, Content, AssignedRoles
+      Project, ProjectReferences, Activity, User, Content, AssignedRoles, Submission
     ]),   
     UserModule 
   ],

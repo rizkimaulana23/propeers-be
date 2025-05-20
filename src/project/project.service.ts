@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { Project, ProjectStatus } from 'src/common/entities/project.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { In, Repository, UpdateResult } from 'typeorm';
 import { CreateProjectDto } from './dto/request/create-project.dto';
 import { ProjectReferences } from 'src/common/entities/projectReferences.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,8 +18,10 @@ import { ProjectReferencesResponseDto } from './dto/response/project-references-
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ProjectSchedulerService } from './project.schedulers';
 import { Content, ContentStatus } from '@/common/entities/content.entity';
+import { Submission } from '@/common/entities/submission.entity';
+import { ProjectPerformanceResponseDto } from './dto/response/project-performance.dto';
 
-@Injectable({ scope: Scope.REQUEST})
+@Injectable({ scope: Scope.REQUEST })
 export class ProjectService {
     constructor(
         @InjectRepository(Project)
@@ -30,14 +32,16 @@ export class ProjectService {
         private readonly projectReferencesRepository: Repository<ProjectReferences>,
         @InjectRepository(Content)
         private readonly contentRepository: Repository<Content>,
-        @Inject() 
+        @InjectRepository(Submission)
+        private readonly submissionRepository: Repository<Submission>,
+        @Inject()
         private readonly projectSchedulers: ProjectSchedulerService,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest,
         private readonly userService: UserService
-    ) {}
+    ) { }
 
     async readProject(id: number) {
-        const project = await this.projectRepository.findOne({ where: { id }});
+        const project = await this.projectRepository.findOne({ where: { id } });
         if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan`, HttpStatus.NOT_FOUND, this.request.path);
         return this.turnProjectIntoProjectResponse(project);
     }
@@ -49,9 +53,11 @@ export class ProjectService {
         if (this.request.user?.roles === Role.DIREKSI || this.request.user?.roles === Role.GM) {
             projects = await this.projectRepository.find();
         } else if (this.request.user?.roles === Role.CLIENT) {
-            projects = await this.projectRepository.find({ where: {
-                clientId: userId
-            }})
+            projects = await this.projectRepository.find({
+                where: {
+                    clientId: userId
+                }
+            })
         } else {
             projects = await this.projectRepository.createQueryBuilder('project')
                 .innerJoin('project.assignedRoles', 'assignedRoles')
@@ -93,8 +99,8 @@ export class ProjectService {
 
         if (!project) {
             throw new FailedException(
-                `Project dengan ID ${updateProjectDto.id} tidak ditemukan`, 
-                HttpStatus.NOT_FOUND, 
+                `Project dengan ID ${updateProjectDto.id} tidak ditemukan`,
+                HttpStatus.NOT_FOUND,
                 this.request.path);
         }
 
@@ -111,17 +117,19 @@ export class ProjectService {
     }
 
     async finishProject(id: number) {
-        const project: Project | null = await this.projectRepository.findOne({ where: {
-            id
-        }});
+        const project: Project | null = await this.projectRepository.findOne({
+            where: {
+                id
+            }
+        });
         if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
-        
-        if (project.status !== ProjectStatus.ONGOING) 
+
+        if (project.status !== ProjectStatus.ONGOING)
             throw new FailedException(`Hanya Project dengan Status On Going yang bisa diselesaikan`, HttpStatus.BAD_REQUEST, this.request.path);
 
-        const projectContent: Content[] = await this.contentRepository.find({ where: { projectId: project.id }});
+        const projectContent: Content[] = await this.contentRepository.find({ where: { projectId: project.id } });
         for (const content of projectContent) {
-            if (content.status !== ContentStatus.UPLOADED) 
+            if (content.status !== ContentStatus.UPLOADED)
                 throw new FailedException(
                     `Hanya Project yang status semua Content-nya adalah Uploaded yang bisa diubah status ke Finished.`,
                     HttpStatus.BAD_REQUEST,
@@ -130,20 +138,22 @@ export class ProjectService {
         }
         project.status = ProjectStatus.FINISHED;
         const updatedProject = await this.projectRepository.save(project);
-        
+
         return this.turnProjectIntoProjectResponse(updatedProject);
     }
 
     async cancelProject(id: number) {
-        const project: Project | null = await this.projectRepository.findOne({ where: {
-            id
-        }});
+        const project: Project | null = await this.projectRepository.findOne({
+            where: {
+                id
+            }
+        });
         if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
 
         if (project.status === ProjectStatus.FINISHED) {
             throw new FailedException(`Project dengan status Finished tidak dapat di-cancel`, HttpStatus.BAD_REQUEST, this.request.path);
         }
-        
+
         project.status = ProjectStatus.CANCELLED;
         const updatedProject = await this.projectRepository.save(project);
 
@@ -151,14 +161,16 @@ export class ProjectService {
     }
 
     async uncancelProject(id: number) {
-        const project: Project | null = await this.projectRepository.findOne({ where: {
-            id
-        }});
+        const project: Project | null = await this.projectRepository.findOne({
+            where: {
+                id
+            }
+        });
         if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
 
         if (new Date(project.startDate).getTime() <= new Date().getTime()) project.status = ProjectStatus.ONGOING
         else {
-            const contents: Content[] = await this.contentRepository.find({ where: { projectId: id }})
+            const contents: Content[] = await this.contentRepository.find({ where: { projectId: id } })
             if (contents.length > 0) project.status = ProjectStatus.ONGOING;
             else project.status = ProjectStatus.CREATED;
         }
@@ -167,9 +179,11 @@ export class ProjectService {
     }
 
     async deleteProject(id: number) {
-        const project: Project | null = await this.projectRepository.findOne({ where: {
-            id
-        }});
+        const project: Project | null = await this.projectRepository.findOne({
+            where: {
+                id
+            }
+        });
         if (!project) throw new FailedException(`Project dengan ID ${id} tidak ada.`, HttpStatus.NOT_FOUND, this.request.path);
 
         if (project.status !== ProjectStatus.CANCELLED) {
@@ -180,6 +194,40 @@ export class ProjectService {
         if (result.affected && result.affected > 0) return `Project dengan ID ${id} berhasil dihapus.`;
 
         throw new FailedException(`Project dengan ID ${id} gagal dihapus.`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.path);
+    }
+
+    async getPerformanceProject(id: number): Promise<ProjectPerformanceResponseDto[]> {
+        const project = await this.projectRepository.findOne({
+            where: { id }
+        });
+
+        if (!project) {
+            throw new FailedException(
+                `Project dengan ID ${id} tidak ditemukan.`,
+                HttpStatus.NOT_FOUND,
+                this.request.path
+            );
+        }
+
+        const performanceData = await this.submissionRepository
+            .createQueryBuilder('s')
+            .select('c.id', 'contentId')
+            .addSelect('c.title', 'contentName')
+            .addSelect('s.durasiLate', 'daysLate')
+            .addSelect('s.durasiOnTime', 'daysOnTime')
+            .addSelect('s.submitTimestamp', 'submittedDate')
+            .innerJoin('content', 'c', 'c.id = s.contentId')
+            .innerJoin('projects', 'p', 'p.id = c.projectId')
+            .where('p.id = :projectId', { projectId: id })
+            .getRawMany();
+
+        return performanceData.map(item => ({
+            contentId: item.contentId.toString(),
+            contentName: item.contentName,
+            daysLate: item.daysLate,
+            daysOnTime: item.daysOnTime,
+            submittedDate: item.submittedDate
+        }));
     }
 
     turnProjectIntoProjectResponse(project: Project) {
@@ -195,7 +243,8 @@ export class ProjectService {
             bonus: project.bonus,
             canvaWhiteboard: project.canvaWhiteboard,
             status: project.status,
-            client: this.userService.turnUserToUserResponse(project.client), 
+            score: project.score,
+            client: this.userService.turnUserToUserResponse(project.client),
             references: this.turnReferencesIntoReferencesDto(project.projectReferences)
         });
         return response;
@@ -211,36 +260,36 @@ export class ProjectService {
                     url: reference.url
                 });
             }
-        } 
-        
+        }
+
         return result;
     }
 
     async getClientProjects(clientEmail: string) {
-        const client = await this.userRepository.findOne({ 
+        const client = await this.userRepository.findOne({
             where: { email: clientEmail }
         });
-        
+
         if (!client) {
             throw new FailedException(
-                `Client dengan email ${clientEmail} tidak ditemukan`, 
-                HttpStatus.NOT_FOUND, 
+                `Client dengan email ${clientEmail} tidak ditemukan`,
+                HttpStatus.NOT_FOUND,
                 this.request.path
             );
         }
-        
+
         if (client.role !== Role.CLIENT) {
             throw new FailedException(
-                `User dengan email ${clientEmail} bukan merupakan client`, 
-                HttpStatus.BAD_REQUEST, 
+                `User dengan email ${clientEmail} bukan merupakan client`,
+                HttpStatus.BAD_REQUEST,
                 this.request.path
             );
         }
-        
-        const projects = await this.projectRepository.find({ 
+
+        const projects = await this.projectRepository.find({
             where: { clientId: client.id }
         });
-        
+
         return projects.map(project => this.turnProjectIntoProjectResponse(project));
     }
 
@@ -251,7 +300,7 @@ export class ProjectService {
             }
         });
 
-        if (!project) 
+        if (!project)
             throw new FailedException(`Project with ID ${projectId} was not found.`, HttpStatus.NOT_FOUND, this.request.path);
 
         switch (documentType) {
@@ -266,8 +315,7 @@ export class ProjectService {
                 break;
             case 'references':
                 await this.projectReferencesRepository.delete({ projectId: projectId });
-                
-                // Then add the new references
+
                 if (dto.references) {
                     for (const reference of dto.references) {
                         const newReference = this.projectReferencesRepository.create({
@@ -281,8 +329,8 @@ export class ProjectService {
                 return this.turnProjectIntoProjectResponse(project);
             default:
                 throw new FailedException(
-                    `Document type ${documentType} is not supported.`, 
-                    HttpStatus.BAD_REQUEST, 
+                    `Document type ${documentType} is not supported.`,
+                    HttpStatus.BAD_REQUEST,
                     this.request.path
                 );
         }

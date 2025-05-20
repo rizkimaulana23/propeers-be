@@ -49,6 +49,9 @@ export class Project extends BaseEntity {
     @Column({ nullable: true })
     bonus: string;
 
+    @Column({ nullable: true, type: 'int'})
+    score: number;
+
     @Column({ nullable: false, type: 'enum', enum: ProjectStatus, default: ProjectStatus.CREATED })
     status: ProjectStatus;
 

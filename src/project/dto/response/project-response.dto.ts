@@ -17,6 +17,8 @@ export class ProjectResponseDto {
     fee: number;
 
     mou: string;
+    
+    score: number | null;
 
     canvaWhiteboard: string;
 
