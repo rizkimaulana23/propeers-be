@@ -143,9 +143,11 @@ export class ContentService {
         if (dto.uploadLink === "" || dto.uploadLink === null || dto.uploadLink === undefined) {
             content.status = ContentStatus.FINISHED;
             content.uploadLink = null;
+            content.uploadLinkTimestamp = null;
         } else {
             content.status = ContentStatus.UPLOADED;
             content.uploadLink = dto.uploadLink;
+            content.uploadLinkTimestamp = new Date();
         }
 
         return this.turnContentIntoContentResponseDto(await this.contentRepository.save(content));
@@ -164,7 +166,7 @@ export class ContentService {
         if (content.status !== ContentStatus.UPLOADED)
             throw new FailedException(`Can't evaluate Content unless Content status is Uploaded.`, HttpStatus.BAD_REQUEST, this.request.url);
 
-        content.evaluationDate = dto.evaluationDate;
+        content.evaluationTimestamp = dto.evaluationTimestamp;
         content.performance = dto.performanceDescription;
         content.performanceNote = dto.performanceNote;
         content.descriptiveEvaluation = dto.descriptiveEvaluation;

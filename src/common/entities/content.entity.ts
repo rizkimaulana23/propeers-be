@@ -35,6 +35,9 @@ export class Content extends BaseEntity {
     @Column({ nullable: true, type: 'text' })
     uploadLink: string | null;
 
+    @Column({ nullable: true, type: 'timestamp'})
+    uploadLinkTimestamp: Date | null;
+
     @Column({ nullable: false, type: 'date' })
     deadline: Date;
 
@@ -71,8 +74,8 @@ export class Content extends BaseEntity {
     @Column({ nullable: true })
     performanceNote: string;
 
-    @Column({ nullable: true, type: 'date' })
-    evaluationDate: Date;
+    @Column({ nullable: true, type: 'timestamp' })
+    evaluationTimestamp: Date;
 
     @Column({ nullable: true })
     descriptiveEvaluation: string;

@@ -76,14 +76,5 @@ export class Project extends BaseEntity {
 
     @OneToMany(() => AssignedRoles, (assignedRoles) => assignedRoles.project)
     assignedRoles: AssignedRoles[];
-
-    // @AfterInsert()
-    // async updateStatusAfterInsert() {
-    //     console.log("masuk")
-    //     console.log(new Date(this.startDate))
-    //     console.log(new Date())
-    //     this.status = ProjectStatus.ONGOING;
-    //     console.log('keluar')
-    // }
 }
 

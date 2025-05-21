@@ -20,6 +20,8 @@ export class ContentResponseDto {
         targetAudience: TargetAudience;
 
         uploadLink: string | null;
+
+        uploadLinkTimestamp: Date | null;
     
         uploadDate: Date;
 
