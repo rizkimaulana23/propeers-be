@@ -23,6 +23,7 @@ import { SubmissionModule } from './submission/submission.module';
 import { FinanceModule } from './finance/finance.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationModule } from './notification/notification.module';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -61,6 +62,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     DashboardModule,
     SubmissionModule,
     FinanceModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

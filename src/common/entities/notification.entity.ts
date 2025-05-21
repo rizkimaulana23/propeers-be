@@ -1,32 +1,32 @@
+import { BaseEntity } from "src/common/entities/base.entity";
+import { User } from "src/common/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
-import { User } from "./user.entity";
-import { BaseEntity } from "./base.entity";
+import { NotificationType, RelatedEntityType } from "../../notification/notification.enums";
 
-export enum NotificationStatus {
-    SENT = 'SENT',
-    READ = 'READ',
-    ARCHIVED = 'ARCHIVED',
-}
-
-@Entity('notification')
+@Entity('notifications')
 export class Notification extends BaseEntity {
-    @Column({ nullable: false })
-    message: string;
-
-    @Column({ nullable: false, type:'enum', enum: NotificationStatus })
-    status: NotificationStatus;
-
-    @Column({ nullable: false })
-    senderId: number;
-
-    @Column({ nullable: true })
-    actionUrl: string;
+    @Column()
+    userId: number; // ID of the user who should receive the notification
 
     @ManyToOne(() => User)
-    @JoinColumn({ name: 'userId'})
+    @JoinColumn({ name: 'userId' })
     user: User;
 
-    @Column({ nullable: true })
-    userId: number;
+    @Column({ type: 'enum', enum: NotificationType })
+    type: NotificationType;
 
+    @Column('text')
+    message: string;
+
+    @Column({ default: false })
+    isRead: boolean;
+
+    @Column({ nullable: true })
+    relatedEntityId?: number;
+
+    @Column({ type: 'enum', enum: RelatedEntityType, nullable: true })
+    relatedEntityType?: RelatedEntityType;
+
+    @Column({ nullable: true })
+    link?: string; // Optional: direct link for frontend navigation
 }

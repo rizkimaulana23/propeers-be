@@ -9,10 +9,14 @@ import { FailedException } from '../common/exceptions/FailedExceptions.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
-import { Role } from 'src/common/entities/user.entity';
+import { Role, User } from 'src/common/entities/user.entity';
 import { UpdateSubmissionDto } from './dto/request/update-submission.dto';
 import { CreateRevisionDto } from './dto/request/create-revision.dto';
 import { UpdateRevisionDto } from './dto/request/update-revision.dto';
+import { NotificationService } from 'src/notification/notification.service'; // Import NotificationService
+import { NotificationType, RelatedEntityType } from 'src/notification/notification.enums'; // Import enums
+import AssignedRoles from 'src/common/entities/assignedRoles.entity'; // Import AssignedRoles
+import { Project } from 'src/common/entities/project.entity'; // Import Project
 
 @Injectable()
 export class SubmissionService {
@@ -21,7 +25,14 @@ export class SubmissionService {
     private readonly submissionRepository: Repository<Submission>,
     @InjectRepository(Content)
     private readonly contentRepository: Repository<Content>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(AssignedRoles) // To find SMS for the project
+    private readonly assignedRolesRepository: Repository<AssignedRoles>,
+    @InjectRepository(Project) // To get client from project
+    private readonly projectRepository: Repository<Project>,
     @Inject(REQUEST) private readonly request: AuthenticatedRequest,
+    private readonly notificationService: NotificationService, // Inject NotificationService
   ) {}
 
   async createSubmission(createSubmissionDto: CreateSubmissionDto) {
@@ -81,7 +92,42 @@ export class SubmissionService {
 
     const savedSubmission = await this.submissionRepository.save(newSubmission);
 
-    return this.turnSubmissionToSubmissionResponse(savedSubmission);
+    const submitter = await this.userRepository.findOne({ where: { email: savedSubmission.submittedBy } });
+
+    if (submitter && submitter.role === Role.FREELANCER && content && content.projectId) {
+        // Find all assignments for this project
+        const projectAssignments = await this.assignedRolesRepository.find({
+            where: { projectId: content.projectId },
+            relations: ['talent'],
+        });
+
+        for (const assignment of projectAssignments) {
+            if (assignment.talentId) { // Check if talentId exists
+                // Fetch the user details for this talentId
+                const assignedUser = await this.userRepository.findOne({
+                    where: { id: assignment.talentId }
+                });
+
+                // Check if the assigned user is an SMS
+                if (assignedUser && assignedUser.role === Role.SMS) {
+                    try {
+                        await this.notificationService.createNotification({
+                            userId: assignedUser.id, // Notify the SMS user
+                            type: NotificationType.NEW_SUBMISSION_FOR_SMS,
+                            message: `Freelancer ${submitter.name || 'N/A'} submitted work for content "${content.title || 'N/A'}" in project (ID: ${content.projectId}).`,
+                            relatedEntityId: savedSubmission.id,
+                            relatedEntityType: RelatedEntityType.SUBMISSION,
+                            link: `/submissions/${savedSubmission.id}`
+                        });
+                    } catch (error) {
+                        console.error(`Failed to create notification for SMS user ID: ${assignedUser.id}`, error);
+                    }
+                }
+            }
+        }
+    }
+
+    return this.turnSubmissionToSubmissionResponse(savedSubmission, content);
   }
 
   async updateSubmission(id: number, updateSubmissionDto: UpdateSubmissionDto) {
@@ -552,11 +598,15 @@ export class SubmissionService {
 
     // Get user role
     const userRole = this.request.user?.roles;
+    let wasVerifiedBySms = false;
 
     // Handle acceptance based on user role
     if (userRole === Role.SMS) {
       // SMS sets isVerified to true
-      submission.isVerified = true;
+      if (!submission.isVerified) { // Check if it's a new verification
+          submission.isVerified = true;
+          wasVerifiedBySms = true;
+      }
     } else if (userRole === Role.CLIENT) {
       // Client can only accept if submission is verified
       if (!submission.isVerified) {
@@ -594,6 +644,18 @@ export class SubmissionService {
         HttpStatus.NOT_FOUND,
         this.request.path,
       );
+    }
+
+    // Notify Client if SMS verified the submission
+    if (wasVerifiedBySms && content.project && content.project.clientId) {
+        await this.notificationService.createNotification({
+            userId: content.project.clientId,
+            type: NotificationType.CONTENT_VERIFIED_FOR_CLIENT,
+            message: `Content "${content.title}" for project "${content.project.projectName}" has been reviewed by SMS and is ready for your approval.`,
+            relatedEntityId: submission.id, // or content.id
+            relatedEntityType: RelatedEntityType.SUBMISSION, // or RelatedEntityType.CONTENT
+            link: `/projects/${content.projectId}/contents/${content.id}` // Example link
+        });
     }
 
     return this.turnSubmissionToSubmissionResponse(updatedSubmission, content);
