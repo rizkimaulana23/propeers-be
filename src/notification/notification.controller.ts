@@ -30,4 +30,11 @@ export class NotificationController {
         const result = await this.notificationService.markAllAsRead();
         return new BaseResponseDto(this.request, 'All notifications marked as read', result);
     }
+
+    @Get()
+    @RolesDecorator(Role.ADMIN, Role.DIREKSI, Role.GM, Role.SMS, Role.FREELANCER, Role.CLIENT)
+    async getMyNotifications(): Promise<BaseResponseDto<NotificationResponseDto[]>> {
+        const notifications = await this.notificationService.getNotificationsForUser();
+        return new BaseResponseDto(this.request, 'Notifications retrieved successfully', notifications);
+    }
 }

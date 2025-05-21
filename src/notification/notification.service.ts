@@ -28,8 +28,26 @@ export class NotificationService {
         const notification = this.notificationRepository.create(dto);
         return this.notificationRepository.save(notification);
     }
-    
 
+    async getNotificationsForUser(): Promise<NotificationResponseDto[]> {
+        const userId = this.request.user?.id;
+        const notifications = await this.notificationRepository.find({
+            where: { userId },
+            order: { createdAt: 'DESC' },
+        });
+        return notifications.map(n => new NotificationResponseDto({
+            id: n.id,
+            userId: n.userId,
+            type: n.type,
+            message: n.message,
+            isRead: n.isRead,
+            relatedEntityId: n.relatedEntityId,
+            relatedEntityType: n.relatedEntityType,
+            link: n.link,
+            createdAt: n.createdAt,
+        }));
+    }
+    
     async markAsRead(notificationId: number): Promise<NotificationResponseDto> {
         const userId = this.request.user?.id;
         const notification = await this.notificationRepository.findOne({ where: { id: notificationId, userId } });
