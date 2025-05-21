@@ -20,6 +20,8 @@ import { ProjectSchedulerService } from './project.schedulers';
 import { Content, ContentStatus } from '@/common/entities/content.entity';
 import { Submission } from '@/common/entities/submission.entity';
 import { ProjectPerformanceResponseDto } from './dto/response/project-performance.dto';
+import { NotificationService } from 'src/notification/notification.service'; // Import NotificationService
+import { NotificationType, RelatedEntityType } from 'src/notification/notification.enums'; // Import enums
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProjectService {
@@ -37,8 +39,9 @@ export class ProjectService {
         @Inject()
         private readonly projectSchedulers: ProjectSchedulerService,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest,
-        private readonly userService: UserService
-    ) { }
+        private readonly userService: UserService,
+        private readonly notificationService: NotificationService, // Inject NotificationService
+    ) {}
 
     async readProject(id: number) {
         const project = await this.projectRepository.findOne({ where: { id } });
@@ -82,8 +85,35 @@ export class ProjectService {
             mou,
             client,
             description
-        })
-        return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
+        });
+        const savedProject = await this.projectRepository.save(project);
+
+        // Notify GMs
+        const gms = await this.userRepository.find({ where: { role: Role.GM } });
+        for (const gm of gms) {
+            await this.notificationService.createNotification({
+                userId: gm.id,
+                type: NotificationType.NEW_PROJECT_FOR_GM,
+                message: `A new project "${savedProject.projectName}" has been created by Direksi.`,
+                relatedEntityId: savedProject.id,
+                relatedEntityType: RelatedEntityType.PROJECT,
+                link: `/projects/${savedProject.id}`
+            });
+        }
+
+        // Notify Client
+        if (client) {
+            await this.notificationService.createNotification({
+                userId: client.id,
+                type: NotificationType.NEW_PROJECT_FOR_CLIENT,
+                message: `A new project "${savedProject.projectName}" has been created for you.`,
+                relatedEntityId: savedProject.id,
+                relatedEntityType: RelatedEntityType.PROJECT,
+                link: `/projects/${savedProject.id}`
+            });
+        }
+        
+        return this.turnProjectIntoProjectResponse(savedProject);
     }
 
     async updateProject(updateProjectDto: UpdateProjectDto) {

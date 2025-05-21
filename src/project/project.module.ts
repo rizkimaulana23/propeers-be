@@ -15,12 +15,14 @@ import { Content } from '@/common/entities/content.entity';
 import AssignedRoles from '@/common/entities/assignedRoles.entity';
 import { AssignedRolesSubscribers } from './assignedRoles.subscribers';
 import { Submission } from '@/common/entities/submission.entity';
+import { NotificationModule } from '@/notification/notification.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Project, ProjectReferences, Activity, User, Content, AssignedRoles, Submission
-    ]),   
+    ]),
+    NotificationModule,
     UserModule 
   ],
   controllers: [ProjectController],

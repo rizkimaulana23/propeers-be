@@ -13,6 +13,10 @@ import { UpdateContentPlanDto } from './dto/request/update-content.dto';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { UploadContentDto } from './dto/request/upload-content.dto';
 import { EvaluateContentDto } from './dto/request/evaluate-content.dto';
+import { NotificationService } from 'src/notification/notification.service'; // Import NotificationService
+import { NotificationType, RelatedEntityType } from 'src/notification/notification.enums'; // Import enums
+import AssignedRoles from 'src/common/entities/assignedRoles.entity';
+import { Role } from '@/common/entities/user.entity';
 
 @Injectable({scope: Scope.REQUEST})
 export class ContentService {
@@ -21,8 +25,11 @@ export class ContentService {
         private readonly projectRepository: Repository<Project>,
         @InjectRepository(Content)
         private readonly contentRepository: Repository<Content>,
+        @InjectRepository(AssignedRoles) // Inject AssignedRoles repository
+        private readonly assignedRolesRepository: Repository<AssignedRoles>,
         private readonly projectService: ProjectService,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest,
+        private readonly notificationService: NotificationService, // Inject NotificationService
     ) {}
 
     async createContent(dto: CreateContentDto) {
@@ -45,7 +52,30 @@ export class ContentService {
             project: project
         })
 
-        return this.turnContentIntoContentResponseDto(await this.contentRepository.save(newContent));
+        const savedContent = await this.contentRepository.save(newContent);
+
+        // Notify assigned talents (Freelancers and SMS)
+        if (project && project.id) {
+            const assignments = await this.assignedRolesRepository.find({
+                where: { projectId: project.id },
+                relations: ['talent'],
+            });
+
+            for (const assignment of assignments) {
+                if (assignment.talent && (assignment.talent.role === Role.FREELANCER || assignment.talent.role === Role.SMS)) {
+                    await this.notificationService.createNotification({
+                        userId: assignment.talent.id,
+                        type: NotificationType.NEW_CONTENT_FOR_TALENT,
+                        message: `New content "${savedContent.title}" has been added to project "${project.projectName}". Deadline: ${new Date(savedContent.deadline).toLocaleDateString()}.`,
+                        relatedEntityId: savedContent.id,
+                        relatedEntityType: RelatedEntityType.CONTENT,
+                        link: `/projects/${project.id}/contents/${savedContent.id}`
+                    });
+                }
+            }
+        }
+
+        return this.turnContentIntoContentResponseDto(savedContent);
     }
 
     async getListContentForProject(projectId: number) {

@@ -11,6 +11,8 @@ import { BaseUserResponseDto } from 'src/user/dto/response/user-response.dto';
 import { DetailTalentResponseDTO } from './dto/response/talent-detail-response.dto';
 import AssignedRoles from 'src/common/entities/assignedRoles.entity';
 // import { AssignedRoleResponseDto } from './dto/response/assigned-role-response.dto';
+import { NotificationService } from 'src/notification/notification.service'; // Import NotificationService
+import { NotificationType, RelatedEntityType } from 'src/notification/notification.enums'; // Import enums
 
 @Injectable()
 export class TalentService {
@@ -22,6 +24,7 @@ export class TalentService {
     @InjectRepository(AssignedRoles)
     private readonly assignedRolesRepository: Repository<AssignedRoles>,
     @Inject(REQUEST) private readonly request: Request,
+    private readonly notificationService: NotificationService, // Inject NotificationService
   ) {}
 
   async readTalents(includeDeleted: boolean = false) {
@@ -170,6 +173,20 @@ export class TalentService {
 
     await this.assignedRolesRepository.save(assignedRole);
     talent.assignedRoles.push(assignedRole);
+
+    // Create notification for the assigned talent
+    try {
+      await this.notificationService.createNotification({
+        userId: talent.id,
+        type: NotificationType.TALENT_ASSIGNED_TO_PROJECT,
+        message: `You have been assigned to project "${project.projectName}" as ${role}.`,
+        relatedEntityId: project.id,
+        relatedEntityType: RelatedEntityType.PROJECT,
+        link: `/projects/${project.id}`
+      });
+    } catch (error) {
+      console.error(`Failed to create assignment notification for talent ID: ${talent.id}`, error);
+    }
 
     return this.turnTalentToTalentResponse(talent);
   }

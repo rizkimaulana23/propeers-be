@@ -14,6 +14,8 @@ import { UserService } from 'src/user/user.service';
 import { ProjectService } from 'src/project/project.service';
 import { UpdateKomisiTalentDTO } from './dto/request/update-komisi-talent.dto';
 import { DetailFinanceDTO } from './dto/response/detail-finance.dto';
+import { NotificationService } from 'src/notification/notification.service'; // Import NotificationService
+import { NotificationType, RelatedEntityType } from 'src/notification/notification.enums'; // Import enums
 // import { In } from 'typeorm';
 
 
@@ -30,7 +32,8 @@ export class FinanceService {
         private readonly commisionRepository: Repository<Commission>,
         @Inject(REQUEST) private readonly request: Request,
         private readonly userService: UserService,
-        private readonly projectService: ProjectService
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService, // Inject NotificationService
     ){}
     
     async createKomisiTalent(createKomisiTalentDto : CreateKomisiTalentDto){
@@ -200,7 +203,21 @@ export class FinanceService {
         komisiTalent.project = project;
         komisiTalent.talent = talent;
 
-        return this.turnCommissionToCommissionResponse(await this.commisionRepository.save(komisiTalent));
+        const savedCommission = await this.commisionRepository.save(komisiTalent);
+
+        // Create notification for the talent
+        if (savedCommission.talent && savedCommission.project) {
+            await this.notificationService.createNotification({
+                userId: savedCommission.talent.id,
+                type: NotificationType.COMMISSION_TRANSFERRED,
+                message: `Your commission of ${savedCommission.commissionAmount} for project "${savedCommission.project.projectName}" has been transferred.`,
+                relatedEntityId: savedCommission.project.id, // or commission.id
+                relatedEntityType: RelatedEntityType.PROJECT, // or RelatedEntityType.COMMISSION
+                link: `/finance/projects/${savedCommission.project.id}` // Example link
+            });
+        }
+
+        return this.turnCommissionToCommissionResponse(savedCommission);
     }
 
     async detailFinanceProject(projectId : number){
