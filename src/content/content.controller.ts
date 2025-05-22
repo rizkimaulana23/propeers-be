@@ -46,7 +46,7 @@ export class ContentController {
     @UseGuards(JwtAuthGuard)
     async getContentHistoryMetadata(@Param('id') id: number) {
         const result = await this.contentService.getContentHistorySubmissionMetadata(id)
-        console.log("HASIL")
+        console.log("HA SIL")
         console.log(result)
         return new BaseResponseDto(this.request, `Content History Metadata dengan ID ${id} berhasil didapatkan`, result);
     }
