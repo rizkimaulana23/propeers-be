@@ -33,7 +33,7 @@ export class SubmissionService {
     private readonly projectRepository: Repository<Project>,
     @Inject(REQUEST) private readonly request: AuthenticatedRequest,
     private readonly notificationService: NotificationService, // Inject NotificationService
-  ) {}
+  ) { }
 
   async createSubmission(createSubmissionDto: CreateSubmissionDto) {
     console.log("Masuk Create Submission")
@@ -93,36 +93,36 @@ export class SubmissionService {
     const submitter = await this.userRepository.findOne({ where: { email: savedSubmission.submittedBy } });
 
     if (submitter && submitter.role === Role.FREELANCER && content && content.projectId) {
-        // Find all assignments for this project
-        const projectAssignments = await this.assignedRolesRepository.find({
-            where: { projectId: content.projectId },
-            relations: ['talent'],
-        });
+      // Find all assignments for this project
+      const projectAssignments = await this.assignedRolesRepository.find({
+        where: { projectId: content.projectId },
+        relations: ['talent'],
+      });
 
-        for (const assignment of projectAssignments) {
-            if (assignment.talentId) { // Check if talentId exists
-                // Fetch the user details for this talentId
-                const assignedUser = await this.userRepository.findOne({
-                    where: { id: assignment.talentId }
-                });
+      for (const assignment of projectAssignments) {
+        if (assignment.talentId) { // Check if talentId exists
+          // Fetch the user details for this talentId
+          const assignedUser = await this.userRepository.findOne({
+            where: { id: assignment.talentId }
+          });
 
-                // Check if the assigned user is an SMS
-                if (assignedUser && assignedUser.role === Role.SMS) {
-                    try {
-                        await this.notificationService.createNotification({
-                            userId: assignedUser.id, // Notify the SMS user
-                            type: NotificationType.NEW_SUBMISSION_FOR_SMS,
-                            message: `Freelancer ${submitter.name || 'N/A'} submitted work for content "${content.title || 'N/A'}" in project (ID: ${content.projectId}).`,
-                            relatedEntityId: savedSubmission.id,
-                            relatedEntityType: RelatedEntityType.SUBMISSION,
-                            link: `/projects/${content.projectId}/contents/${content.id}`
-                        });
-                    } catch (error) {
-                        console.error(`Failed to create notification for SMS user ID: ${assignedUser.id}`, error);
-                    }
-                }
+          // Check if the assigned user is an SMS
+          if (assignedUser && assignedUser.role === Role.SMS) {
+            try {
+              await this.notificationService.createNotification({
+                userId: assignedUser.id, // Notify the SMS user
+                type: NotificationType.NEW_SUBMISSION_FOR_SMS,
+                message: `Freelancer ${submitter.name || 'N/A'} submitted work for content "${content.title || 'N/A'}" in project (ID: ${content.projectId}).`,
+                relatedEntityId: savedSubmission.id,
+                relatedEntityType: RelatedEntityType.SUBMISSION,
+                link: `/projects/${content.projectId}/contents/${content.id}`
+              });
+            } catch (error) {
+              console.error(`Failed to create notification for SMS user ID: ${assignedUser.id}`, error);
             }
+          }
         }
+      }
     }
 
     return this.turnSubmissionToSubmissionResponse(savedSubmission, content);
@@ -187,7 +187,7 @@ export class SubmissionService {
     const deadlineDate = new Date(content.deadline);
     const timeDiff = deadlineDate.getTime() - submissionDate.getTime();
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    
+
     // Update durasiLate atau durasiOnTime berdasarkan perbandingan tanggal
     if (daysDiff < 0) {
       // Submission telat (setelah deadline)
@@ -602,8 +602,8 @@ export class SubmissionService {
     if (userRole === Role.SMS) {
       // SMS sets isVerified to true
       if (!submission.isVerified) { // Check if it's a new verification
-          submission.isVerified = true;
-          wasVerifiedBySms = true;
+        submission.isVerified = true;
+        wasVerifiedBySms = true;
       }
     } else if (userRole === Role.CLIENT) {
       // Client can only accept if submission is verified
@@ -646,14 +646,14 @@ export class SubmissionService {
 
     // Notify Client if SMS verified the submission
     if (wasVerifiedBySms && content.project && content.project.clientId) {
-        await this.notificationService.createNotification({
-            userId: content.project.clientId,
-            type: NotificationType.CONTENT_VERIFIED_FOR_CLIENT,
-            message: `Content "${content.title}" for project "${content.project.projectName}" has been reviewed by SMS and is ready for your approval.`,
-            relatedEntityId: submission.id, // or content.id
-            relatedEntityType: RelatedEntityType.SUBMISSION, // or RelatedEntityType.CONTENT
-            link: `/projects/${content.projectId}/contents/${content.id}` // Example link
-        });
+      await this.notificationService.createNotification({
+        userId: content.project.clientId,
+        type: NotificationType.CONTENT_VERIFIED_FOR_CLIENT,
+        message: `Content "${content.title}" for project "${content.project.projectName}" has been reviewed by SMS and is ready for your approval.`,
+        relatedEntityId: submission.id, // or content.id
+        relatedEntityType: RelatedEntityType.SUBMISSION, // or RelatedEntityType.CONTENT
+        link: `/projects/${content.projectId}/contents/${content.id}` // Example link
+      });
     }
 
     return this.turnSubmissionToSubmissionResponse(updatedSubmission, content);

@@ -16,14 +16,14 @@ import { EvaluateContentDto } from './dto/request/evaluate-content.dto';
 export class ContentController {
     constructor(
         private readonly contentService: ContentService,
-        @Inject(REQUEST) 
+        @Inject(REQUEST)
         private readonly request: Request
-    ){}
+    ) { }
 
     @Post()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @RolesDecorator(Role.DIREKSI, Role.SMS)
-    async createContent(@Body() dto: CreateContentDto)  {
+    async createContent(@Body() dto: CreateContentDto) {
         const result = await this.contentService.createContent(dto);
         return new BaseResponseDto(this.request, `Content berhasil dibuat`, result);
     }
@@ -40,6 +40,15 @@ export class ContentController {
     async getContentDetail(@Param('id') id: number) {
         const result = await this.contentService.getContentDetails(id);
         return new BaseResponseDto(this.request, `Content dengan ID ${id} berhasil didapatkan`, result);
+    }
+
+    @Get('/:id/history-metadata')
+    @UseGuards(JwtAuthGuard)
+    async getContentHistoryMetadata(@Param('id') id: number) {
+        const result = await this.contentService.getContentHistorySubmissionMetadata(id)
+        console.log("HASIL")
+        console.log(result)
+        return new BaseResponseDto(this.request, `Content History Metadata dengan ID ${id} berhasil didapatkan`, result);
     }
 
     @Put('/:id')

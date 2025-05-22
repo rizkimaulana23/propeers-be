@@ -10,11 +10,12 @@ import { SubmissionSubscriber } from './submission.subscribers';
 import { Submission } from '@/common/entities/submission.entity';
 import { NotificationModule } from '@/notification/notification.module';
 import AssignedRoles from '@/common/entities/assignedRoles.entity';
+import { User } from '@/common/entities/user.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Content, Project, Submission, AssignedRoles
+      Content, Project, Submission, AssignedRoles, User
     ]),
     NotificationModule,
     ProjectModule

@@ -16,7 +16,8 @@ import { EvaluateContentDto } from './dto/request/evaluate-content.dto';
 import { NotificationService } from 'src/notification/notification.service'; // Import NotificationService
 import { NotificationType, RelatedEntityType } from 'src/notification/notification.enums'; // Import enums
 import AssignedRoles from 'src/common/entities/assignedRoles.entity';
-import { Role } from '@/common/entities/user.entity';
+import { Role, User } from '@/common/entities/user.entity';
+import { HistoryMetadata } from './dto/response/history-metadata.dto';
 
 @Injectable({scope: Scope.REQUEST})
 export class ContentService {
@@ -27,6 +28,8 @@ export class ContentService {
         private readonly contentRepository: Repository<Content>,
         @InjectRepository(AssignedRoles) // Inject AssignedRoles repository
         private readonly assignedRolesRepository: Repository<AssignedRoles>,
+        @InjectRepository(User) // Inject AssignedRoles repository
+        private readonly userRepository: Repository<User>,
         private readonly projectService: ProjectService,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest,
         private readonly notificationService: NotificationService, // Inject NotificationService
@@ -216,6 +219,50 @@ export class ContentService {
 
         return this.turnContentIntoContentResponseDto(await this.contentRepository.save(content));
     }
+
+async getContentHistorySubmissionMetadata(contentId: number): Promise<HistoryMetadata> {
+    const result = await this.contentRepository
+        .createQueryBuilder('content')
+        .select([
+            'content.id as contentId',
+            'content.title as contentName',
+            'project.id as projectId',
+            'project.projectName as projectName',
+            'client.id as clientId',
+            'client.name as clientName',
+            'sms.id as smsId',
+            'sms.name as smsName'
+        ])
+        .innerJoin('projects', 'project', 'content.projectId = project.id')
+        .innerJoin('users', 'client', 'project.clientId = client.id')
+        .innerJoin('assigned_roles', 'ar', 'ar.projectId = project.id AND ar.role = :smsRole')
+        .innerJoin('users', 'sms', 'ar.talentId = sms.id AND sms.role = :smsUserRole')
+        .where('content.id = :contentId', { contentId })
+        .setParameters({
+            smsRole: '-',
+            smsUserRole: Role.SMS
+        })
+        .getRawOne();
+
+    if (!result) {
+        throw new FailedException(
+            `Content with ID ${contentId} or its related data can't be found.`, 
+            HttpStatus.NOT_FOUND, 
+            this.request.url
+        );
+    }   
+
+    return {
+        clientName: result.clientname,
+        clientId: result.clientid,
+        contentName: result.contentname,
+        contentId: result.contentid,
+        projectName: result.projectname,
+        projectId: result.projectid,
+        smsName: result.smsname,
+        smsId: result.smsid
+    };
+}
 
     turnContentIntoContentResponseDto(content: Content): ContentResponseDto {
         const projectResponse: ProjectResponseDto = this.projectService.turnProjectIntoProjectResponse(content.project);
