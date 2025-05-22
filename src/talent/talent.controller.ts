@@ -92,7 +92,7 @@ export class TalentController {
 
   @Put('brief')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @RolesDecorator(Role.ADMIN, Role.SMS) // Hanya admin/SMS yang bisa update brief notes
+  @RolesDecorator(Role.SMS, Role.DIREKSI)
   async updateBriefNotes(
     @Query('talentId', ParseIntPipe) talentId: number,
     @Query('projectId', ParseIntPipe) projectId: number,
