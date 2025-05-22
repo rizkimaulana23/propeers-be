@@ -5,7 +5,7 @@ import { Content, ContentStatus } from 'src/common/entities/content.entity';
 import { Project, ProjectStatus } from 'src/common/entities/project.entity';
 import { Role, TalentStatus, User } from 'src/common/entities/user.entity';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, In, IsNull, Not, Repository } from 'typeorm';
 import { TaskCalendarResponseDto } from './dto/TaskCalendarResponseDto';
 import AssignedRoles from 'src/common/entities/assignedRoles.entity';
 import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
@@ -44,7 +44,8 @@ export class DashboardService {
         if (this.request.user.roles === Role.DIREKSI) {
             projects = await this.projectRepository.find({
                 where: {
-                    status: ProjectStatus.ONGOING
+                    status: ProjectStatus.ONGOING,
+                    score: Not(IsNull())
                 }
             });
         } else if (this.request.user.roles === Role.SMS) {
@@ -56,7 +57,8 @@ export class DashboardService {
             projects = await this.projectRepository.find({
                 where: {
                     id: In(assignedRoles.map((ar) => ar.projectId)),
-                    status: ProjectStatus.ONGOING
+                    status: ProjectStatus.ONGOING,
+                    score: Not(IsNull())
                 }
             })
         } else {
