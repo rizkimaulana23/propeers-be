@@ -319,7 +319,7 @@ export class DashboardService {
             response.totalTalent = await this.getCardTotalTalent();
             response.totalClient = await this.getCardTotalClient();
         } else if (this.request.user.roles === Role.GM) {
-            response.totalClient = await this.getCardTotalClient();
+            response.totalActiveTalent = await this.getCardTotalActiveTalent();
             response.totalTalent = await this.getCardTotalTalent();
         } else if (this.request.user.roles === Role.SMS || this.request.user.roles === Role.FREELANCER) {
             response.activeProject = await this.getCardActiveProject();
@@ -384,6 +384,15 @@ export class DashboardService {
         return await this.projectRepository.count({
             where: {
                 status: ProjectStatus.FINISHED
+            }
+        })
+    }
+
+    async getCardTotalActiveTalent() {
+        return await this.userRepository.count({
+            where: {
+                role: In([Role.SMS, Role.FREELANCER]),
+                talentStatus: TalentStatus.ACTIVE
             }
         })
     }
