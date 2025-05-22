@@ -19,7 +19,9 @@ export class ContentResponseDto {
 
         targetAudience: TargetAudience;
 
-        uploadLink: string;
+        uploadLink: string | null;
+
+        uploadLinkTimestamp: Date | null;
     
         uploadDate: Date;
 

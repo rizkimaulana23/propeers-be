@@ -147,7 +147,7 @@ export class ContentService {
             throw new FailedException(`Content with ID ${id} can't be found.`, HttpStatus.NOT_FOUND, this.request.url);
 
         if (content.status === ContentStatus.FINISHED || content.status === ContentStatus.UPLOADED)
-            throw new FailedException(`Can't delete Content with  Finished or Uploaded status.`, HttpStatus.BAD_REQUEST, this.request.url);
+            throw new FailedException(`Can't delete Content with Finished or Uploaded status.`, HttpStatus.BAD_REQUEST, this.request.url);
 
         const result: DeleteResult = await this.contentRepository.softDelete(content.id);
 
@@ -167,23 +167,20 @@ export class ContentService {
         if (!content) 
             throw new FailedException(`Content with ID ${id} can't be found.`, HttpStatus.NOT_FOUND, this.request.url);
 
-        if (content.status !== ContentStatus.FINISHED)
-            throw new FailedException(`Can't set Content status to Uploaded unless Content is Finished.`, HttpStatus.BAD_REQUEST, this.request.url);
+        if (content.status !== ContentStatus.FINISHED && content.status !== ContentStatus.UPLOADED)
+            throw new FailedException(`Can't change Upload Link unless the Content status is Finished or Uploaded.`, HttpStatus.BAD_REQUEST, this.request.url);
 
-        const result = await this.contentRepository.update({ id }, { 
-            ...dto,
-            status: ContentStatus.UPLOADED    
-        });
-        
-        const updatedContent: Content | null = await this.contentRepository.findOne({ 
-            where: {
-                id
-            }
-        })
-        if (!updatedContent) {
-            throw new FailedException(`Failed to update content with ID ${id}`, HttpStatus.INTERNAL_SERVER_ERROR, this.request.url);
+        if (dto.uploadLink === "" || dto.uploadLink === null || dto.uploadLink === undefined) {
+            content.status = ContentStatus.FINISHED;
+            content.uploadLink = null;
+            content.uploadLinkTimestamp = null;
+        } else {
+            content.status = ContentStatus.UPLOADED;
+            content.uploadLink = dto.uploadLink;
+            content.uploadLinkTimestamp = new Date();
         }
-        return this.turnContentIntoContentResponseDto(updatedContent);
+
+        return this.turnContentIntoContentResponseDto(await this.contentRepository.save(content));
     }
 
     async evaluateContent(id: number, dto: EvaluateContentDto) {
@@ -199,7 +196,7 @@ export class ContentService {
         if (content.status !== ContentStatus.UPLOADED)
             throw new FailedException(`Can't evaluate Content unless Content status is Uploaded.`, HttpStatus.BAD_REQUEST, this.request.url);
 
-        content.evaluationDate = dto.evaluationDate;
+        content.evaluationTimestamp = dto.evaluationTimestamp;
         content.performance = dto.performanceDescription;
         content.performanceNote = dto.performanceNote;
         content.descriptiveEvaluation = dto.descriptiveEvaluation;

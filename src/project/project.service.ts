@@ -208,6 +208,21 @@ export class ProjectService {
         return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
     }
 
+    async unfinishProject(id: number) {
+        const project: Project | null = await this.projectRepository.findOne({
+            where: {
+                id
+            }
+        });
+        if (!project) throw new FailedException(`Project dengan ID ${id} tidak ditemukan.`, HttpStatus.NOT_FOUND, this.request.path);
+
+        if (![ProjectStatus.FINISHED].includes(project.status)) throw new FailedException("Hanya Project dengan status Finished yang dapat dilakukan operasi Unfinished", HttpStatus.BAD_REQUEST, this.request.path);
+        
+        project.status = ProjectStatus.ONGOING;
+
+        return this.turnProjectIntoProjectResponse(await this.projectRepository.save(project));
+    }
+
     async deleteProject(id: number) {
         const project: Project | null = await this.projectRepository.findOne({
             where: {
