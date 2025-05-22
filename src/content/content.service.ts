@@ -54,15 +54,24 @@ export class ContentService {
 
         const savedContent = await this.contentRepository.save(newContent);
 
-        // Notify assigned talents (Freelancers and SMS)
+        // Notify assigned talents (Freelancers and SMS) - but only once per user
         if (project && project.id) {
             const assignments = await this.assignedRolesRepository.find({
                 where: { projectId: project.id },
                 relations: ['talent'],
             });
 
+            // Track users who have already been notified to avoid duplicates
+            const notifiedUserIds = new Set<number>();
+
             for (const assignment of assignments) {
-                if (assignment.talent && (assignment.talent.role === Role.FREELANCER || assignment.talent.role === Role.SMS)) {
+                if (assignment.talent && 
+                    (assignment.talent.role === Role.FREELANCER || assignment.talent.role === Role.SMS) &&
+                    !notifiedUserIds.has(assignment.talent.id)) { // Only notify if not already notified
+                    
+                    // Add user to the set of notified users
+                    notifiedUserIds.add(assignment.talent.id);
+                    
                     await this.notificationService.createNotification({
                         userId: assignment.talent.id,
                         type: NotificationType.NEW_CONTENT_FOR_TALENT,

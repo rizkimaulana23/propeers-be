@@ -115,7 +115,7 @@ export class SubmissionService {
                             message: `Freelancer ${submitter.name || 'N/A'} submitted work for content "${content.title || 'N/A'}" in project (ID: ${content.projectId}).`,
                             relatedEntityId: savedSubmission.id,
                             relatedEntityType: RelatedEntityType.SUBMISSION,
-                            link: `/submissions/${savedSubmission.id}`
+                            link: `/projects/${content.projectId}/contents/${content.id}`
                         });
                     } catch (error) {
                         console.error(`Failed to create notification for SMS user ID: ${assignedUser.id}`, error);
