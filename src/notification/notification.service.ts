@@ -17,15 +17,17 @@ export class NotificationService {
     constructor(
         @InjectRepository(Notification)
         private notificationRepository: Repository<Notification>,
-        @InjectRepository(User) // To fetch user details if needed for messages
-        private userRepository: Repository<User>,
         @InjectRepository(Content)
         private contentRepository: Repository<Content>,
         @Inject(REQUEST) private readonly request: AuthenticatedRequest,
     ) {}
 
     async createNotification(dto: CreateNotificationDto): Promise<Notification> {
-        const notification = this.notificationRepository.create(dto);
+        const notification = this.notificationRepository.create({
+            ...dto,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
         return this.notificationRepository.save(notification);
     }
 
@@ -35,6 +37,8 @@ export class NotificationService {
             where: { userId },
             order: { createdAt: 'DESC' },
         });
+        
+        // Make sure dates are properly converted when returning to frontend
         return notifications.map(n => new NotificationResponseDto({
             id: n.id,
             userId: n.userId,

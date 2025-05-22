@@ -1,6 +1,6 @@
 import { BaseEntity } from "src/common/entities/base.entity";
 import { User } from "src/common/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { NotificationType, RelatedEntityType } from "../../notification/notification.enums";
 
 @Entity('notifications')
@@ -29,4 +29,11 @@ export class Notification extends BaseEntity {
 
     @Column({ nullable: true })
     link?: string; // Optional: direct link for frontend navigation
+
+    // Override the BaseEntity timestamps with timezone-aware versions
+    @CreateDateColumn({ type: 'timestamptz' })
+    createdAt: Date;
+
+    @UpdateDateColumn({ type: 'timestamptz' })
+    updatedAt: Date;
 }
