@@ -11,6 +11,7 @@ import {
   Query,
   Scope,
   UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import { TalentService } from './talent.service';
 import { CreateAssignedRoleDto } from './dto/request/create-assigned-role.dto';
@@ -23,6 +24,7 @@ import { RolesDecorator } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/entities/user.entity';
 import { UpdateBriefNotesDto } from './dto/request/update-brief-notes-dto';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { FailedException } from 'src/common/exceptions/FailedExceptions.dto';
 
 @Controller({ path: 'talent', scope: Scope.REQUEST })
 export class TalentController {
@@ -76,6 +78,27 @@ export class TalentController {
       this.request,
       `Talent Detail dengan ID ${talentId} berhasil didapatkan`,
       result,
+    );
+  }
+
+  @Get('performance')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RolesDecorator(Role.DIREKSI, Role.GM)
+  async getTalentPerformance(@Query('email') email: string) {
+    if (!email) {
+      throw new FailedException(
+        'Email parameter is required',
+        HttpStatus.BAD_REQUEST,
+        this.request.path,
+      );
+    }
+    
+    const performance = await this.talentService.getTalentPerformance(email);
+    
+    return new BaseResponseDto(
+      this.request,
+      `Performance metrics retrieved for talent ${email}`,
+      performance
     );
   }
 

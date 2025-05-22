@@ -13,6 +13,8 @@ import AssignedRoles from 'src/common/entities/assignedRoles.entity';
 // import { AssignedRoleResponseDto } from './dto/response/assigned-role-response.dto';
 import { NotificationService } from 'src/notification/notification.service'; // Import NotificationService
 import { NotificationType, RelatedEntityType } from 'src/notification/notification.enums'; // Import enums
+import { TalentPerformanceResponseDTO } from './dto/response/talent-performance-response.dto';
+import { Submission } from 'src/common/entities/submission.entity';
 
 @Injectable()
 export class TalentService {
@@ -25,6 +27,8 @@ export class TalentService {
     private readonly assignedRolesRepository: Repository<AssignedRoles>,
     @Inject(REQUEST) private readonly request: Request,
     private readonly notificationService: NotificationService, // Inject NotificationService
+    @InjectRepository(Submission)
+    private readonly submissionRepository: Repository<Submission>,
   ) {}
 
   async readTalents(includeDeleted: boolean = false) {
@@ -300,6 +304,50 @@ export class TalentService {
     }
     
     return this.turnTalentToTalentResponse(updatedTalent);
+  }
+
+  async getTalentPerformance(email: string): Promise<TalentPerformanceResponseDTO> {
+    return this.getSingleTalentPerformance(email);
+  }
+
+  private async getSingleTalentPerformance(email: string): Promise<TalentPerformanceResponseDTO> {
+    // Find the user
+    const talent = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!talent) {
+      throw new FailedException(
+        `Talent dengan email ${email} tidak ditemukan`,
+        HttpStatus.NOT_FOUND,
+        this.request.path,
+      );
+    }
+
+    // Get all submissions by this user
+    const submissions = await this.submissionRepository.find({
+      where: { submittedBy: email },
+    });
+
+    // Calculate metrics
+    const totalLateSubmissions = submissions.filter(s => s.durasiLate !== null && s.durasiLate > 0).length;
+    const totalOnTimeSubmissions = submissions.filter(s => s.durasiOnTime !== null && s.durasiOnTime >= 0).length;
+    const totalSubmissions = totalLateSubmissions + totalOnTimeSubmissions;
+    
+    // Calculate overall score using the formula: 70 + (OnTime x 30)/Total
+    let overallScore = 70;
+    if (totalSubmissions > 0) {
+      overallScore += (totalOnTimeSubmissions * 30) / totalSubmissions;
+    }
+
+    return new TalentPerformanceResponseDTO({
+      userId: talent.id,
+      email: talent.email,
+      name: talent.name || 'Unknown',
+      totalLateSubmissions,
+      totalOnTimeSubmissions,
+      overallScore: Number(overallScore.toFixed(2)), // Round to 2 decimal places
+    });
   }
 
   turnTalentToTalentResponse(talent: User) {
