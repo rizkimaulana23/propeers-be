@@ -131,6 +131,10 @@ export class ContentService {
 
         if (content.status === ContentStatus.FINISHED && (dto.uploadLink !== null || dto.uploadLink !== undefined || dto.uploadLink !== ''))
             this.contentRepository.update({ id }, { status: ContentStatus.UPLOADED});
+
+        if (content.deadline !== dto.deadline) {
+            if (new Date(dto.deadline).getTime() < new Date().getTime()) throw new FailedException("Deadline should not be earlier than today", HttpStatus.BAD_REQUEST, this.request.path);
+        }
         
         const result = await this.contentRepository.update({ id }, { ...dto });
         

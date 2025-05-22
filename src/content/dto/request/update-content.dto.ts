@@ -20,9 +20,6 @@ export class UpdateContentPlanDto {
     @IsDateString()
     @IsNotEmpty()
     @Matches(/^\d{4}-\d{2}-\d{2}$/)
-    @NotBeforeToday({
-        message: 'Deadline must not be earlier than today'
-    })
     deadline: Date;
 
     @IsEnum(JenisPostingan)
@@ -49,21 +46,4 @@ export class UpdateContentPlanDto {
     @IsArray()
     @IsUrl({}, { each: true })
     references: string[];
-
-    @IsString()
-    @IsOptional()
-    performance: string;
-
-    @IsString()
-    @IsOptional()
-    performanceNote: string;
-
-    @IsDateString()
-    @Matches(/^\d{4}-\d{2}-\d{2}$/)
-    @IsOptional()
-    evaluationDate: Date;
-
-    @IsString()
-    @IsOptional()
-    descriptiveEvaluation: string;
 }
