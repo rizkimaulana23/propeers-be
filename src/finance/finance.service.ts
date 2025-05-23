@@ -213,7 +213,7 @@ export class FinanceService {
                 message: `Your commission of ${savedCommission.commissionAmount} for project "${savedCommission.project.projectName}" has been transferred.`,
                 relatedEntityId: savedCommission.project.id, // or commission.id
                 relatedEntityType: RelatedEntityType.PROJECT, // or RelatedEntityType.COMMISSION
-                link: undefined
+                link: `/finance/projects/${savedCommission.project.id}` // Example link
             });
         }
 

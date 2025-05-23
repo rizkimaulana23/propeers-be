@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { FinanceService } from './finance.service';
 import { AuthenticatedRequest } from 'src/common/interfaces/custom-request.interface';
 import { REQUEST } from '@nestjs/core';
 import { CreateKomisiTalentDto } from './dto/request/create-komisi-talent.dto';
 import { BaseResponseDto } from 'src/common/dto/success-response.dto';
 import { UpdateKomisiTalentDTO } from './dto/request/update-komisi-talent.dto';
+import { RolesDecorator } from '@/common/decorators/roles.decorator';
+import { Role } from '@/common/entities/user.entity';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
 @Controller('finance')
 export class FinanceController {
@@ -15,8 +18,8 @@ export class FinanceController {
   ){}
 
   @Post('create-komisi')
-  // @RolesDecorator(Role.DIREKSI)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI)
+  @UseGuards(JwtAuthGuard)
   async createKomisiTalent(@Body() createKomisiTalent: CreateKomisiTalentDto) {
     const komisiBaru = await this.financeService.createKomisiTalent(createKomisiTalent);
     return new BaseResponseDto(
@@ -27,8 +30,8 @@ export class FinanceController {
   }
 
   @Put('update-komisi/:projectId/:talentId')
-  // @RolesDecorator(Role.DIREKSI)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI)
+  @UseGuards(JwtAuthGuard)
   async updateKomisiTalent(@Body() updateKomisiTalent: UpdateKomisiTalentDTO, @Param('projectId') idProject: number, @Param('talentId') idTalent: number) {
     const komisiUpdated = await this.financeService.updateKomisiTalent(updateKomisiTalent);
     return new BaseResponseDto(
@@ -39,8 +42,8 @@ export class FinanceController {
   }
 
   @Put('update-transferred/:projectId/:talentId')
-  // @RolesDecorator(Role.DIREKSI)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI)
+  @UseGuards(JwtAuthGuard)
   async updateTransferredKomisi(@Param('projectId') projectId: number, @Param('talentId') talentId: number) {
     const komisiUpdated = await this.financeService.updateTransferredKomisi(projectId, talentId);
     return new BaseResponseDto(
@@ -51,8 +54,8 @@ export class FinanceController {
   }
 
   @Get('detail/:projectId')
-  // @RolesDecorator(Role.DIREKSI)
-  // @UseGuards(JwtAuthGuard)
+  @RolesDecorator(Role.DIREKSI)
+  @UseGuards(JwtAuthGuard)
   async detailProportionFinance(@Param('projectId') projectId: number) {
     const detailFinance = await this.financeService.detailFinanceProject(projectId);
     return new BaseResponseDto(
