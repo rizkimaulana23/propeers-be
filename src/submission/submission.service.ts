@@ -93,13 +93,6 @@ export class SubmissionService {
     const submitter = await this.userRepository.findOne({ where: { email: savedSubmission.submittedBy } });
 
     if (submitter && submitter.role === Role.FREELANCER && content && content.projectId) {
-<<<<<<< Updated upstream
-      // Find all assignments for this project
-      const projectAssignments = await this.assignedRolesRepository.find({
-        where: { projectId: content.projectId },
-        relations: ['talent'],
-      });
-=======
         // Fetch the project to get the project name
         const project = await this.projectRepository.findOne({
             where: { id: content.projectId }
@@ -112,7 +105,6 @@ export class SubmissionService {
             where: { projectId: content.projectId },
             relations: ['talent'],
         });
->>>>>>> Stashed changes
 
       for (const assignment of projectAssignments) {
         if (assignment.talentId) { // Check if talentId exists
@@ -121,37 +113,19 @@ export class SubmissionService {
             where: { id: assignment.talentId }
           });
 
-<<<<<<< Updated upstream
           // Check if the assigned user is an SMS
           if (assignedUser && assignedUser.role === Role.SMS) {
             try {
               await this.notificationService.createNotification({
                 userId: assignedUser.id, // Notify the SMS user
                 type: NotificationType.NEW_SUBMISSION_FOR_SMS,
-                message: `Freelancer ${submitter.name || 'N/A'} submitted work for content "${content.title || 'N/A'}" in project (ID: ${content.projectId}).`,
+                message: `Freelancer ${submitter.name || 'N/A'} submitted work for content "${content.title || 'N/A'}" in project "${projectName}.`,
                 relatedEntityId: savedSubmission.id,
                 relatedEntityType: RelatedEntityType.SUBMISSION,
                 link: `/projects/${content.projectId}/contents/${content.id}`
               });
             } catch (error) {
               console.error(`Failed to create notification for SMS user ID: ${assignedUser.id}`, error);
-=======
-                // Check if the assigned user is an SMS
-                if (assignedUser && assignedUser.role === Role.SMS) {
-                    try {
-                        await this.notificationService.createNotification({
-                            userId: assignedUser.id, // Notify the SMS user
-                            type: NotificationType.NEW_SUBMISSION_FOR_SMS,
-                            message: `Freelancer ${submitter.name || 'N/A'} submitted work for content "${content.title || 'N/A'}" in project "${projectName}".`,
-                            relatedEntityId: savedSubmission.id,
-                            relatedEntityType: RelatedEntityType.SUBMISSION,
-                            link: `/projects/${content.projectId}/contents/${content.id}`
-                        });
-                    } catch (error) {
-                        console.error(`Failed to create notification for SMS user ID: ${assignedUser.id}`, error);
-                    }
-                }
->>>>>>> Stashed changes
             }
           }
         }
