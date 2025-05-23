@@ -246,7 +246,6 @@ export class DashboardService {
             }
         });
 
-        console.log("babi")
         console.log(deliverables)
 
         deliverables.map((deliverable) => {
