@@ -210,7 +210,7 @@ export class FinanceService {
             await this.notificationService.createNotification({
                 userId: savedCommission.talent.id,
                 type: NotificationType.COMMISSION_TRANSFERRED,
-                message: `Your commission of ${savedCommission.commissionAmount} for project "${savedCommission.project.projectName}" has been transferred.`,
+                message: `Your commission of Rp${savedCommission.commissionAmount} for project "${savedCommission.project.projectName}" has been transferred.`,
                 relatedEntityId: savedCommission.project.id, // or commission.id
                 relatedEntityType: RelatedEntityType.PROJECT, // or RelatedEntityType.COMMISSION
                 link: `/finance/projects/${savedCommission.project.id}` // Example link
