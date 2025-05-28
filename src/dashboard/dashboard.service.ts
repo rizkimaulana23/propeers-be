@@ -144,7 +144,7 @@ export class DashboardService {
         if (!this.request.user) return;
 
         let projects: Project[] = [];
-        if (this.request.user.roles === Role.DIREKSI) {
+        if (this.request.user.roles === Role.DIREKSI || this.request.user.roles === Role.GM) {
             projects = await this.projectRepository.find();
         } else if (this.request.user.roles === Role.SMS || this.request.user.roles === Role.FREELANCER) {
             const assignedRoles: AssignedRoles[] = await this.assignedRolesRepository.find({
@@ -294,7 +294,7 @@ export class DashboardService {
                 const year = date.getFullYear();
                 const period = `${year}-${month.toString().padStart(2, '0')}`;
 
-                monthlyData[period] = (monthlyData[period] || 0) + commission.commissionAmount;
+                monthlyData[period] = (monthlyData[period] || 0) + Number(commission.commissionAmount);
             })
         }
 
