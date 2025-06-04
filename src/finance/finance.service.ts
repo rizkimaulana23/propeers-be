@@ -59,13 +59,13 @@ export class FinanceService {
             }
         }
 
-        if (totalKomisi + commissionAmount > project.fee){
-            throw new FailedException(
-                `Jumlah komisi yang dimasukkan melebihi available budget`,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                this.request.path,
-            );
-        }
+        // if (totalKomisi + commissionAmount > project.fee){
+        //     throw new FailedException(
+        //         `Jumlah komisi yang dimasukkan melebihi available budget`,
+        //         HttpStatus.INTERNAL_SERVER_ERROR,
+        //         this.request.path,
+        //     );
+        // }
 
         const talent = await this.userRepository.findOne({
             where: { id: talentId },
@@ -126,13 +126,13 @@ export class FinanceService {
             }
         }
 
-        if (totalKomisi - komisiTalent.commissionAmount + commissionAmount > project.fee){
-            throw new FailedException(
-                `Jumlah komisi yang dimasukkan melebihi available budget`,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                this.request.path,
-            );
-        }
+        // if (totalKomisi - komisiTalent.commissionAmount + commissionAmount > project.fee){
+        //     throw new FailedException(
+        //         `Jumlah komisi yang dimasukkan melebihi available budget`,
+        //         HttpStatus.INTERNAL_SERVER_ERROR,
+        //         this.request.path,
+        //     );
+        // }
 
         const talent = await this.userRepository.findOne({
             where: { id: talentId },
