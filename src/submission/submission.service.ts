@@ -333,9 +333,9 @@ export class SubmissionService {
         },
       });
 
-      if (existingClientRevisions.length > 0) {
+      if (existingClientRevisions.length > 1) {
         throw new FailedException(
-          'Client hanya dapat membuat revisi satu kali per content',
+          'Client hanya dapat membuat revisi dua kali per content',
           HttpStatus.FORBIDDEN,
           this.request.path,
         );
@@ -363,6 +363,10 @@ export class SubmissionService {
           );
         }
 
+        if (existingClientRevisions.length === 1) {
+          content.status = ContentStatus.CANCELLED;
+        }
+        
         await this.contentRepository.save(content);
       }
     }
