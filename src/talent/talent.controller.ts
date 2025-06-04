@@ -115,7 +115,7 @@ export class TalentController {
 
   @Put('brief')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @RolesDecorator(Role.SMS, Role.DIREKSI)
+  @RolesDecorator(Role.GM, Role.DIREKSI)
   async updateBriefNotes(
     @Query('talentId', ParseIntPipe) talentId: number,
     @Query('projectId', ParseIntPipe) projectId: number,
